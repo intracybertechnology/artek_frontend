@@ -1,15 +1,5 @@
 import type { HeroSlide } from "../types/index.ts";
 
-/**
- * Five-slide hero carousel content.
- *
- * ⚠ IMAGES: these are licensed-free representative stock photographs
- * (source: Unsplash CDN, downloaded locally). They demonstrate the design
- * intent only — they are NOT ARTEK project photos and must not be presented
- * as ARTEK work. Replace files in /public/images/hero/ with ARTEK project
- * photography or licensed stock of the same dimensions (1600×1200, 4:3)
- * when available. Alt text is deliberately descriptive, not attributive.
- */
 export const heroSlides: readonly HeroSlide[] = [
   {
     id: "cctv",
@@ -17,8 +7,7 @@ export const heroSlides: readonly HeroSlide[] = [
     title: "Intelligent CCTV Solutions",
     description: "Advanced surveillance solutions for homes and businesses.",
     image: "/images/hero/artek-security-workspace.webp",
-    imageAlt:
-      "ARTEK security solutions workspace — CCTV monitoring and IT setup",
+    imageAlt: "ARTEK security solutions workspace — CCTV monitoring and IT setup",
     width: 1536,
     height: 1200,
   },
@@ -31,6 +20,7 @@ export const heroSlides: readonly HeroSlide[] = [
     imageAlt: "ARTEK biometric and security systems installation",
     width: 1600,
     height: 1200,
+    mobileImage: "/images/hero/slide2-biometric-mobile.webp",
   },
   {
     id: "access-control",
@@ -41,6 +31,7 @@ export const heroSlides: readonly HeroSlide[] = [
     imageAlt: "ARTEK access control solution at a commercial site",
     width: 1600,
     height: 1200,
+    mobileImage: "/images/hero/slide3-access-mobile.webp",
   },
   {
     id: "intercom",
@@ -51,6 +42,7 @@ export const heroSlides: readonly HeroSlide[] = [
     imageAlt: "ARTEK connected entry and intercom installation",
     width: 1600,
     height: 1200,
+    mobileImage: "/images/hero/slide4-entry-mobile.webp",
   },
   {
     id: "networking",
@@ -61,8 +53,8 @@ export const heroSlides: readonly HeroSlide[] = [
     imageAlt: "Organised server racks and network cabling in a data center",
     width: 1600,
     height: 1200,
+    mobileImage: "/images/hero/slide5-network-mobile.webp",
   },
 ];
 
-/** The LCP-critical first-slide image, preloaded at build time. */
 export const heroPreloadImage = heroSlides[0];

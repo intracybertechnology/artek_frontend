@@ -28,17 +28,16 @@ export interface BreadcrumbItem {
 
 /** Hero carousel slide (see src/data/heroSlides.ts) */
 export interface HeroSlide {
-  /** stable key */
   id: string;
-  /** small uppercase overlay label, e.g. VIDEO SURVEILLANCE */
   category: string;
   title: string;
   description: string;
   image: string;
   imageAlt: string;
-  /** intrinsic dimensions of the image file — prevents layout shift */
   width: number;
   height: number;
+  /** Portrait-cropped image for mobile full-bleed layout (900×1200). */
+  mobileImage?: string;
 }
 
 export interface Faq {

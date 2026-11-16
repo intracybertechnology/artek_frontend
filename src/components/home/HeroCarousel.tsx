@@ -14,7 +14,7 @@ const SWIPE_THRESHOLD = 48;
  * - transform/opacity transitions only; autoplay disabled under
  *   prefers-reduced-motion
  */
-export function HeroCarousel({ slides }: { slides: readonly HeroSlide[] }) {
+export function HeroCarousel({ slides, mobileFullBleed = false }: { slides: readonly HeroSlide[]; mobileFullBleed?: boolean }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const hiddenTab = useRef(false);
@@ -72,7 +72,10 @@ export function HeroCarousel({ slides }: { slides: readonly HeroSlide[] }) {
       role="region"
       aria-roledescription="carousel"
       aria-label="ARTEK technology solutions"
-      className="group relative h-full w-full overflow-hidden rounded-2xl bg-mist-2 shadow-(--shadow-card-hover) ring-1 ring-white/15 ring-inset sm:rounded-3xl"
+      className={cn(
+        "group relative h-full w-full overflow-hidden bg-mist-2 shadow-(--shadow-card-hover) ring-1 ring-white/15 ring-inset",
+        mobileFullBleed ? "rounded-none sm:rounded-3xl" : "rounded-2xl sm:rounded-3xl",
+      )}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -97,10 +100,10 @@ export function HeroCarousel({ slides }: { slides: readonly HeroSlide[] }) {
             data-active={i === index || undefined}
           >
             <img
-              src={s.image}
+              src={mobileFullBleed ? (s.mobileImage ?? s.image) : s.image}
               alt={s.imageAlt}
-              width={s.width}
-              height={s.height}
+              width={mobileFullBleed ? 900 : s.width}
+              height={mobileFullBleed ? 1200 : s.height}
               loading={i === 0 ? "eager" : "lazy"}
               decoding={i === 0 ? "sync" : "async"}
               fetchPriority={i === 0 ? "high" : undefined}
@@ -111,49 +114,55 @@ export function HeroCarousel({ slides }: { slides: readonly HeroSlide[] }) {
         ))}
       </ul>
 
-      {/* readability scrim */}
+      {/* readability scrim — hidden in mobileFullBleed (HeroSection provides its own) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/85 via-black/40 to-transparent"
+        className={cn(
+          "pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/85 via-black/40 to-transparent",
+          mobileFullBleed && "hidden lg:block",
+        )}
       />
 
-      {/* overlay content */}
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-5 sm:p-7">
+      {/* overlay content — hidden in mobileFullBleed (HeroSection provides its own) */}
+        <div className={cn(
+          "absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 sm:gap-6 sm:p-7",
+          mobileFullBleed && "hidden lg:flex",
+        )}>
         <div
           key={slide.id}
           aria-live={userNavigated ? "polite" : "off"}
-          className="min-w-0 max-w-md text-white transition-opacity duration-500"
+          className="min-w-0 max-w-[70%] text-white transition-opacity duration-500 sm:max-w-md"
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/75 sm:text-[11px]">
             {slide.category}
           </p>
-          <h2 className="mt-1.5 text-xl font-bold leading-snug tracking-tight sm:text-2xl">
+          <h2 className="mt-1 text-base font-bold leading-snug tracking-tight sm:mt-1.5 sm:text-2xl">
             {slide.title}
           </h2>
-          <p className="mt-1 hidden text-sm text-white/80 sm:block">{slide.description}</p>
+          <p className="mt-1 line-clamp-2 text-xs text-white/80 sm:text-sm">{slide.description}</p>
         </div>
 
         {/* controls */}
-        <div className="flex shrink-0 flex-col items-end gap-3">
+        <div className="flex shrink-0 flex-col items-end gap-2 sm:gap-3">
           <p className="text-xs font-semibold tabular-nums tracking-[0.2em] text-white/75" aria-hidden="true">
             {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
           </p>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             <button
               type="button"
               onClick={() => go(index - 1)}
               aria-label="Previous slide"
-              className="flex size-9 items-center justify-center rounded-full border border-white/30 text-white backdrop-blur-sm transition-colors hover:border-white/70 hover:bg-white/10 sm:size-10"
+              className="flex size-8 items-center justify-center rounded-full border border-white/30 text-white backdrop-blur-sm transition-colors hover:border-white/70 hover:bg-white/10 sm:size-10"
             >
-              <ChevronLeft className="size-4" aria-hidden="true" />
+              <ChevronLeft className="size-3.5 sm:size-4" aria-hidden="true" />
             </button>
             <button
               type="button"
               onClick={() => go(index + 1)}
               aria-label="Next slide"
-              className="flex size-9 items-center justify-center rounded-full border border-white/30 text-white backdrop-blur-sm transition-colors hover:border-white/70 hover:bg-white/10 sm:size-10"
+              className="flex size-8 items-center justify-center rounded-full border border-white/30 text-white backdrop-blur-sm transition-colors hover:border-white/70 hover:bg-white/10 sm:size-10"
             >
-              <ChevronRight className="size-4" aria-hidden="true" />
+              <ChevronRight className="size-3.5 sm:size-4" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -161,7 +170,10 @@ export function HeroCarousel({ slides }: { slides: readonly HeroSlide[] }) {
 
       {/* indicators — plain buttons; the carousel region carries live status */}
       <div
-        className="absolute inset-x-0 top-0 flex justify-end gap-2 p-5 sm:p-7"
+        className={cn(
+          "absolute inset-x-0 top-0 flex justify-end gap-2 p-5 sm:p-7",
+          mobileFullBleed && "hidden lg:flex",
+        )}
       >
         {slides.map((s, i) => (
           <button

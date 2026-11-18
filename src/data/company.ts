@@ -38,7 +38,7 @@ export interface CompanyDetails {
   phoneDisplay: string;
   phoneHref: string;
   /**
-   * WhatsApp number in international format, digits only (e.g. "97143797128").
+   * WhatsApp number in international format, digits only (e.g. "971505513139").
    * `null` hides every WhatsApp entry point on the site.
    */
   whatsappNumber: string | null;
@@ -72,8 +72,8 @@ export const company: CompanyDetails = {
     { label: "2500+ UAE Businesses", icon: "users" },
     { label: "Computer Street, Bur Dubai", icon: "map-pin" },
   ],
-  phoneDisplay: "+971 4 379 7128",
-  phoneHref: "tel:+97143797128",
+  phoneDisplay: "+971 50 5513139",
+  phoneHref: "tel:+971505513139",
   // ⚠ TEMPORARY TEST NUMBER — the developer's personal mobile (+91 85472 77570),
   // used only to verify that lead routing works end to end.
   // BEFORE LAUNCH: replace with ARTEK's verified WhatsApp Business number.

@@ -7,7 +7,7 @@ export const homeFaqs: readonly Faq[] = [
     answer:
       "ARTEK installs CCTV systems for Dubai premises with SIRA requirements in mind."
     + " " + "Certification wording on this site is being confirmed with the company — please contact us"
-    + " " + "directly on +971 4 379 7128 for current approval details.",
+    + " " + "directly on +971 50 5513139 for current approval details.",
   },
   {
     question: "What CCTV installation services does ARTEK provide?",

@@ -58,7 +58,7 @@ export function ContactForm({ className }: { className?: string }) {
         <CheckCircle2 className="mx-auto size-10 text-emerald-500" aria-hidden="true" />
         <h3 className="mt-4 text-lg font-semibold text-ink">Enquiry sent</h3>
         <p className="mt-2 text-sm text-slate-300">
-          Thank you — our team will get back to you shortly. For urgent matters call +971 4 379 7128.
+          Thank you — our team will get back to you shortly. For urgent matters call +971 50 5513139.
         </p>
         <Button variant="outline" className="mt-5" onClick={() => setResult(null)}>
           Send another enquiry

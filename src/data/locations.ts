@@ -37,7 +37,7 @@ export const locations: readonly ServiceArea[] = [
       {
         question: "Where in Dubai are you based?",
         answer:
-          "ARTEK serves businesses across Dubai from our base in the city. Call +971 4 379 7128 to discuss your requirements and arrange a site survey.",
+          "ARTEK serves businesses across Dubai from our base in the city. Call +971 50 5513139 to discuss your requirements and arrange a site survey.",
       },
       {
         question: "Do you provide on-site support within Dubai?",
@@ -83,7 +83,7 @@ export const locations: readonly ServiceArea[] = [
       {
         question: "Do you carry out installations in Abu Dhabi?",
         answer:
-          "Yes, for business projects. Installation and support visits are scheduled with you in advance from our Dubai base. Call +971 4 379 7128 to discuss your project.",
+          "Yes, for business projects. Installation and support visits are scheduled with you in advance from our Dubai base. Call +971 50 5513139 to discuss your project.",
       },
     ],
   },
@@ -111,7 +111,7 @@ export const locations: readonly ServiceArea[] = [
       {
         question: "Do you serve customers in Sharjah?",
         answer:
-          "Yes. We deliver and support projects for businesses in Sharjah. Call +971 4 379 7128 to arrange a survey or service visit.",
+          "Yes. We deliver and support projects for businesses in Sharjah. Call +971 50 5513139 to arrange a survey or service visit.",
       },
     ],
   },
@@ -139,7 +139,7 @@ export const locations: readonly ServiceArea[] = [
       {
         question: "Do you work in Ajman?",
         answer:
-          "Yes, for business customers. Contact us on +971 4 379 7128 to discuss scheduling a visit to Ajman.",
+          "Yes, for business customers. Contact us on +971 50 5513139 to discuss scheduling a visit to Ajman.",
       },
     ],
   },

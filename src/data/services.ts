@@ -1627,7 +1627,7 @@ export const services: readonly Service[] = [
         heading: "Ready to Secure Your Business? Get a Free VAPT Consultation",
         intro: [
           "Contact our cybersecurity experts today — based in Bur Dubai, serving businesses across the UAE.",
-          "Call +971 4 379 7128 · Email Us",
+          "Call +971 50 5513139 · Email Us",
         ],
       },
     ],

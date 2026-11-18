@@ -36,7 +36,7 @@ const STATIC_PAGE_META: Record<string, PageSeo> = {
     path: canonical("/contact"),
     title: "Contact Us | CCTV, Networking & IT Support in Dubai | ARTEK",
     description:
-      "Contact ARTEK Computers LLC for CCTV installation, IT infrastructure, networking or technical support in Dubai. Call +971 4 379 7128 or request a free quote.",
+      "Contact ARTEK Computers LLC for CCTV installation, IT infrastructure, networking or technical support in Dubai. Call +971 50 5513139 or request a free quote.",
   },
   "/products": {
     path: canonical("/products"),

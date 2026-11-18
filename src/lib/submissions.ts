@@ -69,7 +69,7 @@ export async function submitEnquiry(payload: EnquiryPayload): Promise<Submission
   } catch {
     return {
       status: "error",
-      message: "A network problem prevented sending. Please try again or call +971 4 379 7128.",
+      message: "A network problem prevented sending. Please try again or call +971 50 5513139.",
     };
   }
 }

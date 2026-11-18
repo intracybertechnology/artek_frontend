@@ -1,6 +1,6 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { navItems } from "@/data/navigation";
+import { activeNavTo, navItems } from "@/data/navigation";
 import { Logo } from "@/components/layout/Logo";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useScrolled } from "@/hooks/useReveal";
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
  */
 export function Navbar() {
   const scrolled = useScrolled(24);
+  const activeTo = activeNavTo(useLocation().pathname);
 
   /**
    * Desktop links are uniform: all bold, all white — no colour or block marks
@@ -47,8 +48,7 @@ export function Navbar() {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  end={item.to === "/"}
-                  className={({ isActive }) => cn(linkCls, isActive && activeCls)}
+                  className={cn(linkCls, item.to === activeTo && activeCls)}
                 >
                   {item.label}
                 </NavLink>

@@ -1,4 +1,20 @@
-import { Monitor, Cctv, Network, Phone, Server, Mouse, ExternalLink } from "lucide-react";
+import {
+  Monitor,
+  Cctv,
+  Network,
+  Phone,
+  Server,
+  Mouse,
+  ExternalLink,
+  Printer,
+  Smartphone,
+  Tablet,
+  Shield,
+  Wrench,
+  Video,
+  Cloud,
+  Laptop,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { productCategories } from "@/data/industries";
 import { SectionHeading } from "@/components/common/SectionHeading";
@@ -14,6 +30,14 @@ const ICONS: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = 
   phone: Phone,
   server: Server,
   mouse: Mouse,
+  printer: Printer,
+  smartphone: Smartphone,
+  tablet: Tablet,
+  shield: Shield,
+  wrench: Wrench,
+  video: Video,
+  cloud: Cloud,
+  laptop: Laptop,
 };
 
 /**
@@ -29,11 +53,15 @@ export default function Products() {
           <div className="[&_a]:text-slate-400 [&_span]:text-slate-400">
             <Breadcrumbs items={[{ label: "Home", to: "/" }, { label: "Products", to: "/products" }]} />
           </div>
-          <h1 className="mt-6 text-balance text-3xl font-bold tracking-tight sm:text-4xl">IT Products We Supply</h1>
+          <h1 className="mt-6 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+            IT Products Dubai | Enterprise Technology Solutions
+          </h1>
           <p className="mt-4 max-w-2xl text-pretty text-base text-slate-300 sm:text-lg">
-            Computer systems, surveillance, networking and telephony hardware — supplied, configured
-            and supported by the ARTEK team. Availability changes with current supplier stock;
-            request a quotation for your requirement.
+            Looking for reliable IT products in Dubai? Artek Computers LLC offers a comprehensive range of IT products
+            Dubai businesses trust for their technology infrastructure. From networking solutions and enterprise servers
+            to laptops, desktops, printers, and cybersecurity systems, we provide enterprise-grade IT products and
+            technology solutions across UAE. Whether you’re building new infrastructure or upgrading existing systems,
+            our complete portfolio of IT products Dubai ensures your business stays connected, secure, and productive.
           </p>
           <Button asChild size="lg" className="mt-7">
             <Link to="/contact">Request a Quotation</Link>
@@ -59,14 +87,24 @@ export default function Products() {
                     </span>
                     <h2 className="mt-4 text-lg font-semibold text-ink">{cat.name}</h2>
                     <p className="mt-2 text-sm leading-relaxed text-slate-300">{cat.description}</p>
-                    <ul className="mt-4 flex-1 space-y-1.5">
-                      {cat.items.map((item) => (
-                        <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
-                          <span className="size-1.5 rounded-full bg-accent-400" aria-hidden="true" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
+                    {cat.items && (
+                      <ul className="mt-4 flex-1 space-y-1.5">
+                        {cat.items.map((item) => (
+                          <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
+                            <span className="size-1.5 rounded-full bg-accent-400" aria-hidden="true" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {cat.serviceSlug && (
+                      <Link
+                        to={`/solutions/${cat.serviceSlug}`}
+                        className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-accent-600 underline-offset-4 hover:underline"
+                      >
+                        View related solution →
+                      </Link>
+                    )}
                   </div>
                 </RevealBox>
               );

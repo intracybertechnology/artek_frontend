@@ -160,20 +160,100 @@ export const partnerGroups: readonly PartnerGroup[] = [
 /** PRODUCT URL categories — descriptions only, no invented specs or SKUs. */
 export const productCategories: readonly ProductCategory[] = [
   {
-    slug: "laptops-desktops",
-    name: "Laptops & Desktops",
-    icon: "monitor",
+    slug: "networking-solutions",
+    name: "Networking Solutions",
+    icon: "network",
     description:
-      "Business and consumer computing devices from leading brands, specified and configured to your needs.",
-    items: ["Business laptops", "Desktop PCs", "All-in-one systems", "Workstations"],
+      "Complete network infrastructure setup including routers, switches, WiFi systems, and structured cabling for reliable business connectivity across Dubai and UAE.",
+    items: ["Managed switches", "Wireless access points", "Routers & firewalls", "Cabling & racks"],
+    serviceSlug: "network-solutions-dubai",
   },
   {
-    slug: "servers-storage",
-    name: "Servers & Storage",
+    slug: "server-data-center",
+    name: "Server & Data Center Solutions",
     icon: "server",
     description:
-      "Rack and tower servers, storage systems and accessories for on-premise business workloads.",
+      "Enterprise-grade server solutions, data center setup, virtualization, and storage systems to power your business operations with reliability and scalability.",
     items: ["Rack servers", "Tower servers", "NAS & storage", "UPS & power protection"],
+    serviceSlug: "server-relocation-dubai",
+  },
+  {
+    slug: "desktop-workstation",
+    name: "Desktop & Workstation Solutions",
+    icon: "monitor",
+    description:
+      "High-performance desktop computers and professional workstations tailored for business needs, from basic office PCs to advanced engineering workstations.",
+    items: ["Business laptops", "Desktop PCs", "All-in-one systems", "Workstations"],
+    serviceSlug: "computer-systems-dubai",
+  },
+  {
+    slug: "laptop-computer-services",
+    name: "Laptop & Computer Services",
+    icon: "laptop",
+    description:
+      "Complete laptop solutions including sales, repairs, upgrades, and maintenance services for all major brands. Expert support for business and personal laptops.",
+    serviceSlug: "computer-systems-dubai",
+  },
+  {
+    slug: "network-infrastructure",
+    name: "Network Infrastructure",
+    icon: "network",
+    description:
+      "Structured cabling, fiber optic networks, network security, and complete IT infrastructure design and implementation for businesses of all sizes.",
+    serviceSlug: "network-solutions-dubai",
+  },
+  {
+    slug: "printers-cartridges",
+    name: "Printers & Cartridge",
+    icon: "printer",
+    description:
+      "Wide range of printers, scanners, and genuine cartridges from leading brands. Sales, rental, and maintenance services for all your printing needs.",
+    items: ["Printers & scanners", "Monitors", "Docks & cables", "Keyboards & mice"],
+  },
+  {
+    slug: "smart-phones",
+    name: "Smart Phone",
+    icon: "smartphone",
+    description:
+      "Business smartphones, mobile device management, repairs, and enterprise mobility solutions to keep your team connected and productive.",
+  },
+  {
+    slug: "tablets-mobile-devices",
+    name: "Tablet & Mobile Devices",
+    icon: "tablet",
+    description:
+      "Tablets, iPads, and mobile computing devices for business use. Complete setup, configuration, and mobile device management services.",
+  },
+  {
+    slug: "cybersecurity",
+    name: "Cybersecurity Solutions",
+    icon: "shield",
+    description:
+      "Comprehensive cybersecurity services including firewall setup, antivirus solutions, threat detection, and security audits to protect your business data.",
+    serviceSlug: "cybersecurity-dubai",
+  },
+  {
+    slug: "it-support-maintenance",
+    name: "IT Support & Maintenance",
+    icon: "wrench",
+    description:
+      "24/7 technical support, system maintenance, troubleshooting, and managed IT services to keep your technology running smoothly and efficiently.",
+    serviceSlug: "it-services-dubai",
+  },
+  {
+    slug: "audio-visual",
+    name: "Audio Visual Systems",
+    icon: "video",
+    description:
+      "Professional AV solutions including video conferencing, presentation systems, digital signage, and meeting room technology for modern businesses.",
+  },
+  {
+    slug: "cloud-computing",
+    name: "Cloud Computing Solutions",
+    icon: "cloud",
+    description:
+      "Cloud migration, cloud storage, backup solutions, and Software-as-a-Service (SaaS) implementations to modernize your business infrastructure.",
+    serviceSlug: "cloud-computing-dubai",
   },
   {
     slug: "cctv-security",
@@ -182,14 +262,7 @@ export const productCategories: readonly ProductCategory[] = [
     description:
       "Surveillance cameras, recorders and accessories for installations from single-camera to large multi-site systems.",
     items: ["IP cameras", "NVR / DVR recorders", "PTZ cameras", "Monitors"],
-  },
-  {
-    slug: "networking",
-    name: "Networking",
-    icon: "network",
-    description:
-      "Switches, routers, access points and structured cabling materials for business network builds.",
-    items: ["Managed switches", "Wireless access points", "Routers & firewalls", "Cabling & racks"],
+    serviceSlug: "cctv-security-dubai",
   },
   {
     slug: "telephony",
@@ -198,13 +271,6 @@ export const productCategories: readonly ProductCategory[] = [
     description:
       "IP phones, headsets and telephony hardware for modern business communication systems.",
     items: ["IP desk phones", "Conference devices", "Headsets"],
-  },
-  {
-    slug: "accessories",
-    name: "Accessories & Peripherals",
-    icon: "mouse",
-    description:
-      "Printers, monitors, docking, power and everyday peripherals to complete your setup.",
-    items: ["Printers & scanners", "Monitors", "Docks & cables", "Keyboards & mice"],
+    serviceSlug: "voice-telephony-dubai",
   },
 ];

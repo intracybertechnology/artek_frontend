@@ -40,7 +40,7 @@ const STATIC_PAGE_META: Record<string, PageSeo> = {
   },
   "/products": {
     path: canonical("/products"),
-    title: "Products | Computers, CCTV, Networking & Telephony | ARTEK Dubai",
+    title: "IT Products Dubai - Enterprise technology solutions from Artek Computers",
     description:
       "IT products supplied by ARTEK Computers LLC in Dubai — laptops and desktops, servers, CCTV cameras, networking equipment, telephony and peripherals.",
   },

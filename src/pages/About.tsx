@@ -45,7 +45,7 @@ export default function About() {
               </p>
               <p className="mt-4 leading-relaxed text-slate-300">
                 {/* TODO(Artek): confirm founding year and premises history before publishing */}
-                Our scope covers eight core services: {coreServices.map((s) => s.title).join(", ")} —
+                Our scope covers {coreServices.length} core services: {coreServices.map((s) => s.title).join(", ")} —
                 delivered for customers across {industries.length} industries and the UAE&apos;s
                 business community.
               </p>

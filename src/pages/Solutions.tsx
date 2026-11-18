@@ -4,7 +4,7 @@ import { ServiceCard } from "@/components/common/ServiceCard";
 import { RevealBox } from "@/components/common/RevealBox";
 import { coreServices, services } from "@/data/services";
 
-/** Solutions index — the eight core services plus the additional CCTV landing pages. */
+/** Solutions index — the core services plus the additional CCTV landing pages. */
 export default function Solutions() {
   const extras = services.filter((s) => s.context === "seo");
   return (

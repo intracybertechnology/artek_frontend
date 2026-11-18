@@ -79,10 +79,21 @@ export type ServiceId =
   | "computer-systems"
   | "network"
   | "voice-telephony"
+  | "cloud-computing"
   | "cctv"
   | "it-services"
   | "server-relocation"
-  | "cybersecurity";
+  | "cybersecurity"
+  | "vapt"
+  | "elv-access-control"
+  | "cctv-installation"
+  | "sira-cctv"
+  | "cctv-maintenance"
+  | "cctv-repair"
+  | "commercial-cctv"
+  | "residential-cctv"
+  | "ip-camera"
+  | "cctv-amc";
 
 export interface Service {
   id: ServiceId;
@@ -95,8 +106,8 @@ export interface Service {
   image: string;
   imageAlt: string;
   icon: string;
-  /** "core" = shown in the homepage solutions grid & main listings; "seo" = extra SEO landing page */
-  context: "core" | "seo";
+  /** "core" = shown in the homepage solutions grid & main listings; "seo" = extra SEO landing page; "standalone" = own page and navbar item only */
+  context: "core" | "seo" | "standalone";
   seoTargetPhrase: string;
   seo: SeoMeta;
   h1: string;
@@ -108,6 +119,28 @@ export interface Service {
   features: readonly { title: string; description: string }[];
   faqs: readonly Faq[];
   related: readonly ServiceId[];
+  stats?: readonly ServiceStat[];
+  sections?: readonly ServiceSection[];
+}
+
+export interface ServiceStat {
+  value: string;
+  label: string;
+}
+
+export interface ServiceSectionItem {
+  title: string;
+  description?: string;
+  bullets?: readonly string[];
+}
+
+export interface ServiceSection {
+  heading?: string;
+  intro?: readonly string[];
+  stats?: readonly ServiceStat[];
+  items?: readonly ServiceSectionItem[];
+  bullets?: readonly string[];
+  outro?: readonly string[];
 }
 
 export interface LocationService {
@@ -153,7 +186,9 @@ export interface ProductCategory {
   name: string;
   icon: string;
   description: string;
-  items: readonly string[];
+  items?: readonly string[];
+  /** slug of a service page to link to, when one exists */
+  serviceSlug?: string;
 }
 
 /** One step in the homepage "How we work" process (see src/data/process.ts) */

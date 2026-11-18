@@ -12,6 +12,19 @@ import NotFound from "@/pages/NotFound";
 const breadcrumbFrom = (slug: string) =>
   coreServices.some((s) => s.slug === slug) ? coreServices[0] : services.find((s) => s.slug === slug);
 
+function StatStrip({ stats, className = "" }: { stats: readonly { value: string; label: string }[]; className?: string }) {
+  return (
+    <dl className={`grid grid-cols-2 gap-4 sm:grid-cols-4 ${className}`}>
+      {stats.map((st, i) => (
+        <div key={i} className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <dt className="text-xs text-slate-400">{st.label}</dt>
+          <dd className="mt-1 text-2xl font-bold text-ink">{st.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 /**
  * Reusable service landing page template.
  * Route: /solutions/:slug — one template renders all services + SEO pages;
@@ -40,11 +53,18 @@ export default function SolutionTemplate() {
         <div className="container-page">
           <div className="[&_a]:text-slate-400 [&_span]:text-slate-400">
             <Breadcrumbs
-              items={[
-                { label: "Home", to: "/" },
-                { label: "IT Solutions", to: "/solutions" },
-                { label: service.title, to: `/solutions/${service.slug}` },
-              ]}
+              items={
+                service.context === "standalone"
+                  ? [
+                      { label: "Home", to: "/" },
+                      { label: service.title, to: `/solutions/${service.slug}` },
+                    ]
+                  : [
+                      { label: "Home", to: "/" },
+                      { label: "IT Solutions", to: "/solutions" },
+                      { label: service.title, to: `/solutions/${service.slug}` },
+                    ]
+              }
             />
           </div>
           <h1 className="mt-6 max-w-3xl text-balance text-3xl font-bold tracking-tight sm:text-4xl xl:text-[2.75rem]">
@@ -68,6 +88,7 @@ export default function SolutionTemplate() {
               Call {company.phoneDisplay}
             </a>
           </div>
+          {service.stats && <StatStrip stats={service.stats} className="mt-10" />}
         </div>
       </header>
 
@@ -103,6 +124,7 @@ export default function SolutionTemplate() {
               </ul>
             </RevealBox>
 
+            {service.features.length > 0 && (
             <RevealBox>
               <h2 className="text-2xl font-bold text-ink">Service features</h2>
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
@@ -114,6 +136,56 @@ export default function SolutionTemplate() {
                 ))}
               </div>
             </RevealBox>
+            )}
+
+            {service.sections?.map((s, i) => (
+              <RevealBox key={i}>
+                {s.heading && <h2 className="text-2xl font-bold text-ink">{s.heading}</h2>}
+                {s.intro?.map((p, j) => (
+                  <p key={j} className="mt-4 leading-relaxed text-slate-300">
+                    {p}
+                  </p>
+                ))}
+                {s.stats && <StatStrip stats={s.stats} className="mt-6" />}
+                {s.items && (
+                  <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                    {s.items.map((it, k) => (
+                      <div key={k} className="rounded-xl border border-white/10 bg-white/5 p-5">
+                        <h3 className="font-semibold text-ink">{it.title}</h3>
+                        {it.description && (
+                          <p className="mt-1.5 text-sm leading-relaxed text-slate-300">{it.description}</p>
+                        )}
+                        {it.bullets && (
+                          <ul className="mt-3 space-y-1.5">
+                            {it.bullets.map((b, m) => (
+                              <li key={m} className="flex items-start gap-2 text-sm text-slate-300">
+                                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent-600" aria-hidden="true" />
+                                {b}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {s.bullets && (
+                  <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                    {s.bullets.map((b, k) => (
+                      <li key={k} className="flex items-start gap-2.5 text-sm text-slate-300">
+                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent-600" aria-hidden="true" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {s.outro?.map((p, j) => (
+                  <p key={j} className="mt-6 leading-relaxed text-slate-300">
+                    {p}
+                  </p>
+                ))}
+              </RevealBox>
+            ))}
 
             <RevealBox>
               <h2 className="text-2xl font-bold text-ink">Frequently asked questions</h2>

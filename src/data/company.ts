@@ -84,7 +84,13 @@ export const company: CompanyDetails = {
   // salesEmail: "sales@artekteam.com", // ← hidden from the site per request
   salesEmail: null,
   businessHours: null, // ← populate with confirmed operating hours
-  socials: [], // ← populate with verified links only
+  socials: [
+    { label: "LinkedIn", url: "https://www.linkedin.com/company/artek-computers-llc/" },
+    { label: "Facebook", url: "https://www.facebook.com/ArtekComputers" },
+    { label: "Instagram", url: "https://www.instagram.com/artek_computers/" },
+    { label: "X (Twitter)", url: "https://x.com/Artekcomputers" },
+    { label: "Pinterest", url: "https://in.pinterest.com/artekcomputers/" },
+  ],
   siteUrl: "https://artekcomputer.com",
   emirateOfOperation: "Dubai, United Arab Emirates",
 };

@@ -1,8 +1,8 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { ArrowRight, Menu, Phone, X } from "lucide-react";
-import { navItems } from "@/data/navigation";
+import { activeNavTo, navItems } from "@/data/navigation";
 import { company } from "@/data/company";
 import { Logo } from "@/components/layout/Logo";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ const GROUPS: { label: string; to: readonly string[] }[] = [
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const activeTo = activeNavTo(useLocation().pathname);
 
   const itemsFor = (paths: readonly string[]) =>
     navItems.filter((item) => paths.includes(item.to));
@@ -45,9 +46,8 @@ export function MobileMenu() {
     <li key={item.to} className="list-none">
       <NavLink
         to={item.to}
-        end={item.to === "/"}
         onClick={() => setOpen(false)}
-        className={({ isActive }) => linkClass(isActive)}
+        className={linkClass(item.to === activeTo)}
       >
         {item.label}
         <ArrowRight

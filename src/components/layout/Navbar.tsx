@@ -19,24 +19,25 @@ export function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-40">
 
-      {/* ── Topbar (desktop only) ────────────────────────────────────── */}
-      <div className="hidden sm:block">
+      {/* ── Topbar (all screens) ─────────────────────────────────────── */}
+      <div className="block">
         <div className="border-b border-white/[0.07] bg-black/70 backdrop-blur-md">
-          <div className="mx-auto flex max-w-[87.5rem] items-center justify-end gap-6 px-6 py-1.5">
+          <div className="mx-auto flex max-w-[87.5rem] items-center justify-end gap-4 px-4 py-1.5 sm:gap-6 sm:px-6">
             <a
               href={company.phoneHref}
-              className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-text-muted transition-colors duration-200 hover:text-text"
+              className="inline-flex items-center gap-1.5 text-[10.5px] font-medium text-text-muted transition-colors duration-200 hover:text-text sm:text-[11.5px]"
             >
-              <Phone className="size-3 shrink-0" aria-hidden="true" />
+              <Phone className="size-2.5 shrink-0 sm:size-3" aria-hidden="true" />
               {company.phoneDisplay}
             </a>
             {company.email && (
               <a
                 href={`mailto:${company.email}`}
-                className="inline-flex items-center gap-1.5 text-[11.5px] font-medium text-text-muted transition-colors duration-200 hover:text-text"
+                className="inline-flex items-center gap-1.5 text-[10.5px] font-medium text-text-muted transition-colors duration-200 hover:text-text sm:text-[11.5px]"
               >
-                <Mail className="size-3 shrink-0" aria-hidden="true" />
-                {company.email}
+                <Mail className="size-2.5 shrink-0 sm:size-3" aria-hidden="true" />
+                <span className="hidden xs:inline sm:inline">{company.email}</span>
+                <span className="sm:hidden">info@artekteam.com</span>
               </a>
             )}
           </div>

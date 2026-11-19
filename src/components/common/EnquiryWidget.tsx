@@ -31,28 +31,24 @@ interface QuickAction {
 
 const ACTIONS: readonly QuickAction[] = [
   {
-    id: "cctv",
-    label: "Get a CCTV quote",
-    message:
-      "Hello ARTEK, I would like a quote for CCTV. My premises: (type of site, e.g. office / villa / warehouse). Location: (area in Dubai).",
+    id: "quote",
+    label: "Get a quote",
+    message: "Hello! I’d like a quote for a requirement I have.",
   },
   {
-    id: "price",
-    label: "Ask about pricing",
-    message:
-      "Hello ARTEK, could you tell me what a typical installation costs? My requirement: (e.g. 8 cameras, 2 floors, office in Business Bay).",
+    id: "products",
+    label: "Explore products & pricing",
+    message: "Hello! I’d like to know more about the products you offer and their pricing.",
   },
   {
-    id: "sira",
-    label: "SIRA approval enquiry",
-    message:
-      "Hello ARTEK, I need CCTV that meets SIRA requirements. Can we discuss what my premises needs?",
+    id: "general",
+    label: "General enquiry",
+    message: "Hello! I have a general enquiry about your solutions.",
   },
   {
     id: "support",
-    label: "Support or AMC",
-    message:
-      "Hello ARTEK, I have an existing system and would like support / an annual maintenance contract. System: (CCTV / network / both).",
+    label: "Technical support & AMC",
+    message: "Hello! I’m reaching out regarding support or AMC services.",
   },
 ];
 
@@ -83,9 +79,9 @@ export function EnquiryWidget() {
           aria-label="Contact ARTEK"
           className={[
             "fixed bottom-5 right-4 z-40 inline-flex size-12 items-center justify-center rounded-full",
-            "border border-white/15 bg-surface-2 text-text shadow-[0_8px_24px_rgb(0_0_0/0.55)]",
-            "outline-none transition-[opacity,transform,background-color,border-color] duration-300",
-            "hover:border-white/35 hover:bg-[#1D1D20] focus-visible:ring-2 focus-visible:ring-paper/60",
+            "bg-[#25D366] text-white shadow-[0_8px_24px_rgb(37_211_102/0.35)]",
+            "outline-none transition-[opacity,transform,background-color] duration-300",
+            "hover:bg-[#1ebe5b] focus-visible:ring-2 focus-visible:ring-[#25D366]/60",
             "focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
             "sm:bottom-6 sm:right-6",
             visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",

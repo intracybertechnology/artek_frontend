@@ -6,6 +6,7 @@ import { getIndustryBySlug, industries } from "./industries.ts";
 import { homeFaqs } from "./faqs.ts";
 import { getPostBySlug, publishedPosts } from "./blog.ts";
 import { getAuthor } from "./authors.ts";
+import { getProductGroup, productGroups } from "./catalog.ts";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -37,6 +38,12 @@ const STATIC_PAGE_META: Record<string, PageSeo> = {
     title: "Contact Us | CCTV, Networking & IT Support in Dubai | ARTEK",
     description:
       "Contact ARTEK Computers LLC for CCTV installation, IT infrastructure, networking or technical support in Dubai. Call +971 50 5513139 or request a free quote.",
+  },
+  "/brands": {
+    path: canonical("/brands"),
+    title: "Brands We Supply in Dubai | Cisco, Fortinet, Hikvision, Dell, HP | Artek Computers LLC",
+    description:
+      "Networking, cabling, security, power and computer brands supplied and supported by Artek Computers LLC in Dubai.",
   },
   "/products": {
     path: canonical("/products"),
@@ -344,7 +351,24 @@ function blogPostSeo(path: string): PageSeo | undefined {
     const found = blogPostSeo(path);
     if (found) return found;
   }
+  if (path.startsWith("/products/")) {
+    const found = productSeo(path);
+    if (found) return found;
+  }
   return fallbackSeo(path);
+}
+
+/** Product category pages: intro-based description, trimmed to 160 characters at a word boundary. */
+function productSeo(path: string): PageSeo | undefined {
+  const group = getProductGroup(path.replace("/products/", ""));
+  if (!group) return undefined;
+  const full = `${group.intro} Supplied and supported by Artek Computers LLC in Dubai.`;
+  const description = full.length <= 160 ? full : full.slice(0, 160).slice(0, full.slice(0, 160).lastIndexOf(" ")).trim();
+  return {
+    path: canonical(path),
+    title: `${group.title} in Dubai | Artek Computers LLC`,
+    description,
+  };
 }
 
 function fallbackSeo(path: string): PageSeo {
@@ -365,6 +389,7 @@ const LOCATION_PATHS = locations.flatMap((l) => {
 });
 const INDUSTRY_PATHS = industries.map((i) => `/industries/${i.slug}`);
 const BLOG_PATHS = publishedPosts.map((p) => `/blog/${p.slug}`);
+const PRODUCT_PATHS = productGroups.map((g) => `/products/${g.slug}`);
 
 /** All indexable paths — drives prerendering and sitemap generation. */
 export const ALL_SEO_PATHS: readonly string[] = [
@@ -373,4 +398,5 @@ export const ALL_SEO_PATHS: readonly string[] = [
   ...LOCATION_PATHS,
   ...INDUSTRY_PATHS,
   ...BLOG_PATHS,
+  ...PRODUCT_PATHS,
 ];

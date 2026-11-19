@@ -8,7 +8,6 @@ export const navItems: readonly NavItem[] = [
   { label: "Home", to: "/" },
   { label: "Company", to: "/about" },
   { label: "Solutions", to: "/solutions" },
-  { label: "ELV & Access Control", to: "/solutions/elv-access-control-uae" },
   { label: "Industries", to: "/industries" },
   { label: "Products", to: "/products" },
   { label: "Insights", to: "/blog" },

@@ -64,10 +64,7 @@ export function EnquiryWidget() {
   const wa = company.whatsappNumber;
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    setVisible(true);
   }, []);
 
   return (

@@ -69,15 +69,15 @@ export function EnquiryWidget() {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      {/* Trigger — small, monochrome, out of the way */}
+      {/* Trigger — expands with label on first appearance, collapses to icon on scroll */}
       <Dialog.Trigger asChild>
         <button
           type="button"
-          aria-label="Contact ARTEK"
+          aria-label="Contact ARTEK on WhatsApp"
           className={[
-            "fixed bottom-5 right-4 z-40 inline-flex size-12 items-center justify-center rounded-full",
+            "fixed bottom-5 right-4 z-40 inline-flex items-center justify-center rounded-full",
             "bg-[#25D366] text-white shadow-[0_8px_24px_rgb(37_211_102/0.35)]",
-            "outline-none transition-[opacity,transform,background-color] duration-300",
+            "outline-none transition-all duration-300",
             "hover:bg-[#1ebe5b] focus-visible:ring-2 focus-visible:ring-[#25D366]/60",
             "focus-visible:ring-offset-2 focus-visible:ring-offset-surface",
             "sm:bottom-6 sm:right-6",
@@ -86,7 +86,10 @@ export function EnquiryWidget() {
           tabIndex={visible ? 0 : -1}
           aria-hidden={!visible}
         >
-          <MessageCircle className="size-5" aria-hidden="true" />
+          <span className="flex items-center gap-2 px-4 py-3 text-[13px] font-semibold">
+            <MessageCircle className="size-4 shrink-0" aria-hidden="true" />
+            WhatsApp
+          </span>
         </button>
       </Dialog.Trigger>
 

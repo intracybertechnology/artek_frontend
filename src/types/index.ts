@@ -230,6 +230,8 @@ export interface Author {
  */
 export type PostBlock =
   | { type: "p"; text: string }
+  /** sanitised rich-text HTML from the admin editor; `text` is the plain-text version */
+  | { type: "html"; html: string; text: string }
   | { type: "h2"; id: string; text: string }
   | { type: "h3"; text: string }
   | { type: "ul"; items: readonly string[] }
@@ -264,6 +266,9 @@ export interface BlogPost {
   featured?: boolean;
   /** large word on the typographic cover plate */
   coverWord: string;
+  /** optional uploaded photo, shown instead of the plate */
+  coverImage?: string;
+  coverAlt?: string;
   body: readonly PostBlock[];
   faqs?: readonly Faq[];
   relatedServices: readonly ServiceId[];

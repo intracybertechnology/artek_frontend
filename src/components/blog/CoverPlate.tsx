@@ -15,6 +15,8 @@ export function CoverPlate({
   index,
   variant = "plate",
   className,
+  image,
+  imageAlt,
 }: {
   word: string;
   category: string;
@@ -22,8 +24,31 @@ export function CoverPlate({
   index?: string;
   variant?: "plate" | "band";
   className?: string;
+  /** optional uploaded photo; replaces the plate when present */
+  image?: string;
+  imageAlt?: string;
 }) {
   const isBand = variant === "band";
+
+  if (image) {
+    return (
+      <div
+        className={cn(
+          "relative overflow-hidden bg-surface-2 ring-1 ring-white/[0.08]",
+          isBand ? "h-28 sm:h-32" : "aspect-[16/9]",
+          className,
+        )}
+      >
+        <img
+          src={image}
+          alt={imageAlt ?? ""}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 size-full object-cover"
+        />
+      </div>
+    );
+  }
 
   return (
     <div

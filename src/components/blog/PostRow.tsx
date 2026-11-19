@@ -81,7 +81,13 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
         "group grid gap-8 border-b border-white/10 pb-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-14",
       )}
     >
-      <CoverPlate word={post.coverWord} category={post.category} index="01" />
+      <CoverPlate
+        word={post.coverWord}
+        category={post.category}
+        index="01"
+        image={post.coverImage}
+        imageAlt={post.coverAlt}
+      />
       <div>
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
           Featured · {post.category}

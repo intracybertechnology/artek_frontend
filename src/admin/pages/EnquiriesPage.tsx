@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { LogOutIcon, SearchIcon } from "lucide-react";
-import { useAuth } from "@/admin/lib/auth";
+import { SearchIcon } from "lucide-react";
 import { api } from "@/admin/lib/api";
 import { ENQUIRY_STATUSES, type Enquiry, type EnquiryStatus } from "@/admin/lib/types";
 import { Alert } from "@/admin/components/ui/alert";
@@ -17,7 +16,6 @@ const PAGE_SIZE = 25;
 const fmt = (iso: string) => new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
 
 export function EnquiriesPage() {
-  const { user, logout } = useAuth();
   const [items, setItems] = useState<Enquiry[]>([]);
   const [total, setTotal] = useState(0);
   const [counts, setCounts] = useState<Partial<Record<EnquiryStatus, number>>>({});
@@ -76,23 +74,9 @@ export function EnquiriesPage() {
 
   return (
     <div className="min-h-dvh">
-      <header className="bg-card border-b">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <div>
-            <p className="text-muted-foreground text-[11px] font-bold tracking-[0.2em] uppercase">ARTEK Computers</p>
-            <h1 className="text-lg font-semibold tracking-tight">Website enquiries</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-muted-foreground hidden text-sm sm:inline">
-              {user?.name} · <span className="capitalize">{user?.role}</span>
-            </span>
-            <Button variant="outline" size="sm" onClick={() => void logout()}>
-              <LogOutIcon />
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </header>
+      <div className="mx-auto max-w-6xl px-4 pt-6 sm:px-6">
+        <h1 className="text-xl font-semibold tracking-tight">Website enquiries</h1>
+      </div>
 
       <main className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:px-6">
         {/* Summary tiles double as status filters */}

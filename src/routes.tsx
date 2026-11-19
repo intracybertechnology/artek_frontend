@@ -19,16 +19,24 @@ import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 import TermsAndConditions from "@/pages/legal/TermsAndConditions";
 import NotFound from "@/pages/NotFound";
 import { AdminLayout, Protected, PublicOnly } from "@/admin/AdminLayout";
+import { AdminShell } from "@/admin/components/AdminShell";
 import { LoginPage } from "@/admin/pages/LoginPage";
 import { EnquiriesPage } from "@/admin/pages/EnquiriesPage";
+import { BlogListPage } from "@/admin/pages/BlogListPage";
+import { BlogEditPage } from "@/admin/pages/BlogEditPage";
 
 export function AppRoutes() {
   return (
     <Routes>
       {/* Admin Dashboard (Authenticated SPA) */}
       <Route path="admin" element={<AdminLayout />}>
-        <Route index element={<Protected><EnquiriesPage /></Protected>} />
         <Route path="login" element={<PublicOnly><LoginPage /></PublicOnly>} />
+        <Route element={<Protected><AdminShell /></Protected>}>
+          <Route index element={<EnquiriesPage />} />
+          <Route path="blog" element={<BlogListPage />} />
+          <Route path="blog/new" element={<BlogEditPage />} />
+          <Route path="blog/:id" element={<BlogEditPage />} />
+        </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
 

@@ -25,6 +25,8 @@ export function PostBody({ blocks }: { blocks: readonly PostBlock[] }) {
             );
           case "h3":
             return <h3 key={i}>{block.text}</h3>;
+          case "html":
+            return <div key={i} className="article-html" dangerouslySetInnerHTML={{ __html: block.html }} />;
           case "ul":
             return (
               <ul key={i}>

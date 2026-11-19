@@ -1,4 +1,4 @@
-import type { AdminUser, Enquiry, EnquiryStatus } from "./types";
+import type { AdminUser, BlogInput, BlogPost, Enquiry, EnquiryStatus } from "./types";
 
 /**
  * Thin API client. `credentials: "include"` is what sends the httpOnly JWT
@@ -57,4 +57,19 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ status }),
     }),
+
+  listBlog: () => request<{ ok: true; items: BlogPost[] }>("/admin/blog"),
+
+  getBlog: (id: string) => request<{ ok: true; post: BlogPost }>(`/admin/blog/${id}`),
+
+  createBlog: (data: BlogInput) =>
+    request<{ ok: true; post: BlogPost }>("/admin/blog", { method: "POST", body: JSON.stringify(data) }),
+
+  updateBlog: (id: string, data: Partial<BlogInput>) =>
+    request<{ ok: true; post: BlogPost }>(`/admin/blog/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+
+  deleteBlog: (id: string) => request<{ ok: true }>(`/admin/blog/${id}`, { method: "DELETE" }),
+
+  uploadImage: (dataUrl: string) =>
+    request<{ ok: true; url: string }>("/admin/uploads", { method: "POST", body: JSON.stringify({ data: dataUrl }) }),
 };

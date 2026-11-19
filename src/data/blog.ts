@@ -1,4 +1,5 @@
 import type { BlogPost } from "@/types";
+import generatedPosts from "./generated/blog-posts.json";
 
 /**
  * Blog / Insights articles.
@@ -19,7 +20,7 @@ import type { BlogPost } from "@/types";
  * ⚠ These articles are written as reference copy for the design review. Have
  * ARTEK's engineers read each one and set status to "published" before launch.
  */
-export const posts: readonly BlogPost[] = [
+const staticPosts: readonly BlogPost[] = [
   {
     id: "p1",
     slug: "sira-cctv-requirements-dubai",
@@ -391,6 +392,9 @@ export const posts: readonly BlogPost[] = [
     ],
   },
 ];
+
+/** Hand-written articles above, plus posts published from the admin panel (generated/blog-posts.json). */
+export const posts: readonly BlogPost[] = [...staticPosts, ...(generatedPosts as unknown as BlogPost[])];
 
 const byDateDesc = (a: BlogPost, b: BlogPost) =>
   b.publishedAt.localeCompare(a.publishedAt);

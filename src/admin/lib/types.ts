@@ -25,3 +25,53 @@ export type Enquiry = {
 };
 
 export const ENQUIRY_STATUSES: EnquiryStatus[] = ["new", "contacted", "quoted", "won", "lost"];
+
+export type BlogStatus = "draft" | "published";
+
+export type BlogPost = {
+  id: string;
+  slug: string;
+  title: string;
+  dek: string;
+  category: string;
+  authorId: string;
+  content: string;
+  coverImage: string | null;
+  coverAlt: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  status: BlogStatus;
+  featured: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** What the editor sends. Dates are YYYY-MM-DD or null. */
+export type BlogInput = Pick<
+  BlogPost,
+  | "slug"
+  | "title"
+  | "dek"
+  | "category"
+  | "authorId"
+  | "content"
+  | "coverImage"
+  | "coverAlt"
+  | "seoTitle"
+  | "seoDescription"
+  | "status"
+  | "featured"
+  | "publishedAt"
+>;
+
+export const BLOG_CATEGORIES = [
+  "IT Infrastructure",
+  "Cybersecurity",
+  "CCTV & Surveillance",
+  "Business IT Solutions",
+  "Networking & Connectivity",
+  "Cloud Solutions",
+  "Access Control & Security",
+  "Technology Insights",
+] as const;

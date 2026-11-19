@@ -73,6 +73,8 @@ export default function BlogPostTemplate() {
               word={post.coverWord}
               category={`Insight ${String(index + 1).padStart(2, "0")}`}
               className="hidden lg:block"
+              image={post.coverImage}
+              imageAlt={post.coverAlt}
             />
           </div>
         </div>

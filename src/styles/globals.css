@@ -359,6 +359,47 @@ body {
 .article-prose li + li {
   margin-top: 0.55rem;
 }
+/* Rich-text articles from the admin editor: each block is wrapped in .article-html. */
+.article-html > * + * {
+  margin-top: 1.25rem;
+}
+.article-html h3 {
+  margin-top: 2.25rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #0a0a0b;
+}
+.article-html h4 {
+  margin-top: 1.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0a0a0b;
+}
+.article-html ul {
+  list-style: disc;
+  max-width: 40rem;
+  padding-left: 1.5rem;
+}
+.article-html ul li::marker {
+  color: #71717a;
+}
+.article-html ol {
+  max-width: 40rem;
+  padding-left: 1.5rem;
+  list-style: decimal;
+}
+.article-html li + li {
+  margin-top: 0.55rem;
+}
+.article-html blockquote {
+  max-width: 40rem;
+  border-left: 2px solid #d4d4d8;
+  padding-left: 1.25rem;
+  font-style: italic;
+  color: #3f3f46;
+}
 .article-quote {
   max-width: 40rem;
   margin-block: 2.75rem;
@@ -456,33 +497,60 @@ body {
   color-scheme: light;
   --radius: 0.625rem;
 
-  --background: #f7f6f4;
-  --foreground: #0a0a0b;
+  --background: #f1f5f9;
+  --foreground: #0f172a;
 
   --card: #ffffff;
-  --card-foreground: #0a0a0b;
+  --card-foreground: #0f172a;
 
   --popover: #ffffff;
-  --popover-foreground: #0a0a0b;
+  --popover-foreground: #0f172a;
 
-  --primary: #0a0a0b;
-  --primary-foreground: #f7f6f4;
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
 
-  --secondary: #efeeea;
-  --secondary-foreground: #0a0a0b;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #0f172a;
 
-  --muted: #efeeea;
-  --muted-foreground: #6b6b70;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
 
-  --accent: #efeeea;
-  --accent-foreground: #0a0a0b;
+  --accent: #dbeafe;
+  --accent-foreground: #1e3a8a;
 
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  --border: #e4e2dd;
-  --input: #e4e2dd;
-  --ring: #0a0a0b;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #3b82f6;
+
+  --sidebar: #0f172a;
+  --sidebar-hover: #1e293b;
+  --sidebar-active: #1d4ed8;
+  --sidebar-foreground: #cbd5e1;
+  --sidebar-muted: #64748b;
+
+  /* Re-declare the colour tokens here: the @theme values resolve at :root, where the admin colours don't exist. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
   background-color: var(--background);
   color: var(--foreground);

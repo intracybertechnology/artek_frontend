@@ -39,6 +39,13 @@ const STATIC_PAGE_META: Record<string, PageSeo> = {
     description:
       "Contact ARTEK Computers LLC for CCTV installation, IT infrastructure, networking or technical support in Dubai. Call +971 50 5513139 or request a free quote.",
   },
+  "/cctvservicesindubai": {
+    path: canonical("/cctvservicesindubai"),
+    title: "CCTV Services in Dubai | Installation & Maintenance | ARTEK Computers LLC",
+    description:
+      "Professional CCTV services in Dubai — SIRA-approved installation, maintenance and monitoring for homes and businesses. Get a free site survey from ARTEK Computers LLC.",
+    ogType: "website",
+  },
   "/brands": {
     path: canonical("/brands"),
     title: "Brands We Supply in Dubai | Cisco, Fortinet, Hikvision, Dell, HP | Artek Computers LLC",
@@ -330,7 +337,7 @@ function blogPostSeo(path: string): PageSeo | undefined {
     const jsonLd: JsonLdObject[] = [breadcrumbsJsonLd([{ name: "Home", url: company.siteUrl }])];
     if (path === "/") {
       jsonLd.push(organizationJsonLd(), localBusinessJsonLd(), faqJsonLd(homeFaqs));
-    } else if (path === "/contact") {
+    } else if (path === "/contact" || path === "/cctvservicesindubai") {
       jsonLd.push(localBusinessJsonLd());
     }
     return { ...base, jsonLd };
@@ -424,7 +431,7 @@ function fallbackSeo(path: string): PageSeo {
 
 /* ── Every prerenderable/crawlable path ──────────────────────────────── */
 
-const STATIC_PATHS = Object.keys(STATIC_PAGE_META);
+const STATIC_PATHS = [...Object.keys(STATIC_PAGE_META)];
 const SOLUTION_PATHS = services.map((s) => `/solutions/${s.slug}`);
 const LOCATION_PATHS = locations.flatMap((l) => {
   const combos = (l.combos ?? []).map((c) => `/locations/${l.slug}/${c.serviceSlug}`);

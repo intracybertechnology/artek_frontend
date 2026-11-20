@@ -10,16 +10,19 @@ export const navItems: readonly NavItem[] = [
   { label: "Solutions", to: "/solutions" },
   { label: "ELV & Access Control", to: "/solutions/elv-access-control-uae" },
   { label: "Industries", to: "/industries" },
-  { label: "Products", to: "/products" },
+  { label: "Brands", to: "/brands" },
   { label: "Insights", to: "/blog" },
   { label: "Contact", to: "/contact" },
 ];
 
-/** Only the most specific matching item is active, so a nested page doesn't light up its parent. */
+/** Only the most specific matching item is active, so a nested page doesn't light up its parent.
+ *  /products/* also activates the Brands item since Brands is the entry point for products. */
 export function activeNavTo(pathname: string): string | undefined {
+  const effective =
+    pathname === "/products" || pathname.startsWith("/products/") ? "/brands" : pathname;
   return navItems
     .filter((item) =>
-      item.to === "/" ? pathname === "/" : pathname === item.to || pathname.startsWith(`${item.to}/`),
+      item.to === "/" ? effective === "/" : effective === item.to || effective.startsWith(`${item.to}/`),
     )
     .sort((a, b) => b.to.length - a.to.length)[0]?.to;
 }

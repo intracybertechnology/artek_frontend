@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { FaWhatsapp } from "react-icons/fa6";
 import { ArrowRight, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+import { BrandLogo } from "@/components/common/BrandLogo";
 import { FAQAccordion } from "@/components/common/FAQAccordion";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/company";
-import { brandGroups, getProductGroup, slugify, whatsappLink } from "@/data/catalog";
+import { brandGroups, getProductGroup, slugify } from "@/data/catalog";
 import { getServiceBySlug } from "@/data/services";
 import NotFound from "@/pages/NotFound";
 
@@ -63,14 +63,18 @@ export default function ProductCategory() {
             </h2>
             <ul className="grid gap-3 sm:grid-cols-2">
               {group.items.map((name) => {
-                const wa = whatsappLink(`Hi, I'm interested in ${name} (${group.title}).`);
                 return (
                   <li
                     key={name}
                     id={slugify(name)}
                     className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-4"
                   >
-                    <span className="text-sm font-semibold text-ink">{name}</span>
+                    <Link
+                      to={`/products/${group.slug}/${slugify(name)}`}
+                      className="text-sm font-semibold text-ink underline-offset-4 transition-colors hover:text-accent-600 hover:underline"
+                    >
+                      {name}
+                    </Link>
                     <span className="flex shrink-0 items-center gap-2">
                       <Link
                         to={`/contact?product=${encodeURIComponent(name)}&category=${encodeURIComponent(group.title)}`}
@@ -80,17 +84,6 @@ export default function ProductCategory() {
                       >
                         Get a quote
                       </Link>
-                      {wa && (
-                        <a
-                          href={wa}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`Ask about ${name} on WhatsApp (opens in a new tab)`}
-                          className="inline-flex size-8 items-center justify-center rounded-md bg-[#25D366] text-white transition-colors hover:bg-[#1ebe5b]"
-                        >
-                          <FaWhatsapp className="size-4" aria-hidden="true" />
-                        </a>
-                      )}
                     </span>
                   </li>
                 );
@@ -126,8 +119,14 @@ export default function ProductCategory() {
             </div>
             <ul className="mt-6 flex flex-wrap gap-2">
               {brandGroup.brands.map((brand) => (
-                <li key={brand} className="rounded-md border border-white/15 px-3 py-1.5 text-sm font-medium text-text-muted">
-                  {brand}
+                <li key={brand}>
+                  <Link
+                    to={`/brands/${slugify(brand)}`}
+                    className="flex items-center gap-2 rounded-lg border border-white/15 px-2 py-1.5 transition-colors hover:border-white/30 hover:bg-white/5"
+                  >
+                    <BrandLogo name={brand} className="h-7 w-14 shrink-0" />
+                    <span className="text-sm font-medium text-text-muted">{brand}</span>
+                  </Link>
                 </li>
               ))}
             </ul>

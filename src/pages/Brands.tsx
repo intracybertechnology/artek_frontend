@@ -1,14 +1,65 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/company";
-import { brandGroups } from "@/data/catalog";
+import { brandGroups, brandLogo, slugify } from "@/data/catalog";
 
-/** Every brand we supply, grouped by category. */
+/** ------------------------------------------------------------------ *
+ *  Single brand tile                                                    *
+ *  - Shows the logo image (object-contain, fills the tile).            *
+ *  - Brand name in small text under the logo.                          *
+ *  - If the image fails: name only, centered and bold — once.          *
+ * ------------------------------------------------------------------- */
+function BrandTile({ name }: { name: string }) {
+  const [failed, setFailed] = useState(false);
+  const src = brandLogo(name);
+  const noImage = !src || failed;
+
+  return (
+    <Link
+      to={`/brands/${slugify(name)}`}
+      className="
+        group flex h-28 flex-col items-center justify-center gap-2
+        rounded-xl border border-white/15 bg-white p-4
+        transition-all duration-200
+        hover:-translate-y-0.5 hover:border-white/40 hover:shadow-[0_6px_20px_rgb(0_0_0/0.18)]
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface
+        xl:h-32
+      "
+    >
+      {noImage ? (
+        /* No logo file — name is the only content, centered, once */
+        <span className="px-2 text-center text-xl font-bold leading-tight text-slate-900 md:text-2xl">
+          {name}
+        </span>
+      ) : (
+        <>
+          <img
+            src={src}
+            alt={`${name} logo`}
+            width={120}
+            height={60}
+            loading="lazy"
+            decoding="async"
+            onError={() => setFailed(true)}
+            className="min-h-0 flex-1 max-h-[72%] max-w-[88%] w-auto object-contain"
+          />
+          <span className="shrink-0 text-center text-lg font-bold leading-tight text-slate-900 md:text-xl">
+            {name}
+          </span>
+        </>
+      )}
+    </Link>
+  );
+}
+
+/** /brands — all brands grouped by category, one section per group. */
 export default function Brands() {
   return (
     <article>
+      {/* ── Page header ─────────────────────────────────────────────── */}
       <header className="bg-navy-950 pb-14 pt-32 text-white sm:pb-16">
         <div className="container-page">
           <div className="[&_a]:text-slate-400 [&_span]:text-slate-400">
@@ -23,26 +74,42 @@ export default function Brands() {
         </div>
       </header>
 
-      <section className="bg-mist-2 py-14 sm:py-20">
-        <div className="container-page grid gap-6 md:grid-cols-2">
+      {/* ── Brand sections ──────────────────────────────────────────── */}
+      <div className="bg-mist-2">
+        <div className="container-page divide-y divide-white/[0.07]">
           {brandGroups.map((g) => (
-            <div key={g.title} className="rounded-xl border border-white/10 bg-white/5 p-6">
-              <h2 className="text-lg font-semibold text-ink">{g.title}</h2>
-              <ul className="mt-4 flex flex-wrap gap-2">
+            <section key={g.title} className="py-10 sm:py-12" aria-labelledby={`group-${slugify(g.title)}`}>
+              {/* Section heading + count */}
+              <div className="flex flex-wrap items-baseline gap-3">
+                <h2
+                  id={`group-${slugify(g.title)}`}
+                  className="text-2xl font-semibold text-ink"
+                >
+                  {g.title}
+                </h2>
+                <span className="text-sm text-text-muted">
+                  {g.brands.length} {g.brands.length === 1 ? "brand" : "brands"}
+                </span>
+              </div>
+
+              {/* Brand grid */}
+              <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 {g.brands.map((brand) => (
-                  <li key={brand} className="rounded-md border border-white/15 px-3 py-1.5 text-sm font-medium text-text-muted">
-                    {brand}
+                  <li key={brand}>
+                    <BrandTile name={brand} />
                   </li>
                 ))}
               </ul>
-            </div>
+            </section>
           ))}
         </div>
-        <p className="container-page mt-8 text-xs text-slate-400">
+
+        <p className="container-page pb-6 text-xs text-slate-400">
           All brand names are trademarks of their respective owners.
         </p>
-      </section>
+      </div>
 
+      {/* ── CTA ─────────────────────────────────────────────────────── */}
       <section className="border-t border-white/[0.06] bg-slate-safe py-14 sm:py-20">
         <div className="container-page flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div>

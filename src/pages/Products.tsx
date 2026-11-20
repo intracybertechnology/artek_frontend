@@ -1,13 +1,21 @@
-import { Link } from "react-router-dom";
-import { FaWhatsapp } from "react-icons/fa6";
-import { ArrowRight, Phone } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/company";
-import { productGroups, slugify, whatsappLink } from "@/data/catalog";
+import { productGroups, slugify } from "@/data/catalog";
 
-/** Product index: every category and its items, each with a quote and WhatsApp action. */
+/** Product index: every category and its items, each with a quote action. */
 export default function Products() {
+  const { hash } = useLocation();
+
+  /* react-router doesn't scroll to hash anchors on client navigation — do it after render */
+  useEffect(() => {
+    if (!hash) return;
+    document.getElementById(hash.slice(1))?.scrollIntoView();
+  }, [hash]);
+
   return (
     <article>
       <header className="bg-navy-950 pb-14 pt-32 text-white sm:pb-16">
@@ -51,25 +59,22 @@ export default function Products() {
                   </h2>
                   <p className="mt-1 max-w-2xl text-sm text-slate-300">{g.intro}</p>
                 </div>
-                <Link
-                  to={`/products/${g.slug}`}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-600 hover:underline"
-                >
-                  View {g.title}
-                  <ArrowRight className="size-4" aria-hidden="true" />
-                </Link>
               </div>
 
               <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {g.items.map((name) => {
-                  const wa = whatsappLink(`Hi, I'm interested in ${name} (${g.title}).`);
                   return (
                     <li
                       key={name}
                       id={slugify(name)}
                       className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 p-4"
                     >
-                      <span className="text-sm font-semibold text-ink">{name}</span>
+                      <Link
+                        to={`/products/${g.slug}/${slugify(name)}`}
+                        className="text-sm font-semibold text-ink underline-offset-4 transition-colors hover:text-accent-600 hover:underline"
+                      >
+                        {name}
+                      </Link>
                       <span className="flex shrink-0 items-center gap-2">
                         <Link
                           to={`/contact?product=${encodeURIComponent(name)}&category=${encodeURIComponent(g.title)}`}
@@ -79,17 +84,6 @@ export default function Products() {
                         >
                           Get a quote
                         </Link>
-                        {wa && (
-                          <a
-                            href={wa}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`Ask about ${name} on WhatsApp (opens in a new tab)`}
-                            className="inline-flex size-8 items-center justify-center rounded-md bg-[#25D366] text-white transition-colors hover:bg-[#1ebe5b]"
-                          >
-                            <FaWhatsapp className="size-4" aria-hidden="true" />
-                          </a>
-                        )}
                       </span>
                     </li>
                   );

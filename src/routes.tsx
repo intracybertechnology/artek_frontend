@@ -5,9 +5,11 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import Products from "@/pages/Products";
 import ProductCategory from "@/pages/products/ProductCategory";
+import ProductDetail from "@/pages/products/ProductDetail";
 import Brands from "@/pages/Brands";
-import Solutions from "@/pages/Solutions";
+import BrandDetail from "@/pages/BrandDetail";
 import SolutionTemplate from "@/pages/solutions/SolutionTemplate";
+import Solutions from "@/pages/Solutions";
 import Locations from "@/pages/Locations";
 import LocationTemplate from "@/pages/locations/LocationTemplate";
 import LocationServiceTemplate from "@/pages/locations/LocationServiceTemplate";
@@ -39,7 +41,9 @@ export function AppRoutes() {
         <Route path="contact" element={<Contact />} />
         <Route path="products" element={<Products />} />
         <Route path="products/:group" element={<ProductCategory />} />
+        <Route path="products/:group/:product" element={<ProductDetail />} />
         <Route path="brands" element={<Brands />} />
+        <Route path="brands/:brand" element={<BrandDetail />} />
         <Route path="solutions" element={<Solutions />} />
         <Route path="solutions/:slug" element={<SolutionTemplate />} />
         <Route path="locations" element={<Locations />} />

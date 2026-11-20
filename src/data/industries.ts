@@ -137,7 +137,7 @@ export const getIndustryBySlug = (slug: string) =>
 export const partnerGroups: readonly PartnerGroup[] = [
   {
     label: "Cabling & Connectivity",
-    brands: ["Belden", "Panduit", "ExTell", "Corning", "3M", "Opterna", "Norden", "Dconnect", "Molex", "Kuwes", "Techlogiks"],
+    brands: ["Belden", "ExTell", "Opterna", "Norden", "Kuwes", "Techlogiks"],
   },
   {
     label: "Networking & IT Infrastructure",

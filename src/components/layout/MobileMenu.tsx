@@ -1,8 +1,10 @@
 import * as Dialog from "@radix-ui/react-dialog";
+import * as Accordion from "@radix-ui/react-accordion";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { ArrowRight, Menu, Phone, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, Phone, X } from "lucide-react";
 import { activeNavTo, navItems } from "@/data/navigation";
+import { productGroups, slugify, topBrands } from "@/data/catalog";
 import { company } from "@/data/company";
 import { Logo } from "@/components/layout/Logo";
 import { cn } from "@/lib/utils";
@@ -10,27 +12,24 @@ import { cn } from "@/lib/utils";
 /**
  * Mobile navigation panel.
  *
- * Radix Dialog supplies the focus trap, Escape-to-close and background
- * scroll-lock; links close the sheet on selection.
+ * "Brands" is an expandable accordion item (chevron) containing:
+ *   - a "View all brands" link to /brands
+ *   - "Top brands" (flat list)
+ *   - "Shop by category" (nested accordion per product group)
  *
- * Layout mirrors the desktop bar's hierarchy instead of flattening it:
- *   brand  →  call  →  what we do  →  what we sell  →  quote CTA
- * so the drawer still reads as part of a premium site rather than a
- * settings list. Rows are 52px tall (comfortable touch targets) and the
- * active route is marked with a paper rule rather than a grey fill.
+ * All other items are plain nav rows as before. Tapping any link closes
+ * the whole menu.
  */
 
-/** Grouping is presentational only — destinations come from navigation.ts. */
-const GROUPS: { label: string; to: readonly string[] }[] = [
-  { label: "Explore", to: ["/about", "/solutions", "/industries"] },
-  { label: "More", to: ["/products", "/contact"] },
-];
+/** Nav items that render as plain rows (everything except Brands). */
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
-  const activeTo = activeNavTo(useLocation().pathname);
+  const close = () => setOpen(false);
+  const { pathname } = useLocation();
+  const activeTo = activeNavTo(pathname);
 
-  const itemsFor = (paths: readonly string[]) =>
+  const plainItemsFor = (paths: readonly string[]) =>
     navItems.filter((item) => paths.includes(item.to));
 
   const linkClass = (isActive: boolean) =>
@@ -46,7 +45,7 @@ export function MobileMenu() {
     <li key={item.to} className="list-none">
       <NavLink
         to={item.to}
-        onClick={() => setOpen(false)}
+        onClick={close}
         className={linkClass(item.to === activeTo)}
       >
         {item.label}
@@ -58,10 +57,11 @@ export function MobileMenu() {
     </li>
   );
 
+  const brandsActive = activeTo === "/brands";
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        {/* 44×44 — the minimum comfortable touch target, not 36px. */}
         <button
           className="inline-flex size-11 items-center justify-center rounded-lg text-text outline-none transition-colors hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-paper/60 lg:hidden"
           aria-label="Open menu"
@@ -73,11 +73,10 @@ export function MobileMenu() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/65 backdrop-blur-sm" />
         <Dialog.Content className="fixed inset-y-0 right-0 z-50 flex w-[90vw] max-w-sm flex-col border-l border-white/10 bg-surface-2 shadow-[-20px_0_60px_rgb(0_0_0/0.6)] outline-none">
-          {/* Brand + close — the drawer should still say whose site it is */}
+
+          {/* Header */}
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-            <Dialog.Title asChild>
-              <Logo />
-            </Dialog.Title>
+            <Dialog.Title asChild><Logo /></Dialog.Title>
             <Dialog.Description className="sr-only">
               Site navigation. Choose a section, or call us directly.
             </Dialog.Description>
@@ -91,7 +90,7 @@ export function MobileMenu() {
             </Dialog.Close>
           </div>
 
-          {/* Call first — on a phone this is the primary action, not a footer item */}
+          {/* Call strip */}
           <div className="border-b border-white/10 px-5 py-4">
             <a
               href={company.phoneHref}
@@ -99,27 +98,145 @@ export function MobileMenu() {
             >
               <Phone className="size-4 shrink-0 text-text-muted" aria-hidden="true" />
               <span className="flex flex-col">
-                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-text-muted">
-                  Call us
-                </span>
-                <span className="text-[15px] font-semibold tracking-tight text-text">
-                  {company.phoneDisplay}
-                </span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-text-muted">Call us</span>
+                <span className="text-[15px] font-semibold tracking-tight text-text">{company.phoneDisplay}</span>
               </span>
             </a>
           </div>
 
+          {/* Nav */}
           <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-3 py-4">
-            {GROUPS.map((group, gi) => (
-              <div key={group.label} className={gi > 0 ? "mt-6" : undefined}>
-                <p className="px-4 pb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">
-                  {group.label}
-                </p>
-                <ul>{itemsFor(group.to).map(row)}</ul>
-              </div>
-            ))}
+
+            {/* Explore group */}
+            <div>
+              <p className="px-4 pb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Explore</p>
+              <ul>{plainItemsFor(["/about", "/solutions", "/industries"]).map(row)}</ul>
+            </div>
+
+            {/* ── Brands accordion ──────────────────────────────────── */}
+            <div className="mt-6">
+              <p className="px-4 pb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Brands</p>
+
+              <Accordion.Root type="multiple">
+                <Accordion.Item value="brands" className="border-t border-white/[0.06]">
+                  <Accordion.Trigger
+                    className={cn(
+                      "group flex w-full min-h-[52px] items-center justify-between gap-3 pl-4 pr-2 text-[17px] font-medium tracking-[-0.01em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-paper/60",
+                      brandsActive ? "text-text" : "text-text-muted hover:text-text",
+                    )}
+                  >
+                    Brands
+                    <ChevronDown
+                      className="size-4 shrink-0 text-white/30 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                      aria-hidden="true"
+                    />
+                  </Accordion.Trigger>
+                  <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
+
+                    {/* View all brands */}
+                    <NavLink
+                      to="/brands"
+                      onClick={close}
+                      className="group flex min-h-[48px] items-center justify-between gap-3 pl-6 pr-2 text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+                    >
+                      View all brands
+                      <ArrowRight
+                        className="size-4 shrink-0 text-white/20 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-text-muted"
+                        aria-hidden="true"
+                      />
+                    </NavLink>
+
+                    <Accordion.Root type="multiple">
+
+                      {/* Top brands */}
+                      <Accordion.Item value="top-brands" className="border-t border-white/[0.06]">
+                        <Accordion.Trigger className="group flex w-full min-h-[48px] items-center justify-between gap-3 pl-4 pr-2 text-[15px] font-medium text-text-muted outline-none transition-colors hover:text-text focus-visible:ring-2 focus-visible:ring-paper/60">
+                          Top brands
+                          <ChevronDown
+                            className="size-4 shrink-0 text-white/30 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                            aria-hidden="true"
+                          />
+                        </Accordion.Trigger>
+                        <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
+                          <ul className="grid grid-cols-2 gap-x-2 gap-y-0.5 pb-3 pl-6 pr-2">
+                            {topBrands.map((brand) => (
+                              <li key={brand}>
+                                <Link
+                                  to={`/brands/${slugify(brand)}`}
+                                  onClick={close}
+                                  className="block py-2 text-[14px] font-medium text-text-muted transition-colors hover:text-text"
+                                >
+                                  {brand}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </Accordion.Content>
+                      </Accordion.Item>
+
+                      {/* Shop by category */}
+                      <Accordion.Item value="categories" className="border-t border-white/[0.06]">
+                        <Accordion.Trigger className="group flex w-full min-h-[48px] items-center justify-between gap-3 pl-4 pr-2 text-[15px] font-medium text-text-muted outline-none transition-colors hover:text-text focus-visible:ring-2 focus-visible:ring-paper/60">
+                          Shop by category
+                          <ChevronDown
+                            className="size-4 shrink-0 text-white/30 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                            aria-hidden="true"
+                          />
+                        </Accordion.Trigger>
+                        <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
+                          {/* Nested accordion per product group */}
+                          <Accordion.Root type="multiple" className="pb-2 pl-2">
+                            {productGroups.map((g) => (
+                              <Accordion.Item key={g.slug} value={g.slug} className="border-t border-white/[0.04]">
+                                <Accordion.Trigger className="group flex w-full min-h-[44px] items-center justify-between gap-3 pl-4 pr-2 text-[13.5px] font-semibold text-text-muted outline-none transition-colors hover:text-text focus-visible:ring-2 focus-visible:ring-paper/60">
+                                  <Link
+                                    to={`/products/${g.slug}`}
+                                    onClick={close}
+                                    className="flex-1 text-left"
+                                  >
+                                    {g.title}
+                                  </Link>
+                                  <ChevronDown
+                                    className="size-3.5 shrink-0 text-white/25 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                                    aria-hidden="true"
+                                  />
+                                </Accordion.Trigger>
+                                <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
+                                  <ul className="pb-2 pl-6">
+                                    {g.items.map((item) => (
+                                      <li key={item}>
+                                        <Link
+                                          to={`/products/${g.slug}/${slugify(item)}`}
+                                          onClick={close}
+                                          className="block py-1.5 text-[13px] text-white/45 transition-colors hover:text-white/80"
+                                        >
+                                          {item}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </Accordion.Content>
+                              </Accordion.Item>
+                            ))}
+                          </Accordion.Root>
+                        </Accordion.Content>
+                      </Accordion.Item>
+
+                    </Accordion.Root>
+                  </Accordion.Content>
+                </Accordion.Item>
+              </Accordion.Root>
+            </div>
+
+            {/* More group */}
+            <div className="mt-6">
+              <p className="px-4 pb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">More</p>
+              <ul>{plainItemsFor(["/contact"]).map(row)}</ul>
+            </div>
+
           </nav>
 
+          {/* CTA */}
           <div className="space-y-2.5 border-t border-white/10 px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
             <Dialog.Close asChild>
               <Link
@@ -134,6 +251,7 @@ export function MobileMenu() {
               </Link>
             </Dialog.Close>
           </div>
+
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

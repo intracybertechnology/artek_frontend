@@ -9,3 +9,6 @@ dist
 .env
 .env.local
 .env.*.local
+
+# Original brand logo backups (before trim)
+brand-logos-original/

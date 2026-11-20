@@ -6,7 +6,7 @@ import { getIndustryBySlug, industries } from "./industries.ts";
 import { homeFaqs } from "./faqs.ts";
 import { getPostBySlug, publishedPosts } from "./blog.ts";
 import { getAuthor } from "./authors.ts";
-import { getProductGroup, productGroups } from "./catalog.ts";
+import { brandGroups, getBrand, getProductGroup, productDetails, productGroups, slugify } from "./catalog.ts";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -355,19 +355,62 @@ function blogPostSeo(path: string): PageSeo | undefined {
     const found = productSeo(path);
     if (found) return found;
   }
+  if (path.startsWith("/brands/")) {
+    const found = brandSeo(path);
+    if (found) return found;
+  }
   return fallbackSeo(path);
 }
 
-/** Product category pages: intro-based description, trimmed to 160 characters at a word boundary. */
+/**
+ * Product pages. Detail pages: detail description (once filled in) or a plain
+ * factual line; category pages: intro-based description. Trimmed to 160
+ * characters at a word boundary.
+ */
 function productSeo(path: string): PageSeo | undefined {
-  const group = getProductGroup(path.replace("/products/", ""));
+  const segments = path.replace("/products/", "").split("/");
+  if (segments.length > 2) return undefined;
+  const group = getProductGroup(segments[0]);
   if (!group) return undefined;
-  const full = `${group.intro} Supplied and supported by Artek Computers LLC in Dubai.`;
+
+  const name = segments.length === 2 ? group.items.find((item) => slugify(item) === segments[1]) : undefined;
+  if (segments.length === 2 && !name) return undefined;
+
+  let full: string;
+  if (name) {
+    const detail = productDetails[segments[1]] ?? {};
+    full = detail.description
+      ? `${detail.description} Supplied by Artek Computers LLC in Dubai.`
+      : `${name} from our ${group.title} range, supplied and supported by Artek Computers LLC in Dubai.`;
+  } else {
+    full = `${group.intro} Supplied and supported by Artek Computers LLC in Dubai.`;
+  }
   const description = full.length <= 160 ? full : full.slice(0, 160).slice(0, full.slice(0, 160).lastIndexOf(" ")).trim();
   return {
     path: canonical(path),
-    title: `${group.title} in Dubai | Artek Computers LLC`,
+    title: name ? `${name} in Dubai | Artek Computers LLC` : `${group.title} in Dubai | Artek Computers LLC`,
     description,
+  };
+}
+
+function brandSeo(path: string): PageSeo | undefined {
+  const brandSlug = path.replace("/brands/", "").replace(/\/$/, "");
+  const brand = getBrand(brandSlug);
+  if (!brand) return undefined;
+  const description = brand.detail.description
+    ? brand.detail.description.slice(0, 160)
+    : `${brand.name} products supplied and supported by Artek Computers LLC in Dubai and across the UAE.`;
+  return {
+    path: canonical(path),
+    title: `${brand.name} in Dubai | Artek Computers LLC`,
+    description,
+    jsonLd: [
+      breadcrumbsJsonLd([
+        { name: "Home", url: company.siteUrl },
+        { name: "Brands", url: `${company.siteUrl}/brands` },
+        { name: brand.name, url: canonical(path) },
+      ]),
+    ],
   };
 }
 
@@ -389,7 +432,11 @@ const LOCATION_PATHS = locations.flatMap((l) => {
 });
 const INDUSTRY_PATHS = industries.map((i) => `/industries/${i.slug}`);
 const BLOG_PATHS = publishedPosts.map((p) => `/blog/${p.slug}`);
-const PRODUCT_PATHS = productGroups.map((g) => `/products/${g.slug}`);
+const PRODUCT_PATHS = productGroups.flatMap((g) => [
+  `/products/${g.slug}`,
+  ...g.items.map((item) => `/products/${g.slug}/${slugify(item)}`),
+]);
+const BRAND_PATHS = brandGroups.flatMap((bg) => bg.brands.map((b) => `/brands/${slugify(b)}`));
 
 /** All indexable paths — drives prerendering and sitemap generation. */
 export const ALL_SEO_PATHS: readonly string[] = [
@@ -399,4 +446,5 @@ export const ALL_SEO_PATHS: readonly string[] = [
   ...INDUSTRY_PATHS,
   ...BLOG_PATHS,
   ...PRODUCT_PATHS,
+  ...BRAND_PATHS,
 ];

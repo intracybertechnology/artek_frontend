@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 /**
  * Mobile navigation panel.
  *
- * "Brands" is an expandable accordion item (chevron) containing:
+ * "Products" (links to /brands) is an expandable accordion item (chevron)
+ * containing:
  *   - a "View all brands" link to /brands
  *   - "Top brands" (flat list)
  *   - "Shop by category" (nested accordion per product group)
@@ -21,7 +22,7 @@ import { cn } from "@/lib/utils";
  * the whole menu.
  */
 
-/** Nav items that render as plain rows (everything except Brands). */
+/** Nav items that render as plain rows (everything except Products). */
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
@@ -57,7 +58,7 @@ export function MobileMenu() {
     </li>
   );
 
-  const brandsActive = activeTo === "/brands";
+  const productsActive = activeTo === "/brands";
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -113,19 +114,19 @@ export function MobileMenu() {
               <ul>{plainItemsFor(["/about", "/solutions", "/industries"]).map(row)}</ul>
             </div>
 
-            {/* ── Brands accordion ──────────────────────────────────── */}
+            {/* ── Products accordion ─────────────────────────────────── */}
             <div className="mt-6">
-              <p className="px-4 pb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Brands</p>
+              <p className="px-4 pb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/35">Products</p>
 
               <Accordion.Root type="multiple">
                 <Accordion.Item value="brands" className="border-t border-white/[0.06]">
                   <Accordion.Trigger
                     className={cn(
                       "group flex w-full min-h-[52px] items-center justify-between gap-3 pl-4 pr-2 text-[17px] font-medium tracking-[-0.01em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-paper/60",
-                      brandsActive ? "text-text" : "text-text-muted hover:text-text",
+                      productsActive ? "text-text" : "text-text-muted hover:text-text",
                     )}
                   >
-                    Brands
+                    Products
                     <ChevronDown
                       className="size-4 shrink-0 text-white/30 transition-transform duration-200 group-data-[state=open]:rotate-180"
                       aria-hidden="true"
@@ -137,7 +138,7 @@ export function MobileMenu() {
                     <NavLink
                       to="/brands"
                       onClick={close}
-                      className="group flex min-h-[48px] items-center justify-between gap-3 pl-6 pr-2 text-[15px] font-medium text-text-muted transition-colors hover:text-text"
+                      className="group flex min-h-[48px] items-center justify-between gap-3 pl-6 pr-2 text-[15px] font-medium text-text transition-colors hover:underline"
                     >
                       View all brands
                       <ArrowRight
@@ -150,7 +151,7 @@ export function MobileMenu() {
 
                       {/* Top brands */}
                       <Accordion.Item value="top-brands" className="border-t border-white/[0.06]">
-                        <Accordion.Trigger className="group flex w-full min-h-[48px] items-center justify-between gap-3 pl-4 pr-2 text-[15px] font-medium text-text-muted outline-none transition-colors hover:text-text focus-visible:ring-2 focus-visible:ring-paper/60">
+                        <Accordion.Trigger className="group flex w-full min-h-[48px] items-center justify-between gap-3 pl-4 pr-2 text-[15px] font-medium text-text outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60">
                           Top brands
                           <ChevronDown
                             className="size-4 shrink-0 text-white/30 transition-transform duration-200 group-data-[state=open]:rotate-180"
@@ -164,7 +165,7 @@ export function MobileMenu() {
                                 <Link
                                   to={`/brands/${slugify(brand)}`}
                                   onClick={close}
-                                  className="block py-2 text-[14px] font-medium text-text-muted transition-colors hover:text-text"
+                                  className="block py-2 text-[14px] font-medium text-text transition-colors hover:underline"
                                 >
                                   {brand}
                                 </Link>
@@ -176,7 +177,7 @@ export function MobileMenu() {
 
                       {/* Shop by category */}
                       <Accordion.Item value="categories" className="border-t border-white/[0.06]">
-                        <Accordion.Trigger className="group flex w-full min-h-[48px] items-center justify-between gap-3 pl-4 pr-2 text-[15px] font-medium text-text-muted outline-none transition-colors hover:text-text focus-visible:ring-2 focus-visible:ring-paper/60">
+                        <Accordion.Trigger className="group flex w-full min-h-[48px] items-center justify-between gap-3 pl-4 pr-2 text-[15px] font-medium text-text outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60">
                           Shop by category
                           <ChevronDown
                             className="size-4 shrink-0 text-white/30 transition-transform duration-200 group-data-[state=open]:rotate-180"
@@ -188,7 +189,7 @@ export function MobileMenu() {
                           <Accordion.Root type="multiple" className="pb-2 pl-2">
                             {productGroups.map((g) => (
                               <Accordion.Item key={g.slug} value={g.slug} className="border-t border-white/[0.04]">
-                                <Accordion.Trigger className="group flex w-full min-h-[44px] items-center justify-between gap-3 pl-4 pr-2 text-[13.5px] font-semibold text-text-muted outline-none transition-colors hover:text-text focus-visible:ring-2 focus-visible:ring-paper/60">
+                                <Accordion.Trigger className="group flex w-full min-h-[44px] items-center justify-between gap-3 pl-4 pr-2 text-[13.5px] font-bold text-text outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60">
                                   <Link
                                     to={`/products/${g.slug}`}
                                     onClick={close}
@@ -208,7 +209,7 @@ export function MobileMenu() {
                                         <Link
                                           to={`/products/${g.slug}/${slugify(item)}`}
                                           onClick={close}
-                                          className="block py-1.5 text-[13px] text-white/45 transition-colors hover:text-white/80"
+                                          className="block py-1.5 text-[13px] text-white transition-colors hover:underline"
                                         >
                                           {item}
                                         </Link>

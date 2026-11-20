@@ -1,12 +1,44 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { activeNavTo, navItems } from "@/data/navigation";
-import { productGroups, slugify, topBrands } from "@/data/catalog";
+import { menuGroupOrder, productGroups, slugify, topBrands, type ProductGroup } from "@/data/catalog";
 import { Logo } from "@/components/layout/Logo";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useScrolled } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
+
+/** Renders one product group: heading, intro, and item links. */
+function CategoryGroup({ group, onNavigate }: { group: ProductGroup; onNavigate: () => void }) {
+  return (
+    <div>
+      <Link
+        to={`/products/${group.slug}`}
+        onClick={onNavigate}
+        className="block border-b border-white/20 pb-2 text-lg font-extrabold text-white transition-colors hover:text-accent-400"
+      >
+        {group.title}
+      </Link>
+      <p className="mt-1.5 line-clamp-2 text-sm leading-snug text-slate-200">
+        {group.intro}
+      </p>
+      <ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
+        {group.items.map((item) => (
+          <li key={item}>
+            <Link
+              to={`/products/${group.slug}/${slugify(item)}`}
+              onClick={onNavigate}
+              className="flex items-center gap-1.5 rounded-sm py-0.5 text-[15px] font-medium text-white outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
+            >
+              <span className="size-1 shrink-0 rounded-full bg-white" aria-hidden="true" />
+              {item}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 /**
  * Premium floating navigation with a Products mega menu.
@@ -27,13 +59,51 @@ export function Navbar() {
   const scrolled = useScrolled(24);
   const { pathname } = useLocation();
   const activeTo = activeNavTo(pathname);
-
   const [megaOpen, setMegaOpen] = useState(false);
+  const [panelCanScroll, setPanelCanScroll] = useState(false);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressFocusOpen = useRef(false);
   const triggerRef = useRef<HTMLAnchorElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const panelScrollRef = useRef<HTMLDivElement>(null);
+
+  /** Groups in menu order, split into two balanced flex columns.
+   *  Each group's height ≈ Math.ceil(items / 2) + 3 (heading + intro + link rows). */
+  const { leftGroups, rightGroups } = useMemo(() => {
+    const rank = (slug: string) => {
+      const i = menuGroupOrder.indexOf(slug);
+      return i === -1 ? menuGroupOrder.length : i;
+    };
+    const ordered = [...productGroups].sort((a, b) => rank(a.slug) - rank(b.slug));
+
+    const left: ProductGroup[] = [];
+    const right: ProductGroup[] = [];
+    let leftH = 0;
+    let rightH = 0;
+    for (const g of ordered) {
+      const h = Math.ceil(g.items.length / 2) + 3;
+      if (leftH <= rightH) { left.push(g); leftH += h; }
+      else { right.push(g); rightH += h; }
+    }
+    return { leftGroups: left, rightGroups: right };
+  }, []);
+
+  /** "Scroll for more" pill: shown while panel content extends below the viewport. */
+  const updatePanelFade = useCallback(() => {
+    const el = panelScrollRef.current;
+    if (el) setPanelCanScroll(el.scrollTop + el.clientHeight < el.scrollHeight - 8);
+  }, []);
+
+  useEffect(() => {
+    if (megaOpen) {
+      if (panelScrollRef.current) panelScrollRef.current.scrollTop = 0;
+      requestAnimationFrame(updatePanelFade);
+      window.addEventListener("resize", updatePanelFade, { passive: true });
+      return () => window.removeEventListener("resize", updatePanelFade);
+    }
+  }, [megaOpen, updatePanelFade]);
+
   /** Close immediately, dropping any pending open/close timer. */
   const closeNow = useCallback(() => {
     if (openTimer.current) { clearTimeout(openTimer.current); openTimer.current = null; }
@@ -191,71 +261,35 @@ export function Navbar() {
               aria-label="Products and brands menu"
               onMouseEnter={cancelClose}
               onMouseLeave={scheduleClose}
-              className={cn(
-                "max-h-[75vh] overflow-y-auto rounded-b-xl border border-t-0 border-white/10 bg-surface",
-                "shadow-[0_20px_60px_rgb(0_0_0/0.55)]",
-              )}
+              className="relative rounded-b-xl border border-t-0 border-white/10 bg-surface shadow-[0_20px_60px_rgb(0_0_0/0.55)]"
             >
-              <div className="container-page grid gap-8 py-8 lg:grid-cols-[4fr_11fr_5fr]">
+              {/* Inner scroller: wheel/trackpad scroll the panel from anywhere
+                  over it; custom thin scrollbar always visible (see .menu-scroll
+                  in globals.css); pr-2 keeps text clear of the scrollbar. */}
+              <div
+                ref={panelScrollRef}
+                onScroll={updatePanelFade}
+                data-lenis-prevent
+                className="menu-scroll max-h-[calc(100vh-5.5rem)] overscroll-contain pr-2"
+              >
+              <div className="container-page grid gap-10 py-5 lg:grid-cols-[3fr_1fr]">
 
-                {/* LEFT (~20%) — intro card */}
-                <div className="flex flex-col rounded-xl border border-white/10 bg-surface-2 p-5">
-                  <h3 className="text-lg font-bold text-white">
-                    Shop by brand and category
-                  </h3>
-                  <p className="mt-3 text-[12.5px] leading-relaxed text-slate-200">
-                    Browse the cabling, networking, computer and security products we supply in Dubai.
-                  </p>
-                  <Link
-                    to="/brands"
-                    onClick={() => setMegaOpen(false)}
-                    className="group mt-6 inline-flex h-9 items-center gap-1.5 self-start rounded-lg bg-paper px-3.5 text-[12.5px] font-semibold text-surface outline-none transition-colors duration-200 hover:bg-white focus-visible:ring-2 focus-visible:ring-paper/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
-                  >
-                    Shop all brands
-                    <ArrowRight
-                      className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </div>
-
-                {/* MIDDLE (~55%) — categories */}
+                {/* LEFT (~75%) — categories */}
                 <div>
-                  <p className="mb-5 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
+                  <p className="mb-4 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
                     Shop by category
                   </p>
-                  <div className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
-                    {productGroups.map((g) => (
-                      <div key={g.slug}>
-                        <Link
-                          to={`/products/${g.slug}`}
-                          onClick={() => setMegaOpen(false)}
-                          className="block border-b border-white/20 pb-2 text-lg font-extrabold text-white"
-                        >
-                          {g.title}
-                        </Link>
-                        <p className="mb-3 mt-2 line-clamp-2 text-sm leading-relaxed text-slate-200">
-                          {g.intro}
-                        </p>
-                        <ul className="grid grid-cols-2 gap-x-4 gap-y-0">
-                          {g.items.map((item) => (
-                            <li key={item}>
-                              <Link
-                                to={`/products/${g.slug}/${slugify(item)}`}
-                                onClick={() => setMegaOpen(false)}
-                                className="flex items-start gap-1.5 rounded-sm py-1 text-[15px] font-medium leading-snug text-white outline-none transition-colors hover:text-accent-400 hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
-                              >
-                                <span
-                                  className="mt-[8px] size-1 shrink-0 rounded-full bg-white"
-                                  aria-hidden="true"
-                                />
-                                {item}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                  <div className="grid grid-cols-2 gap-x-10 items-start">
+                    <div className="flex flex-col gap-8">
+                      {leftGroups.map((g) => (
+                        <CategoryGroup key={g.slug} group={g} onNavigate={() => setMegaOpen(false)} />
+                      ))}
+                    </div>
+                    <div className="flex flex-col gap-8">
+                      {rightGroups.map((g) => (
+                        <CategoryGroup key={g.slug} group={g} onNavigate={() => setMegaOpen(false)} />
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -264,13 +298,13 @@ export function Navbar() {
                   <p className="mb-4 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
                     Top brands
                   </p>
-                  <ul className="space-y-1.5">
+                  <ul className="space-y-1">
                     {topBrands.map((brand) => (
                       <li key={brand}>
                         <Link
                           to={`/brands/${slugify(brand)}`}
                           onClick={() => setMegaOpen(false)}
-                          className="block rounded-sm py-0.5 text-base font-medium text-white outline-none transition-colors hover:text-accent-400 hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
+                          className="block rounded-sm py-1 text-base font-medium text-white outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
                         >
                           {brand}
                         </Link>
@@ -281,7 +315,7 @@ export function Navbar() {
                     <Link
                       to="/brands"
                       onClick={() => setMegaOpen(false)}
-                      className="group inline-flex items-center gap-1.5 rounded-sm text-sm font-semibold text-white outline-none transition-colors hover:text-accent-400 hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
+                      className="group inline-flex items-center gap-1.5 rounded-sm text-[13px] font-semibold text-white outline-none transition-colors hover:text-accent-400 hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
                     >
                       View all brands
                       <ArrowRight
@@ -292,6 +326,18 @@ export function Navbar() {
                   </div>
                 </div>
               </div>
+              </div>
+              {panelCanScroll && (
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-3 pt-6 bg-gradient-to-t from-surface to-transparent"
+                >
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm">
+                    Scroll for more
+                    <ChevronDown className="size-3.5" aria-hidden="true" />
+                  </span>
+                </div>
+              )}
             </div>
           )}
 

@@ -122,10 +122,11 @@ export default function ProductCategory() {
                 <li key={brand}>
                   <Link
                     to={`/brands/${slugify(brand)}`}
-                    className="flex items-center gap-2 rounded-lg border border-white/15 px-2 py-1.5 transition-colors hover:border-white/30 hover:bg-white/5"
+                    aria-label={brand}
+                    className="flex items-center justify-center rounded-lg border border-white/15 px-2 py-1.5 transition-colors hover:border-white/30 hover:bg-white/5"
                   >
-                    <BrandLogo name={brand} className="h-7 w-14 shrink-0" />
-                    <span className="text-sm font-medium text-text-muted">{brand}</span>
+                    <BrandLogo name={brand} className="h-7 w-14 shrink-0" showNameFallback />
+                    <span className="sr-only">{brand}</span>
                   </Link>
                 </li>
               ))}

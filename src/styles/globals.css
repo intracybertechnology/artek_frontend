@@ -199,6 +199,31 @@
   }
 }
 
+/* ── Mega-menu scrollable panel ─────────────────────────────────────── */
+/* Thin, always-visible scrollbar for the Products mega menu panel.     */
+.menu-scroll {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.55) rgba(255,255,255,0.08);
+}
+.menu-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.menu-scroll::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+}
+.menu-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.55);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.menu-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.8);
+  background-clip: padding-box;
+}
+
 html {
   /* Smooth scrolling is provided by Lenis (see src/lib/lenis.ts), which
      disables this natively while active. Kept as the reduced-motion fallback. */

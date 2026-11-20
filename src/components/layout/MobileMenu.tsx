@@ -4,10 +4,14 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { ArrowRight, ChevronDown, Menu, Phone, X } from "lucide-react";
 import { activeNavTo, navItems } from "@/data/navigation";
-import { productGroups, slugify, topBrands } from "@/data/catalog";
+import { menuGroupOrder, productGroups, slugify, topBrands } from "@/data/catalog";
 import { company } from "@/data/company";
 import { Logo } from "@/components/layout/Logo";
 import { cn } from "@/lib/utils";
+
+/** Shared animation classes for every Accordion.Content in this panel. */
+const contentAnim =
+  "overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]";
 
 /**
  * Mobile navigation panel.
@@ -21,14 +25,19 @@ import { cn } from "@/lib/utils";
  * All other items are plain nav rows as before. Tapping any link closes
  * the whole menu.
  */
-
-/** Nav items that render as plain rows (everything except Products). */
-
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   const { pathname } = useLocation();
   const activeTo = activeNavTo(pathname);
+  const productsActive = activeTo === "/brands";
+
+  /** Groups in menu order: menuGroupOrder first, unlisted slugs after (stable). */
+  const menuGroupRank = (slug: string) => {
+    const i = menuGroupOrder.indexOf(slug);
+    return i === -1 ? menuGroupOrder.length : i;
+  };
+  const orderedGroups = [...productGroups].sort((a, b) => menuGroupRank(a.slug) - menuGroupRank(b.slug));
 
   const plainItemsFor = (paths: readonly string[]) =>
     navItems.filter((item) => paths.includes(item.to));
@@ -57,8 +66,6 @@ export function MobileMenu() {
       </NavLink>
     </li>
   );
-
-  const productsActive = activeTo === "/brands";
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -105,8 +112,8 @@ export function MobileMenu() {
             </a>
           </div>
 
-          {/* Nav */}
-          <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-3 py-4">
+          {/* Nav — scrolls inside itself; bottom padding for the CTA bar */}
+          <nav aria-label="Mobile" className="flex-1 overflow-y-auto overscroll-contain px-3 pt-4 pb-6">
 
             {/* Explore group */}
             <div>
@@ -132,7 +139,7 @@ export function MobileMenu() {
                       aria-hidden="true"
                     />
                   </Accordion.Trigger>
-                  <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
+                  <Accordion.Content className={contentAnim}>
 
                     {/* View all brands */}
                     <NavLink
@@ -158,14 +165,14 @@ export function MobileMenu() {
                             aria-hidden="true"
                           />
                         </Accordion.Trigger>
-                        <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
-                          <ul className="grid grid-cols-2 gap-x-2 gap-y-0.5 pb-3 pl-6 pr-2">
+                        <Accordion.Content className={contentAnim}>
+                          <ul className="space-y-0.5 pb-3 pl-6 pr-2">
                             {topBrands.map((brand) => (
                               <li key={brand}>
                                 <Link
                                   to={`/brands/${slugify(brand)}`}
                                   onClick={close}
-                                  className="block py-2 text-[14px] font-medium text-text transition-colors hover:underline"
+                                  className="block py-1.5 text-[14px] font-medium text-text transition-colors hover:underline"
                                 >
                                   {brand}
                                 </Link>
@@ -184,25 +191,19 @@ export function MobileMenu() {
                             aria-hidden="true"
                           />
                         </Accordion.Trigger>
-                        <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
+                        <Accordion.Content className={contentAnim}>
                           {/* Nested accordion per product group */}
                           <Accordion.Root type="multiple" className="pb-2 pl-2">
-                            {productGroups.map((g) => (
+                            {orderedGroups.map((g) => (
                               <Accordion.Item key={g.slug} value={g.slug} className="border-t border-white/[0.04]">
                                 <Accordion.Trigger className="group flex w-full min-h-[44px] items-center justify-between gap-3 pl-4 pr-2 text-[13.5px] font-bold text-text outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60">
-                                  <Link
-                                    to={`/products/${g.slug}`}
-                                    onClick={close}
-                                    className="flex-1 text-left"
-                                  >
-                                    {g.title}
-                                  </Link>
+                                  <span className="flex-1 text-left">{g.title}</span>
                                   <ChevronDown
                                     className="size-3.5 shrink-0 text-white/25 transition-transform duration-200 group-data-[state=open]:rotate-180"
                                     aria-hidden="true"
                                   />
                                 </Accordion.Trigger>
-                                <Accordion.Content className="overflow-hidden data-[state=closed]:animate-[accordion-up_0.2s_ease-out] data-[state=open]:animate-[accordion-down_0.2s_ease-out]">
+                                <Accordion.Content className={contentAnim}>
                                   <ul className="pb-2 pl-6">
                                     {g.items.map((item) => (
                                       <li key={item}>

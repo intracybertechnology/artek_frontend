@@ -4,11 +4,17 @@ import { Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/company";
-import { productGroups, slugify } from "@/data/catalog";
+import { menuGroupOrder, productGroups, slugify } from "@/data/catalog";
 
 /** Product index: every category and its items, each with a quote action. */
 export default function Products() {
   const { hash } = useLocation();
+
+  const mgRank = (slug: string) => {
+    const i = menuGroupOrder.indexOf(slug);
+    return i === -1 ? menuGroupOrder.length : i;
+  };
+  const orderedGroups = [...productGroups].sort((a, b) => mgRank(a.slug) - mgRank(b.slug));
 
   /* react-router doesn't scroll to hash anchors on client navigation — do it after render */
   useEffect(() => {
@@ -34,7 +40,7 @@ export default function Products() {
 
       <nav aria-label="Product groups" className="border-b border-white/10 bg-navy-950">
         <div className="container-page flex gap-2 overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {productGroups.map((g) => (
+          {orderedGroups.map((g) => (
             <a
               key={g.slug}
               href={`#${g.slug}`}
@@ -48,7 +54,7 @@ export default function Products() {
 
       <div className="bg-mist-2 py-14 sm:py-20">
         <div className="container-page space-y-16">
-          {productGroups.map((g) => (
+          {orderedGroups.map((g) => (
             <section key={g.slug} id={g.slug} aria-labelledby={`${g.slug}-heading`} className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-4">
                 <div>

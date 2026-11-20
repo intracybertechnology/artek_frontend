@@ -4,7 +4,7 @@ import { Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/company";
-import { brandGroups, brandLogo, slugify } from "@/data/catalog";
+import { brandGroups, brandGroupOrder, brandLogo, slugify } from "@/data/catalog";
 
 /** ------------------------------------------------------------------ *
  *  Single brand tile                                                    *
@@ -20,17 +20,10 @@ function BrandTile({ name }: { name: string }) {
   return (
     <Link
       to={`/brands/${slugify(name)}`}
-      className="
-        group flex h-28 flex-col items-center justify-center gap-2
-        rounded-xl border border-white/15 bg-white p-4
-        transition-all duration-200
-        hover:-translate-y-0.5 hover:border-white/40 hover:shadow-[0_6px_20px_rgb(0_0_0/0.18)]
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface
-        xl:h-32
-      "
+      aria-label={name}
+      className="group flex h-28 items-center justify-center rounded-xl border border-white/15 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:shadow-[0_6px_20px_rgb(0_0_0/0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface xl:h-32"
     >
       {noImage ? (
-        /* No logo file — name is the only content, centered, once */
         <span className="px-2 text-center text-xl font-bold leading-tight text-slate-900 md:text-2xl">
           {name}
         </span>
@@ -44,11 +37,9 @@ function BrandTile({ name }: { name: string }) {
             loading="lazy"
             decoding="async"
             onError={() => setFailed(true)}
-            className="min-h-0 flex-1 max-h-[72%] max-w-[88%] w-auto object-contain"
+            className="max-h-full max-w-full object-contain"
           />
-          <span className="shrink-0 text-center text-lg font-bold leading-tight text-slate-900 md:text-xl">
-            {name}
-          </span>
+          <span className="sr-only">{name}</span>
         </>
       )}
     </Link>
@@ -57,6 +48,11 @@ function BrandTile({ name }: { name: string }) {
 
 /** /brands — all brands grouped by category, one section per group. */
 export default function Brands() {
+  const bgRank = (title: string) => {
+    const i = brandGroupOrder.indexOf(title);
+    return i === -1 ? brandGroupOrder.length : i;
+  };
+  const orderedBrandGroups = [...brandGroups].sort((a, b) => bgRank(a.title) - bgRank(b.title));
   return (
     <article>
       {/* ── Page header ─────────────────────────────────────────────── */}
@@ -77,7 +73,7 @@ export default function Brands() {
       {/* ── Brand sections ──────────────────────────────────────────── */}
       <div className="bg-mist-2">
         <div className="container-page divide-y divide-white/[0.07]">
-          {brandGroups.map((g) => (
+          {orderedBrandGroups.map((g) => (
             <section key={g.title} className="py-10 sm:py-12" aria-labelledby={`group-${slugify(g.title)}`}>
               {/* Section heading + count */}
               <div className="flex flex-wrap items-baseline gap-3">

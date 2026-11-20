@@ -5,9 +5,13 @@
   "type": "module",
   "description": "ARTEK Computers LLC — IT Solutions, CCTV and Networking for Businesses in Dubai",
   "scripts": {
+    "predev": "npm run gen:logos",
     "dev": "vite",
+    "prebuild": "npm run gen:logos",
     "build": "vite build",
+    "prebuild:static": "npm run gen:logos",
     "build:static": "vite build && vite build -c vite.ssr.config.ts --ssr src/entry-server.tsx && node scripts/prerender.mjs && node scripts/generate-sitemap.mjs",
+    "gen:logos": "node scripts/gen-brand-logos.mjs",
     "prerender": "node scripts/prerender.mjs",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "preview": "vite preview",

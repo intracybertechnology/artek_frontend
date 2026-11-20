@@ -29,6 +29,7 @@ export function MainLayout() {
       </main>
       <Footer />
       <EnquiryWidget />
+      <FloatingCallButton />
     </div>
   );
 }

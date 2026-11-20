@@ -34,17 +34,17 @@ export default function ProductDetail() {
         { label: name, to: `/products/${group.slug}/${slugify(name)}` },
       ]}
       primaryCta={{
-        label: "Request a quote",
-        href: `/contact?product=${encodeURIComponent(name)}&category=${encodeURIComponent(group.title)}`,
+        label: "Request a Free Quote",
+        href: `/contact?message=${encodeURIComponent(`I'm interested in ${name} (${group.title}).`)}`,
       }}
       callHref={company.phoneHref}
-      sidebarTitle={`More ${group.title}`}
+      sidebarTitle={`More ${group.title.toUpperCase()}`}
       sidebarLinks={others.map((item) => ({
         label: item,
         to: `/products/${group.slug}/${slugify(item)}`,
       }))}
+      sidebarAllLink={{ label: "All products", to: "/products" }}
       bottomCtaTitle={name}
-      quoteMessage={`Hi, I'm interested in ${name} (${group.title}).`}
       seo={{
         title: `${name} in Dubai, UAE | Artek Computers LLC`,
         description,

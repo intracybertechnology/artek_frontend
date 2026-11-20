@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, Phone } from "lucide-react";
 import { getServiceBySlug, coreServices, services } from "@/data/services";
 import { company } from "@/data/company";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+import { QuoteSidebar } from "@/components/common/QuoteSidebar";
 import { RevealBox } from "@/components/common/RevealBox";
 import { FAQAccordion } from "@/components/common/FAQAccordion";
 import { Button } from "@/components/ui/button";
@@ -194,45 +195,12 @@ export default function SolutionTemplate() {
           </div>
 
           {/* sidebar */}
-          <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
-            <div className="rounded-xl bg-navy-950 p-6 text-white">
-              <h2 className="text-lg font-semibold">Start with a free quote</h2>
-              <p className="mt-2 text-sm text-slate-300">
-                Tell us about your site and requirement — we&apos;ll respond with a tailored proposal.
-              </p>
-              <Button asChild className="mt-4 w-full">
-                <Link to="/contact">Request a Free Quote</Link>
-              </Button>
-              <a
-                href={company.phoneHref}
-                className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-white/25 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10"
-              >
-                <Phone className="size-4" aria-hidden="true" />
-                {company.phoneDisplay}
-              </a>
-            </div>
-
-            <nav aria-label="Related solutions" className="rounded-xl border border-white/10 p-6">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Related solutions</h2>
-              <ul className="mt-3 space-y-2.5 text-sm">
-                {related.map((r) => (
-                  <li key={r.id}>
-                    <Link
-                      to={`/solutions/${r.slug}`}
-                      className="font-medium text-slate-200 underline-offset-4 transition-colors hover:text-accent-600 hover:underline"
-                    >
-                      {r.title}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link to="/solutions" className="text-accent-600 underline-offset-4 hover:underline">
-                    All solutions →
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </aside>
+          <QuoteSidebar
+            quoteTo="/contact"
+            relatedLabel="Related solutions"
+            relatedLinks={related.map((r) => ({ label: r.title, to: `/solutions/${r.slug}` }))}
+            allLink={{ label: "All solutions", to: "/solutions" }}
+          />
         </div>
       </div>
     </article>

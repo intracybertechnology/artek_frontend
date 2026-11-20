@@ -199,28 +199,29 @@
   }
 }
 
+
 /* ── Mega-menu scrollable panel ─────────────────────────────────────── */
-/* Thin, always-visible scrollbar for the Products mega menu panel.     */
+/* Thin dark scrollbar for the white Products mega menu (only when it overflows). */
 .menu-scroll {
-  overflow-y: scroll;
+  overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.55) rgba(255,255,255,0.08);
+  scrollbar-color: rgba(15,23,42,0.45) rgba(15,23,42,0.08);
 }
 .menu-scroll::-webkit-scrollbar {
   width: 10px;
 }
 .menu-scroll::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.08);
+  background: rgba(15,23,42,0.08);
   border-radius: 999px;
 }
 .menu-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.55);
+  background: rgba(15,23,42,0.45);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 .menu-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.8);
+  background: rgba(15,23,42,0.7);
   background-clip: padding-box;
 }
 

@@ -1,44 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight } from "lucide-react";
 import { activeNavTo, navItems } from "@/data/navigation";
-import { menuGroupOrder, productGroups, slugify, topBrands, type ProductGroup } from "@/data/catalog";
+import { menuGroupOrder, productGroups, slugify, topBrands } from "@/data/catalog";
 import { Logo } from "@/components/layout/Logo";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { useScrolled } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 
-/** Renders one product group: heading, intro, and item links. */
-function CategoryGroup({ group, onNavigate }: { group: ProductGroup; onNavigate: () => void }) {
-  return (
-    <div>
-      <Link
-        to={`/products/${group.slug}`}
-        onClick={onNavigate}
-        className="block border-b border-white/20 pb-2 text-lg font-extrabold text-white transition-colors hover:text-accent-400"
-      >
-        {group.title}
-      </Link>
-      <p className="mt-1.5 line-clamp-2 text-sm leading-snug text-slate-200">
-        {group.intro}
-      </p>
-      <ul className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1">
-        {group.items.map((item) => (
-          <li key={item}>
-            <Link
-              to={`/products/${group.slug}/${slugify(item)}`}
-              onClick={onNavigate}
-              className="flex items-center gap-1.5 rounded-sm py-0.5 text-[15px] font-medium text-white outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
-            >
-              <span className="size-1 shrink-0 rounded-full bg-white" aria-hidden="true" />
-              {item}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 /**
  * Premium floating navigation with a Products mega menu.
@@ -52,64 +21,87 @@ function CategoryGroup({ group, onNavigate }: { group: ProductGroup; onNavigate:
  *   - Escape key (focus returns to the trigger)
  *   - route change, click outside, focus leaving the header (Tab)
  *
- * The panel and the bar above it are solid (no backdrop blur) so no page
- * content ever shows through behind the menu text.
+ * The bar stays dark; the white panel below it shows a category rail on the
+ * left, the selected category's products in the middle, and top brands on
+ * the right — no dark overlay or glow over the page content.
  */
 export function Navbar() {
   const scrolled = useScrolled(24);
   const { pathname } = useLocation();
   const activeTo = activeNavTo(pathname);
   const [megaOpen, setMegaOpen] = useState(false);
+  const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [panelCanScroll, setPanelCanScroll] = useState(false);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressFocusOpen = useRef(false);
   const triggerRef = useRef<HTMLAnchorElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const categoryListRef = useRef<HTMLElement>(null);
   const panelScrollRef = useRef<HTMLDivElement>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  /** Groups in menu order, split into two balanced flex columns.
-   *  Each group's height ≈ Math.ceil(items / 2) + 3 (heading + intro + link rows). */
-  const { leftGroups, rightGroups } = useMemo(() => {
+  /** Groups in menu order: menuGroupOrder first, unlisted slugs after (stable). */
+  const orderedGroups = useMemo(() => {
     const rank = (slug: string) => {
       const i = menuGroupOrder.indexOf(slug);
       return i === -1 ? menuGroupOrder.length : i;
     };
-    const ordered = [...productGroups].sort((a, b) => rank(a.slug) - rank(b.slug));
-
-    const left: ProductGroup[] = [];
-    const right: ProductGroup[] = [];
-    let leftH = 0;
-    let rightH = 0;
-    for (const g of ordered) {
-      const h = Math.ceil(g.items.length / 2) + 3;
-      if (leftH <= rightH) { left.push(g); leftH += h; }
-      else { right.push(g); rightH += h; }
-    }
-    return { leftGroups: left, rightGroups: right };
+    return [...productGroups].sort((a, b) => rank(a.slug) - rank(b.slug));
   }, []);
 
-  /** "Scroll for more" pill: shown while panel content extends below the viewport. */
+  // The menu always opens on the first category in the order.
+  useEffect(() => {
+    if (megaOpen) setActiveSlug(orderedGroups[0]?.slug ?? null);
+  }, [megaOpen, orderedGroups]);
+
+  const activeGroup = orderedGroups.find((g) => g.slug === activeSlug) ?? orderedGroups[0];
+
+  /** Hovering a rail row activates it after 80 ms; leaving cancels. */
+  const scheduleActivate = useCallback((slug: string) => {
+    clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveSlug(slug), 80);
+  }, []);
+
+  const cancelActivate = useCallback(() => {
+    if (hoverTimer.current) { clearTimeout(hoverTimer.current); hoverTimer.current = undefined; }
+  }, []);
+
+  /** ArrowUp/ArrowDown move focus through the rail rows; focusing a row
+   *  also activates it (rows activate on focus). */
+  const onCategoryListKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    e.preventDefault();
+    const rows = categoryListRef.current?.querySelectorAll<HTMLAnchorElement>("a");
+    if (!rows?.length) return;
+    const list = [...rows];
+    const i = list.indexOf(document.activeElement as HTMLAnchorElement);
+    const next = list[i + (e.key === "ArrowDown" ? 1 : -1)] ?? list[e.key === "ArrowDown" ? 0 : list.length - 1];
+    next?.focus();
+  };
+
+  /** "Scroll for more" pill: shown only while the panel actually overflows. */
   const updatePanelFade = useCallback(() => {
     const el = panelScrollRef.current;
     if (el) setPanelCanScroll(el.scrollTop + el.clientHeight < el.scrollHeight - 8);
   }, []);
 
   useEffect(() => {
-    if (megaOpen) {
-      if (panelScrollRef.current) panelScrollRef.current.scrollTop = 0;
-      requestAnimationFrame(updatePanelFade);
-      window.addEventListener("resize", updatePanelFade, { passive: true });
-      return () => window.removeEventListener("resize", updatePanelFade);
-    }
+    if (!megaOpen) return;
+    if (panelScrollRef.current) panelScrollRef.current.scrollTop = 0;
+    requestAnimationFrame(updatePanelFade);
+    window.addEventListener("resize", updatePanelFade, { passive: true });
+    return () => window.removeEventListener("resize", updatePanelFade);
   }, [megaOpen, updatePanelFade]);
 
-  /** Close immediately, dropping any pending open/close timer. */
+  /** Close immediately, dropping any pending timer. */
   const closeNow = useCallback(() => {
     if (openTimer.current) { clearTimeout(openTimer.current); openTimer.current = null; }
     if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
+    if (hoverTimer.current) { clearTimeout(hoverTimer.current); hoverTimer.current = undefined; }
     setMegaOpen(false);
   }, []);
+
 
   // Close on route change. Cancels any pending hover-open timer so the panel
   // cannot re-open over the destination page while the cursor rests on the
@@ -172,14 +164,14 @@ export function Navbar() {
       }}
     >
       <div className="px-3 pt-2 sm:px-6 sm:pt-3">
-        <div className="mx-auto max-w-[87.5rem]">
+        <div className="relative mx-auto max-w-[87.5rem]">
 
           {/* ── Nav bar ─────────────────────────────────────────────── */}
           <div
             className={cn(
               "flex h-14 items-center justify-between gap-2 rounded-xl border px-3 transition-[background-color,border-color,box-shadow] duration-300 sm:h-[3.75rem] sm:gap-4 sm:px-5",
               megaOpen
-                ? "rounded-b-none border-white/10 bg-surface shadow-none"
+                ? "border-white/10 bg-surface shadow-none"
                 : scrolled
                   ? "border-white/10 bg-black/45 shadow-[0_8px_30px_rgb(0_0_0/0.45)] backdrop-blur-xl"
                   : "border-white/[0.08] bg-black/20 backdrop-blur-md",
@@ -255,84 +247,140 @@ export function Navbar() {
 
           {/* ── Mega menu panel ─────────────────────────────────────── */}
           {megaOpen && (
+            // Hover area = invisible bridge + card, so the pointer can cross
+            // the gap between the header bar and the card without closing.
             <div
               ref={panelRef}
               role="dialog"
               aria-label="Products and brands menu"
               onMouseEnter={cancelClose}
               onMouseLeave={scheduleClose}
-              className="relative rounded-b-xl border border-t-0 border-white/10 bg-surface shadow-[0_20px_60px_rgb(0_0_0/0.55)]"
+              className="absolute left-1/2 top-full z-30 mt-2 w-[900px] max-w-[calc(100vw-2rem)] -translate-x-1/2"
             >
-              {/* Inner scroller: wheel/trackpad scroll the panel from anywhere
-                  over it; custom thin scrollbar always visible (see .menu-scroll
-                  in globals.css); pr-2 keeps text clear of the scrollbar. */}
+              {/* Invisible bridge over the header→card gap */}
+              <div aria-hidden="true" className="absolute inset-x-0 -top-3 h-3" />
+              {/* The card scrolls only on really short screens (.menu-scroll) */}
               <div
                 ref={panelScrollRef}
                 onScroll={updatePanelFade}
                 data-lenis-prevent
-                className="menu-scroll max-h-[calc(100vh-5.5rem)] overscroll-contain pr-2"
+                className="menu-scroll overscroll-contain max-h-[calc(100vh-6rem)] rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl"
               >
-              <div className="container-page grid gap-10 py-5 lg:grid-cols-[3fr_1fr]">
+                <div className="grid grid-cols-[230px_1fr] gap-6">
 
-                {/* LEFT (~75%) — categories */}
-                <div>
-                  <p className="mb-4 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
-                    Shop by category
-                  </p>
-                  <div className="grid grid-cols-2 gap-x-10 items-start">
-                    <div className="flex flex-col gap-8">
-                      {leftGroups.map((g) => (
-                        <CategoryGroup key={g.slug} group={g} onNavigate={() => setMegaOpen(false)} />
-                      ))}
-                    </div>
-                    <div className="flex flex-col gap-8">
-                      {rightGroups.map((g) => (
-                        <CategoryGroup key={g.slug} group={g} onNavigate={() => setMegaOpen(false)} />
-                      ))}
-                    </div>
+                  {/* LEFT — category rail */}
+                  <div>
+                    <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      Categories
+                    </p>
+                    <nav
+                      ref={categoryListRef}
+                      aria-label="Product categories"
+                      onKeyDown={onCategoryListKeyDown}
+                      className="flex flex-col gap-0.5"
+                    >
+                      {orderedGroups.map((g) => {
+                        const isActive = g.slug === activeGroup?.slug;
+                        return (
+                          <Link
+                            key={g.slug}
+                            to={`/products/${g.slug}`}
+                            onClick={() => setMegaOpen(false)}
+                            onMouseEnter={() => scheduleActivate(g.slug)}
+                            onMouseLeave={cancelActivate}
+                            onFocus={() => { cancelActivate(); setActiveSlug(g.slug); }}
+                            className={cn(
+                              "flex items-center justify-between gap-2 rounded-md px-3 py-1.5 text-[15px] font-medium text-slate-900 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-1",
+                              isActive ? "bg-slate-900 text-white" : "hover:bg-slate-100",
+                            )}
+                          >
+                            {g.title}
+                            <ChevronRight
+                              className={cn("size-4 shrink-0", isActive ? "text-white/70" : "text-slate-400")}
+                              aria-hidden="true"
+                            />
+                          </Link>
+                        );
+                      })}
+                    </nav>
+                  </div>
+
+                  {/* MIDDLE — products of the selected category */}
+                  <div className="min-h-[300px]">
+                    {activeGroup && (
+                      <>
+                        <Link
+                          to={`/products/${activeGroup.slug}`}
+                          onClick={() => setMegaOpen(false)}
+                          className="text-xl font-extrabold text-slate-900 transition-colors hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                        >
+                          {activeGroup.title}
+                        </Link>
+                        <p className="mt-2 line-clamp-2 text-sm text-slate-600">{activeGroup.intro}</p>
+                        <ul className="mt-5 grid grid-cols-2 gap-x-8 gap-y-1">
+                          {activeGroup.items.map((item) => (
+                            <li key={item}>
+                              <Link
+                                to={`/products/${activeGroup.slug}/${slugify(item)}`}
+                                onClick={() => setMegaOpen(false)}
+                                className="flex items-center gap-1.5 rounded-sm py-0.5 text-[15px] font-medium text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
+                              >
+                                <span className="size-1 shrink-0 rounded-full bg-slate-400" aria-hidden="true" />
+                                {item}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                        <Link
+                          to={`/products/${activeGroup.slug}`}
+                          onClick={() => setMegaOpen(false)}
+                          className="group mt-6 inline-flex items-center gap-1.5 rounded-sm text-[13px] font-semibold text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
+                        >
+                          View all {activeGroup.title.toLowerCase()}
+                          <ArrowRight
+                            className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                            aria-hidden="true"
+                          />
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
 
-                {/* RIGHT (~25%) — top brands */}
-                <div className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-5">
-                  <p className="mb-4 text-[10px] font-semibold uppercase tracking-wider text-slate-300">
+                {/* BOTTOM — top brands strip */}
+                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-slate-200 pt-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                     Top brands
                   </p>
-                  <ul className="space-y-1">
-                    {topBrands.map((brand) => (
-                      <li key={brand}>
-                        <Link
-                          to={`/brands/${slugify(brand)}`}
-                          onClick={() => setMegaOpen(false)}
-                          className="block rounded-sm py-1 text-base font-medium text-white outline-none transition-colors hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
-                        >
-                          {brand}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-5 border-t border-white/[0.08] pt-4">
+                  {topBrands.map((brand) => (
                     <Link
-                      to="/brands"
+                      key={brand}
+                      to={`/brands/${slugify(brand)}`}
                       onClick={() => setMegaOpen(false)}
-                      className="group inline-flex items-center gap-1.5 rounded-sm text-[13px] font-semibold text-white outline-none transition-colors hover:text-accent-400 hover:underline focus-visible:ring-2 focus-visible:ring-paper/60"
+                      className="rounded-sm text-sm font-medium text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
                     >
-                      View all brands
-                      <ArrowRight
-                        className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                        aria-hidden="true"
-                      />
+                      {brand}
                     </Link>
-                  </div>
+                  ))}
+                  <Link
+                    to="/brands"
+                    onClick={() => setMegaOpen(false)}
+                    className="group inline-flex items-center gap-1 rounded-sm text-sm font-semibold text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
+                  >
+                    View all brands
+                    <ArrowRight
+                      className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </Link>
                 </div>
-              </div>
               </div>
               {panelCanScroll && (
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center pb-3 pt-6 bg-gradient-to-t from-surface to-transparent"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center rounded-b-2xl bg-gradient-to-t from-white pb-3 pt-6 to-transparent"
                 >
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-xs font-medium text-white">
                     Scroll for more
                     <ChevronDown className="size-3.5" aria-hidden="true" />
                   </span>

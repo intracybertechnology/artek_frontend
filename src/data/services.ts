@@ -1686,7 +1686,7 @@ export const services: readonly Service[] = [
     image: "/images/services/elv-access-control.jpg",
     imageAlt: "Access control and ELV systems installed for a business in Dubai",
     icon: "shield",
-    context: "standalone",
+    context: "core",
     seoTargetPhrase: "Access Control Systems UAE",
     seo: {
       title: "ELV, AV & Access Control Solutions in UAE | ARTEK Computers",

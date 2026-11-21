@@ -57,7 +57,6 @@ export const BRAND_LOGO_FILES: Readonly<Record<string, string>> = {
   "toten": "toten.png",
   "tp-link": "tp-link.webp",
   "ubiquiti": "ubiquiti.jpg",
-  "ugreen": "ugreen.png",
   "unv": "unv.png",
   "wd": "wd.png",
   "yeastar": "yeastar.webp",

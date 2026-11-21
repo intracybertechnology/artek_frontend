@@ -1082,4 +1082,24 @@ export const productContent: Record<string, ProductContent> = {
       },
     ],
   },
+  "hard-disk": {
+    whatIs:
+      "A hard disk is the device inside computers and recorders that stores files when the power is off. Systems boot from it, documents and footage collect on it, and when a machine needs more room for its data, another disk is the usual answer.",
+    whereUsed:
+      "Hard disks sit wherever data must be kept: inside office desktops and workstations, in servers and network storage boxes on the LAN, and in the recorders behind CCTV systems across the UAE. They also serve as the destination for backups of files that a business cannot lose.",
+    howWeHelp:
+      "Artek Computers LLC supplies hard disks in Dubai and the UAE. Tell us the quantity, what they will go into and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Hard Disk?",
+        answer:
+          "Send us an enquiry or call the office. Tell us the quantity and your requirements, and we will send you a quote.",
+      },
+      {
+        question: "Which hard disk should I choose?",
+        answer:
+          "Tell us how and where it will be used, and the equipment it goes into. Our team will help you choose.",
+      },
+    ],
+  },
 };

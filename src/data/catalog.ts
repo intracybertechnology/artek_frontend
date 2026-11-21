@@ -144,11 +144,11 @@ export const productGroups: readonly ProductGroup[] = [
   {
     slug: "computer-peripherals",
     title: "Computer peripherals",
-    intro: "Mice, keyboards, webcams and printers for offices and meeting rooms.",
+    intro: "Hard disks, mice, keyboards, webcams and printers for offices and meeting rooms.",
     image: "/images/products/computers.webp",
     relatedSolution: "computer-systems-dubai",
     brandGroupTitle: "Computers, storage and peripherals",
-    items: ["Mouse", "Keyboard", "Webcam", "Conference Webcam", "Printer"],
+    items: ["Mouse", "Keyboard", "Webcam", "Conference Webcam", "Printer", "Hard Disk"],
   },
 ];
 
@@ -299,6 +299,7 @@ export const productDetails: Record<string, ProductDetail> = {
   "webcam": { description: "A webcam sits on a desk or monitor for video calls, online meetings and interviews. It is now a standard part of every office workstation. Artek Computers LLC supplies webcams in Dubai and the UAE — request a quote and tell us how many desks you need covered." },
   "conference-webcam": { description: "A conference webcam covers the whole meeting room so remote participants can see everyone at the table. It is used in meeting rooms and boardrooms of all sizes. Artek Computers LLC supplies conference webcams in Dubai and the UAE; contact our team for a quote." },
   "printer": { description: "A printer produces documents at the desk or in the office print area. It is used across businesses for invoices, reports and everyday paperwork. Artek Computers LLC supplies printers in Dubai and the UAE — request a quote and we will match one to your office." },
+  "hard-disk": { description: "A hard disk is the storage device that holds files on computers, servers, network storage and CCTV recorders. Businesses use it to store documents and footage and to keep backups of important data. Artek Computers LLC supplies hard disks in Dubai and the UAE — request a quote." },
 };
 
 /** Resolve a product page (/products/<group>/<product>) to its group, display name and details. */
@@ -373,7 +374,7 @@ export const brandDetails: Record<string, BrandDetail> = {
   synology: { description: "" },
   qnap: { description: "" },
   wd: { description: "" },
-  seagate: { description: "", products: [] },
+  "seagate": { description: "", products: ["Hard Disk"] },
   epson: { description: "", products: ["Printer"] },
   brother: { description: "" },
   logitech: { description: "", products: ["Mouse", "Keyboard", "Webcam", "Conference Webcam"] },

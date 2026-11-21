@@ -82,8 +82,11 @@ export function MobileMenu() {
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
 
         {/* Own scroll container: sheet below the 4rem header (pt-2 + h-14),
-            dvh height so mobile browser chrome never hides the content. */}
-        <Dialog.Content className="fixed inset-x-0 top-16 z-50 h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-slate-200 bg-white pb-24 shadow-xl outline-none">
+            dvh height so mobile browser chrome never hides the content.
+            data-lenis-prevent: while the Radix body lock stops Lenis, a stopped
+            Lenis still swallows wheel events — this lets the sheet scroll
+            (same escape hatch as the desktop mega-menu panel). */}
+        <Dialog.Content data-lenis-prevent className="fixed inset-x-0 top-16 z-50 h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-slate-200 bg-white pb-24 shadow-xl outline-none">
 
           {/* Header row */}
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">

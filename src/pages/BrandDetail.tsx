@@ -3,7 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { Camera } from "lucide-react";
 import { DetailPageLayout } from "@/components/common/DetailPageLayout";
 import { BrandLogo } from "@/components/common/BrandLogo";
+import { FAQAccordion } from "@/components/common/FAQAccordion";
 import { brandLogo, getBrand, getBrandProducts, slugify, type BrandModel } from "@/data/catalog";
+import { brandContent } from "@/data/brandContent";
 import { company } from "@/data/company";
 import NotFound from "@/pages/NotFound";
 
@@ -54,7 +56,10 @@ export default function BrandDetail() {
 
   if (!brand || !name || !group) return <NotFound />;
 
-  const intro = detail?.description
+  const content = brandContent[slugify(name ?? "")];
+  /** Hero: the brand's intro when it has content, else the page description, else the generic line. */
+  const intro = content?.intro
+    || detail?.description
     || `Browse the ${name} products we supply in Dubai and request a quote.`;
   const products = getBrandProducts(brandSlug ?? "");
   const otherBrands = group.brands.filter((b) => b !== name);
@@ -152,6 +157,26 @@ export default function BrandDetail() {
           </div>
         </div>
       )}
+
+      {/* ── How we can help + FAQ (only for brands with brandContent entries) ── */}
+      {content && (
+        <>
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold text-ink">How we can help</h2>
+            <p className="mt-3 text-base leading-relaxed text-slate-300">{content.howWeHelp}</p>
+          </section>
+
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold text-ink">Frequently asked questions</h2>
+            <FAQAccordion faqs={content.faqs} className="mt-6" />
+          </section>
+        </>
+      )}
+
+      {/* ── Trademark note (every brand page) ─────────────────────── */}
+      <p className="mt-10 border-t border-slate-200 pt-4 text-sm text-slate-500">
+        {name} is a trademark of its respective owner. Artek Computers LLC is a reseller of {name} products.
+      </p>
     </DetailPageLayout>
   );
 }

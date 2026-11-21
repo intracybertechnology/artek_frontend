@@ -840,4 +840,246 @@ export const productContent: Record<string, ProductContent> = {
       },
     ],
   },
+  "desktops": {
+    plural: true,
+    whatIs:
+      "Desktops are the tower-and-screen computers that sit on or under a desk as a fixed workstation. The separate box holds the working parts while the screen, keyboard and mouse attach outside, giving offices a settled machine for everyday work that stays where it is put.",
+    whereUsed:
+      "These machines run at desks in every kind of UAE workplace: open-plan offices, reception counters, accounts departments, design studios and school computer rooms. Staff use them for documents, email, business applications and shared files, with each machine assigned to one desk.",
+    howWeHelp:
+      "Artek Computers LLC supplies desktop computers in Dubai and the UAE. Tell us how many workstations you need, the work they will do and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Desktops?",
+        answer:
+          "Send an enquiry or call our office. Tell us the quantity and your requirements, and we will send you a quote.",
+      },
+      {
+        question: "Which desktop computer should I choose?",
+        answer:
+          "Tell us how and where it will be used, and the software it runs. Our team will help you choose.",
+      },
+    ],
+  },
+  "gaming-pc": {
+    whatIs:
+      "A gaming PC is a desktop computer put together with demanding games and graphics-heavy work in mind. The same build also suits design, editing and rendering tasks, so many buyers use one machine for evening games and daytime creative work alike.",
+    whereUsed:
+      "These machines sit in homes and dorms across Dubai and in studios doing content work. Owners run modern games after hours, stream to an audience, or edit video and renders during the day — one box doing duty as both entertainment and a working tool.",
+    howWeHelp:
+      "Artek Computers LLC supplies gaming PCs in Dubai and the UAE. Tell us the quantity, the games or software you run and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Gaming PC?",
+        answer:
+          "Write to us by enquiry or call the office. Share the quantity and your requirements, and we will quote.",
+      },
+      {
+        question: "Which gaming PC should I choose?",
+        answer:
+          "Tell us how you will use it — the games, the streaming, the creative work. Our team will help you pick.",
+      },
+    ],
+  },
+  "laptops": {
+    plural: true,
+    whatIs:
+      "Laptops are the portable computers that fold screen to keyboard and travel in a bag. Everything a workstation needs is packed into the one unit, so staff can carry their machine between office, home and site, working wherever the day takes them.",
+    whereUsed:
+      "They ride in bags across Dubai and beyond: to meeting rooms and client sites, on flights, to home offices and hot desks. Companies issue them to field and remote staff, sales teams carry them on visits, and they suit anyone whose work moves with them.",
+    howWeHelp:
+      "Artek Computers LLC supplies laptops in Dubai and the UAE. Tell us how many you need, who will use them and for what, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Laptops?",
+        answer:
+          "Enquire online or by phone. Let us know the quantity and your requirements, and we will get back to you with a quote.",
+      },
+      {
+        question: "Which laptop should I choose?",
+        answer:
+          "Tell us how and where it will be used — desk, travel or home. Our team will help you choose.",
+      },
+    ],
+  },
+  "mouse": {
+    whatIs:
+      "A mouse is the hand-held pointer that sits beside a keyboard and moves the cursor on screen. Rolling it across the pad shifts the pointer; its buttons select, open and drag; and the wheel scrolls through pages — the everyday tool for steering desktop work.",
+    whereUsed:
+      "Mice sit at every workstation in UAE offices, from open-plan desks to reception and trading rooms. Staff pair them with docked laptops too, and home offices keep one spare; they also serve point-of-sale stations in shops and front desks in clinics.",
+    howWeHelp:
+      "Artek Computers LLC supplies computer mice in Dubai and the UAE. Tell us the quantity, how they will be used and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Mouse?",
+        answer:
+          "Send us an enquiry or call with the quantity and your requirements. We will come back with a quote.",
+      },
+      {
+        question: "Which mouse should I choose?",
+        answer:
+          "Tell us how and where it will be used — desk work, travel or presentations. Our team will suggest a fitting option.",
+      },
+    ],
+  },
+  "keyboard": {
+    whatIs:
+      "A keyboard is the typing device that turns presses of its key rows into text and commands on the computer. Letters, numbers and function keys sit in the familiar layout, letting staff write emails, fill forms and drive the software that runs their work.",
+    whereUsed:
+      "Keyboards sit in front of every screen in Dubai offices, at reception desks, in server nooks and at home workstations. They pair with desktops and docked laptops alike, and spare units wait in IT cupboards for quick swaps when a desk's typing fails.",
+    howWeHelp:
+      "Artek Computers LLC supplies keyboards in Dubai and the UAE. Tell us the quantity, the kind of desks they serve and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Keyboard?",
+        answer:
+          "Reach us by enquiry form or phone call with the quantity and your requirements, and we will quote.",
+      },
+      {
+        question: "Which keyboard should I choose?",
+        answer:
+          "Tell us how and where it will be used, and by whom. Our team will help you choose a suitable keyboard.",
+      },
+    ],
+  },
+  "webcam": {
+    whatIs:
+      "A webcam is a small camera that clips to a monitor or stands on the desk and feeds live pictures to the computer. Calls, recorded clips and online meetings all draw on it, with its built-in microphone often carrying the voice alongside the video.",
+    whereUsed:
+      "Webcams perch on monitors at desks and meeting-room screens across Dubai now that remote meetings are part of ordinary work. They serve home offices, reception points, training rooms and interview desks, joining whoever sits in front of them to the call.",
+    howWeHelp:
+      "Artek Computers LLC supplies webcams in Dubai and the UAE. Tell us the quantity, the desks or rooms they serve and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Webcam?",
+        answer:
+          "Send an enquiry or call the office. Tell us the quantity and your requirements, and we will send a quote.",
+      },
+      {
+        question: "Which webcam should I choose?",
+        answer:
+          "Tell us where it will be used — one desk or a meeting room. Our team will help you pick.",
+      },
+    ],
+  },
+  "conference-webcam": {
+    whatIs:
+      "A conference webcam is the camera a meeting room uses so far-end participants can see everyone seated around the table. It mounts above or below the shared screen, faces the whole room, and sends its picture to the meeting platform running on the room system.",
+    whereUsed:
+      "These cameras hang in the meeting rooms and boardrooms of Dubai offices, in training rooms and huddle spaces, and in clinics consulting remotely. Any room where several people must appear on one call at once puts one at the screen.",
+    howWeHelp:
+      "Artek Computers LLC supplies conference webcams in Dubai and the UAE. Tell us the room size they will serve, the quantity and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Conference Webcam?",
+        answer:
+          "Submit an enquiry or call our team. Tell us the quantity and your requirements, and we will send pricing.",
+      },
+      {
+        question: "Which conference webcam should I choose?",
+        answer:
+          "Tell us the room it will serve and how meetings run there. Our team will suggest a suitable camera.",
+      },
+    ],
+  },
+  "printer": {
+    whatIs:
+      "A printer turns files on the computer into paper at the desk or in the office print corner. Documents, invoices, reports and labels come out on demand, with most office machines also copying and scanning, making one device the paper hub of the floor.",
+    whereUsed:
+      "Printers sit in Dubai offices beside desks and in shared print areas, at clinic receptions printing patient material, in shops issuing receipts and in schools preparing handouts. Workgroups share one machine; managers keep another close; some desks have their own.",
+    howWeHelp:
+      "Artek Computers LLC supplies printers in Dubai and the UAE. Tell us the quantity, the printing your team does and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Printer?",
+        answer:
+          "Call us or send an enquiry. Let us know the quantity and your requirements, and we will reply with a quote.",
+      },
+      {
+        question: "Which printer should I choose?",
+        answer:
+          "Tell us how and where it will be used, and what gets printed. Our team will help you choose.",
+      },
+    ],
+  },
+  "ip-camera": {
+    whatIs:
+      "An IP camera is a surveillance camera that connects over the computer network rather than by a dedicated video cable. Once on the LAN it sends its picture to a recorder or viewing software, and it becomes another addressable device the security team can reach from anywhere on site.",
+    whereUsed:
+      "These cameras watch entrances and lobbies, corridors and stairwells, car parks, yards, shop floors and warehouses across Dubai and the UAE. They hang from ceilings or mount on walls and poles, each one reporting back over the network to the recorder.",
+    howWeHelp:
+      "Artek Computers LLC supplies IP cameras in Dubai and the UAE. Tell us the areas you want covered, the quantity and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for IP Camera?",
+        answer:
+          "Send an enquiry or call with the quantity and your requirements. We will come back with a quote.",
+      },
+      {
+        question: "Which IP camera should I choose?",
+        answer:
+          "Tell us where each camera will sit and what it must watch. Our team will help you choose.",
+      },
+    ],
+  },
+  "dome-camera": {
+    whatIs:
+      "A dome camera is a surveillance camera housed in a small rounded ceiling bubble. The covering hides which way the lens points, the low shape tucks close to the ceiling, and it connects over the network to a recorder or viewing software.",
+    whereUsed:
+      "Domes sit above reception desks and shop doorways, in hotel lobbies and clinic waiting areas, along office corridors and above supermarket aisles across the UAE — anywhere indoors where a camera should blend in rather than stand out on a bracket.",
+    howWeHelp:
+      "Artek Computers LLC supplies dome cameras in Dubai and the UAE. Tell us the indoor areas to cover, the quantity and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Dome Camera?",
+        answer:
+          "Use the enquiry form or call our office with the quantity and your requirements, and we will share a quote.",
+      },
+      {
+        question: "Which dome camera should I choose?",
+        answer:
+          "Tell us the room or corridor it will watch and the ceiling it mounts on. Our team will help you choose.",
+      },
+    ],
+  },
+  "bullet-camera": {
+    whatIs:
+      "A bullet camera is a surveillance camera shaped like a slim cylinder on a mounting arm, clearly visible once fitted. That presence is part of its job at doors and boundaries, and it links back over the network to the recorder or viewing software.",
+    whereUsed:
+      "Bullet cameras guard building entrances and exits, perimeter walls and fences, car park lanes, loading bays and site gates across Dubai and the UAE. The wall or pole bracket aims them along the approach they watch, out in the open where people pass.",
+    howWeHelp:
+      "Artek Computers LLC supplies bullet cameras in Dubai and the UAE. Tell us the outdoor points to cover, the quantity and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Bullet Camera?",
+        answer:
+          "Send us an enquiry or call the office with the quantity and your requirements. We will reply with a quote.",
+      },
+      {
+        question: "Which bullet camera should I choose?",
+        answer:
+          "Tell us where it will hang and what approach it must watch. Our team will help you pick.",
+      },
+    ],
+  },
+  "ptz-camera": {
+    whatIs:
+      "A PTZ camera is a surveillance camera an operator can steer: pan across a scene, tilt up and down, and zoom in on points of interest — the letters of its name spell those three moves. It connects over the network like other cameras and can be driven live or set to follow preset tours.",
+    whereUsed:
+      "PTZ units watch wide, open ground: warehouse floors, stadium and yard areas, hotel forecourts, car parks and compound perimeters across the UAE. From a high mount they follow moving activity, steering to wherever it goes under an operator's hand or between saved positions.",
+    howWeHelp:
+      "Artek Computers LLC supplies PTZ cameras in Dubai and the UAE. Tell us the open areas they will watch, the quantity and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for PTZ Camera?",
+        answer:
+          "Enquire by form or phone. Tell us the quantity and your requirements, and we will get back to you with a quote.",
+      },
+      {
+        question: "Which PTZ camera should I choose?",
+        answer:
+          "Tell us the area it will watch and how it will be operated. Our team will help you choose.",
+      },
+    ],
+  },
 };

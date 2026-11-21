@@ -6,6 +6,7 @@ import { getIndustryBySlug, industries } from "./industries.ts";
 import { homeFaqs } from "./faqs.ts";
 import { getPostBySlug, publishedPosts } from "./blog.ts";
 import { getAuthor } from "./authors.ts";
+import { productContent } from "./productContent.ts";
 import { brandGroups, brandLogo, getBrand, getBrandProducts, getProductGroup, productDetails, productGroups, slugify } from "./catalog.ts";
 
 /**
@@ -405,6 +406,9 @@ function productSeo(path: string): PageSeo | undefined {
         isPartOf: { "@type": "WebSite", name: company.legalName, url: company.siteUrl },
       },
     ];
+
+    const content = productContent[segments[1]];
+    if (content) jsonLd.push(faqJsonLd(content.faqs));
 
     return {
       path: canonical(path),

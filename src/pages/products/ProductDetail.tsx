@@ -3,7 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { Image as ImageIcon } from "lucide-react";
 import { DetailPageLayout } from "@/components/common/DetailPageLayout";
 import { BrandLogo } from "@/components/common/BrandLogo";
-import { brandGroups, getProduct, slugify } from "@/data/catalog";
+import { FAQAccordion } from "@/components/common/FAQAccordion";
+import { brandDetails, brandGroups, getProduct, slugify } from "@/data/catalog";
+import { productContent } from "@/data/productContent";
 import { company } from "@/data/company";
 import NotFound from "@/pages/NotFound";
 
@@ -22,6 +24,13 @@ export default function ProductDetail() {
     ?? `${name} from our ${group.title} range, supplied and supported by Artek Computers LLC in Dubai.`;
   const brandGroup = brandGroups.find((b) => b.title === group.brandGroupTitle);
   const others = group.items.filter((item) => item !== name);
+  const content = productContent[slugify(name)];
+  /** Reverse lookup: brands whose brandDetails.products list this product. */
+  const contentBrands = content
+    ? brandGroups.flatMap((bg) =>
+        bg.brands.filter((brand) => brandDetails[slugify(brand)]?.products?.includes(name)),
+      )
+    : [];
 
   return (
     <DetailPageLayout
@@ -75,6 +84,52 @@ export default function ProductDetail() {
 
       {/* ── Description ──────────────────────────────────────────── */}
       <p className="mt-6 text-pretty text-base text-slate-300 sm:text-lg">{description}</p>
+
+      {/* ── Article sections (only for products with productContent entries) ── */}
+      {content && (
+        <>
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold text-ink">What is {name}?</h2>
+            <p className="mt-3 text-base leading-relaxed text-slate-300">{content.whatIs}</p>
+          </section>
+
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold text-ink">Where is {name} used?</h2>
+            <p className="mt-3 text-base leading-relaxed text-slate-300">{content.whereUsed}</p>
+          </section>
+
+          {contentBrands.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-2xl font-bold text-ink">Brands we supply</h2>
+              <p className="mt-3 text-base leading-relaxed text-slate-300">
+                {name} from brands including{" "}
+                {contentBrands.map((brand, i) => (
+                  <span key={brand}>
+                    {i > 0 && (i === contentBrands.length - 1 ? " and " : ", ")}
+                    <Link
+                      to={`/brands/${slugify(brand)}`}
+                      className="font-medium text-slate-200 underline-offset-4 transition-colors hover:text-accent-600 hover:underline"
+                    >
+                      {brand}
+                    </Link>
+                  </span>
+                ))}
+                .
+              </p>
+            </section>
+          )}
+
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold text-ink">How we can help</h2>
+            <p className="mt-3 text-base leading-relaxed text-slate-300">{content.howWeHelp}</p>
+          </section>
+
+          <section className="mt-10">
+            <h2 className="text-2xl font-bold text-ink">Frequently asked questions</h2>
+            <FAQAccordion faqs={content.faqs} className="mt-6" />
+          </section>
+        </>
+      )}
 
       {/* ── Brands we supply in this area ────────────────────────── */}
       {brandGroup && (

@@ -620,4 +620,224 @@ export const productContent: Record<string, ProductContent> = {
       },
     ],
   },
+  "audio-cable": {
+    whatIs:
+      "Audio cable carries sound signals between equipment — from microphones and instruments to mixers, amplifiers and speakers. Inside its jacket are conductors arranged to keep the signal clean along the run, with shielding against electrical noise picked up in busy equipment rooms.",
+    whereUsed:
+      "This wiring runs through venues and buildings across the UAE: meeting rooms with speech systems, halls and mosques with public address, gyms and cafés with background music, and stages needing microphone drops back to a mixing desk, and announcement systems in schools and clinics.",
+    howWeHelp:
+      "Artek Computers LLC supplies audio cable in Dubai and the UAE. Tell us the runs you are wiring, the total length needed and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Audio Cable?",
+        answer:
+          "Send an enquiry or call the office. Let us know the quantity and your site details, and we will send pricing.",
+      },
+      {
+        question: "Which audio cable should I choose?",
+        answer:
+          "Tell us the equipment it connects, the run lengths and the room it serves. Our team will help you pick.",
+      },
+    ],
+  },
+  "cctv-cable": {
+    whatIs:
+      "CCTV cable is the wiring that links surveillance cameras to their recorders and power. It combines the signal path and the power feed in one sheath on many installs, so a single pull between camera and head end carries both the picture and the current that runs the camera.",
+    whereUsed:
+      "Installers pull this cable on camera jobs throughout Dubai and the UAE — up walls and masts, across ceilings, through car parks and along fences. It feeds dome and bullet cameras at gates, corridors, yards and lobbies, bringing each view back to the recorder.",
+    howWeHelp:
+      "Artek Computers LLC supplies CCTV cable in Dubai and the UAE. Tell us the number of cameras, the lengths to cover and the site details, and we will come back with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for CCTV Cable?",
+        answer:
+          "Use our enquiry form or call with the quantity and your site details. We will reply with a quote.",
+      },
+      {
+        question: "Which CCTV cable should I choose?",
+        answer:
+          "Describe the site, the distances involved and the cameras it will connect. Our team will help you choose.",
+      },
+    ],
+  },
+  "control-cable": {
+    whatIs:
+      "Control cable connects the devices that operate machines and building systems — sensors, buttons, drives and actuators — back to the panels that command them. Its conductors travel together in one outer cover, carrying the small signalling currents that start, stop and adjust equipment.",
+    whereUsed:
+      "This cable threads through plants and properties across the UAE: between control panels and motors on factory floors, from pump rooms to roof plant, inside automation skids, and out to gates and barriers that open on command, and to lifts and shutters in busy buildings.",
+    howWeHelp:
+      "Artek Computers LLC supplies control cable in Dubai and the UAE. Tell us the quantity, the route lengths and the site details, and we will answer with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Control Cable?",
+        answer:
+          "Enquire by form or phone call. Share the quantity and your site details, and we will quote for the job.",
+      },
+      {
+        question: "Which control cable should I choose?",
+        answer:
+          "Tell us the equipment it connects, the run lengths and the panel it lands on. Our team will suggest a suitable cable.",
+      },
+    ],
+  },
+  "eib-bus-cable": {
+    whatIs:
+      "EIB bus cable is the wiring that links the devices of a building automation system together. Control panels, switches and sensors exchange their messages over these shared runs, letting one installation coordinate lighting, shading and climate across a floor or a whole building.",
+    whereUsed:
+      "This cable is pulled during fit-outs and villa builds across the UAE, running beside mains wiring to backboxes, ceiling sensors and distribution cupboards. It appears in offices, hotels and apartment towers wherever lighting and climate are controlled from one system.",
+    howWeHelp:
+      "Artek Computers LLC supplies EIB bus cable in Dubai and the UAE. Tell us the quantity, the lengths and the site details, and our team will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for EIB BUS Cable?",
+        answer:
+          "Send an enquiry or call us with the quantity and your site details. We will get back to you with a quote.",
+      },
+      {
+        question: "Which EIB bus cable should I choose?",
+        answer:
+          "Tell us the site, the run lengths and the automation equipment it connects. Our team will help you choose.",
+      },
+    ],
+  },
+  "fire-alarm-cable": {
+    whatIs:
+      "Fire alarm cable is the dedicated wiring that joins detectors, call points, sounders and control panels in a fire detection system. It carries the signals and power that keep those devices talking to the panel, running through the building on routes planned as part of the system design.",
+    whereUsed:
+      "This cable is installed during new builds and fit-outs across the UAE, linking ceiling detectors on each floor, wall call points at exits and sounders throughout corridors back to the panel, usually in risers and ceiling voids, and to interfaces that pass alarms onward.",
+    howWeHelp:
+      "Artek Computers LLC supplies fire alarm cable in Dubai and the UAE. Tell us the project scope, the lengths needed and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Fire Alarm Cable?",
+        answer:
+          "Write to us by enquiry or call the office with the quantity and your site details, and we will send a quote.",
+      },
+      {
+        question: "Which fire alarm cable should I choose?",
+        answer:
+          "Tell us the site, the run lengths and the devices it will connect. Our team will help you choose.",
+      },
+    ],
+  },
+  "hdmi-cable": {
+    whatIs:
+      "An HDMI cable carries picture and sound together between audio-visual equipment — computers to screens, players to displays, laptops to projectors. One connector at each end handles the whole link, which is why it has become the everyday cord behind office and home displays.",
+    whereUsed:
+      "These cords link screens in Dubai offices, meeting rooms and reception displays, video walls in retail, projectors in classrooms and training rooms, and digital signage in lifts and lobbies. Anywhere a screen shows content from a separate source, one is usually in the mix.",
+    howWeHelp:
+      "Artek Computers LLC supplies HDMI cables in Dubai and the UAE. Tell us how many you need, the lengths and where they will run, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for HDMI Cable?",
+        answer:
+          "Send us an enquiry or call with the quantity and your site details. We will share a quote.",
+      },
+      {
+        question: "Which HDMI cable should I choose?",
+        answer:
+          "Tell us the equipment at each end and the distance between them. Our team will point you to a suitable cord.",
+      },
+    ],
+  },
+  "instrumentation-cable": {
+    whatIs:
+      "Instrumentation cable connects measuring and control devices — the instruments that read levels, flows and conditions — to the systems that record and act on them. It is laid as the signal wiring of process and utility installations, linking field devices back to control rooms.",
+    whereUsed:
+      "On UAE industrial and utility sites this cable runs from field instruments at tanks, pipelines and plant skids to marshalling cabinets and control rooms. It is installed in energy, water and processing plants wherever readings must travel from the point of measurement to the people watching them.",
+    howWeHelp:
+      "Artek Computers LLC supplies instrumentation cable in Dubai and the UAE. Tell us the quantity, the route lengths and the site details, and we will send you a clear, itemised quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Instrumentation Cable?",
+        answer:
+          "Reach our team by enquiry or phone. Give us the quantity and your site details, and we will quote.",
+      },
+      {
+        question: "Which instrumentation cable should I choose?",
+        answer:
+          "Describe the site, the run lengths and the instruments it connects. Our team will help you choose.",
+      },
+    ],
+  },
+  "lift-cable": {
+    whatIs:
+      "Lift cable serves the moving parts of an elevator, travelling with the car as it rises and falls. It feeds the lighting, controls and fittings inside the cabin and connects them to the equipment at the shaft top and landings, flexing through every trip.",
+    whereUsed:
+      "This wiring goes into elevator installations and modernisation projects in towers across Dubai and the UAE, running up the shaft alongside the car. It is supplied to lift contractors fitting out new buildings and refurbishing cabins in older ones, from basements to rooftops.",
+    howWeHelp:
+      "Artek Computers LLC supplies lift cable in Dubai and the UAE. Tell us the project, the lengths involved and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Lift Cable?",
+        answer:
+          "Send an enquiry or call with the quantity and your site details, and we will come back with a quote.",
+      },
+      {
+        question: "Which lift cable should I choose?",
+        answer:
+          "Tell us the site, the shaft details and the equipment it connects. Our team will help you choose.",
+      },
+    ],
+  },
+  "rg59-cable": {
+    whatIs:
+      "RG59 is a coaxial cable — a single central conductor wrapped in shielding — long used for video feeds. Signals travel along its core with the shield keeping interference out, and screw or twist connectors at each end join it to the equipment.",
+    whereUsed:
+      "In Dubai and the UAE this cable still serves analogue camera systems in shops, warehouses and residential blocks, carrying pictures from wall and ceiling cameras to recorders and monitors in the back room or guard desk, alongside basic video and aerial-style feeds.",
+    howWeHelp:
+      "Artek Computers LLC supplies RG59 cable in Dubai and the UAE. Tell us the camera count, the lengths needed and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for RG59 Cable?",
+        answer:
+          "Call the office or send an enquiry with the quantity and your site details. We will reply with pricing.",
+      },
+      {
+        question: "Which RG59 cable should I choose?",
+        answer:
+          "Tell us the equipment it connects, the lengths and the site. Our team will guide you to a suitable pick.",
+      },
+    ],
+  },
+  "rg6-cable": {
+    whatIs:
+      "RG6 is a coaxial cable built for TV and satellite distribution. A centre conductor, dielectric and outer shielding carry radio-frequency signals from aerials, dishes and head-ends to receivers, feeding channels to set-top boxes, tuners and distribution equipment along building cable networks.",
+    whereUsed:
+      "This cable runs in villas, hotels and apartment buildings across the UAE, from rooftop dishes and antennas down risers to floor outlets behind televisions. It also links satellite heads to splitters and amplifiers in shared aerial systems serving many units at once.",
+    howWeHelp:
+      "Artek Computers LLC supplies RG6 cable in Dubai and the UAE. Tell us the outlets you are feeding, the total length and the site details, and we will come back with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for RG6 Cable?",
+        answer:
+          "Submit an enquiry or call our team with the quantity and your site details, and we will send you a quote.",
+      },
+      {
+        question: "Which RG6 cable should I choose?",
+        answer:
+          "Describe the site, the distances and the equipment it connects. Our team will help you choose a suitable cable.",
+      },
+    ],
+  },
+  "speaker-cable": {
+    whatIs:
+      "Speaker cable carries the output of an amplifier to the loudspeakers connected to it. Just conductors and insulation, its job is to pass audio power along the run so drivers in ceiling, wall and cabinet speakers can reproduce the sound sent to them.",
+    whereUsed:
+      "This wiring feeds sound systems throughout Dubai: ceiling speakers in offices, restaurants and clinics, wall units in corridors and prayer rooms, and floor-standing cabinets in halls and ballrooms, all looping back to amplifiers in a rack or plant cupboard or behind the stage.",
+    howWeHelp:
+      "Artek Computers LLC supplies speaker cable in Dubai and the UAE. Tell us the number of speakers, the lengths and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Speaker Cable?",
+        answer:
+          "Send an enquiry or give our office a call with the quantity and your site details. We will quote for the supply.",
+      },
+      {
+        question: "Which speaker cable should I choose?",
+        answer:
+          "Tell us the amplifiers and speakers involved, the run lengths and the room. Our team will help you choose.",
+      },
+    ],
+  },
 };

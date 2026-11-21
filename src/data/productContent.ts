@@ -418,4 +418,206 @@ export const productContent: Record<string, ProductContent> = {
       },
     ],
   },
+  "network-cabinet": {
+    whatIs:
+      "A network cabinet is an enclosed rack that holds network and IT equipment in one place. Shelves, rails and cable management inside keep everything arranged, lockable doors control access, and air moves through the enclosure so equipment does not overheat.",
+    whereUsed:
+      "These cabinets stand in office IT rooms, comms cupboards, reception areas and small data spaces across Dubai. They house switches, patch panels, servers and other gear, keeping cabling off the floor and giving technicians a single, tidy place to work on the network.",
+    howWeHelp:
+      "Artek Computers LLC supplies network cabinets in Dubai and the UAE. Tell us what equipment each cabinet will hold, how many you need and the room it stands in, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Network Cabinet?",
+        answer:
+          "Submit an enquiry or call our office. Share the quantity and your site details, and we will send you a quote.",
+      },
+      {
+        question: "Which network cabinet should I choose?",
+        answer:
+          "Describe the room it will sit in and the equipment it will serve. Our team will help you pick a suitable cabinet.",
+      },
+    ],
+  },
+  "patch-free-cabinet": {
+    whatIs:
+      "A patch free cabinet is an equipment housing used in ELV and low-voltage installations. It gives installers a plain, enclosed space to mount devices and route their wiring, and it keeps loose equipment organised and out of sight once a system is commissioned.",
+    whereUsed:
+      "Contractors fit these housings wherever ELV systems come together: alongside entry panels, in plant and riser rooms, and in service cupboards of buildings across the UAE. They collect the mountable parts of security, intercom and building-control installations in one tidy spot.",
+    howWeHelp:
+      "Artek Computers LLC supplies patch free cabinets in Dubai and the UAE. Tell us the quantity, what will be mounted inside and the site details, and we will come back with clear pricing.",
+    faqs: [
+      {
+        question: "How do I get a quote for Patch Free Cabinet?",
+        answer:
+          "Send an enquiry or give us a call with the quantity and your site details. We will reply with a quote.",
+      },
+      {
+        question: "Which patch free cabinet should I choose?",
+        answer:
+          "Tell us the site and the equipment it will serve. Our team will help you choose a suitable housing.",
+      },
+    ],
+  },
+  "pdu": {
+    whatIs:
+      "A PDU is a power distribution unit — a bar or block of sockets mounted inside a rack that feeds the equipment stacked there. Plugged into the room's supply, it spreads that power across servers, switches and other devices so each one draws from a single organised source.",
+    whereUsed:
+      "PDUs live in every populated rack: in office comms rooms, data rooms and site cabinets around the UAE. They sit at the back or front of the frame, taking in one feed and handing it out to the servers, switches and accessories mounted alongside.",
+    howWeHelp:
+      "Artek Computers LLC supplies PDUs in Dubai and the UAE. Tell us how many racks you are fitting, the gear each will carry and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for PDU?",
+        answer:
+          "Write to us by enquiry or call the office with the quantity and your site details, and we will quote for you.",
+      },
+      {
+        question: "Which PDU should I choose?",
+        answer:
+          "Tell us the rack it will live in and the equipment it will feed. Our team will guide you to a suitable unit.",
+      },
+    ],
+  },
+  "ups": {
+    whatIs:
+      "A UPS is an uninterruptible power supply — a box that sits between the mains and your IT equipment. It passes power through in normal running and switches to its internal batteries when the incoming supply fails or dips, bridging the gap until power returns or equipment shuts down safely.",
+    whereUsed:
+      "UPS units sit beside servers, network racks, CCTV recorders and tills wherever work must continue through a power cut. In Dubai they are found in data rooms, back offices, guard houses and retail backrooms, quietly feeding the equipment plugged into them.",
+    howWeHelp:
+      "Artek Computers LLC supplies UPS units in Dubai and the UAE. Tell us the equipment each unit will support, how many you need and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for UPS?",
+        answer:
+          "Send us an enquiry or call with the quantity and your site details. We will come back with a quote.",
+      },
+      {
+        question: "Which UPS should I choose?",
+        answer:
+          "Tell us the site and the equipment it will serve. Our team will help you choose a fitting unit.",
+      },
+    ],
+  },
+  "network-router": {
+    whatIs:
+      "A network router is the device that connects your local network to the internet and steers traffic between networks. It decides where incoming and outgoing data should go, hands out addresses to devices on the LAN, and stands guard at the edge with basic filtering rules.",
+    whereUsed:
+      "Routers sit at the edge of networks in offices, shops, warehouses and branch sites across the UAE. They link the whole site to the ISP line, join separate office networks together, and carry the traffic that flows to and from the internet all day.",
+    howWeHelp:
+      "Artek Computers LLC supplies network routers in Dubai and the UAE. Tell us the site, how many users the router will carry and the line it connects to, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Network Router?",
+        answer:
+          "Enquire online or by phone. Tell us the quantity and your site details, and we will get back to you with a quote.",
+      },
+      {
+        question: "Which network router should I choose?",
+        answer:
+          "Describe the site and the equipment it will serve. Our team will help you pick a suitable router.",
+      },
+    ],
+  },
+  "network-switches": {
+    plural: true,
+    whatIs:
+      "Network switches are the boxes that tie a local area network together. Every wired device plugs into a port, and the switch passes traffic between them so computers, phones, cameras and access points can talk without each one needing its own direct link to the rest.",
+    whereUsed:
+      "Switches sit at the heart of the network in offices, data rooms and comms cabinets across Dubai. They gather desk connections, feed wireless access points, carry camera traffic to recorders and link floors together, forming the meeting point of the wired network.",
+    howWeHelp:
+      "Artek Computers LLC supplies network switches in Dubai and the UAE. Tell us the equipment they will serve, how many you need and the site details, and we will send a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Network Switches?",
+        answer:
+          "Send an enquiry or call our team with the quantity and your site details, and we will share a quote.",
+      },
+      {
+        question: "Which network switch should I choose?",
+        answer:
+          "Tell us the site layout and the equipment it will serve. Our team will help you choose the right switch.",
+      },
+    ],
+  },
+  "industrial-switches": {
+    plural: true,
+    whatIs:
+      "Industrial switches are network switches made for factories, utilities and plant areas rather than offices. Their housings and mounting methods suit fitting on machines, walls and inside control panels, letting plant equipment join the same network as the office side of the business.",
+    whereUsed:
+      "You will find them across UAE industrial sites: on production lines, in automation panels, substations, water and energy plants, and in roadside or gate cabinets. They carry traffic from controllers, sensors and cameras back to the systems that monitor them.",
+    howWeHelp:
+      "Artek Computers LLC supplies industrial switches in Dubai and the UAE. Tell us the plant they will serve, the quantity and the site details, and our team will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Industrial Switches?",
+        answer:
+          "Call us or send an enquiry with the quantity and your site details, and we will come back to you with pricing.",
+      },
+      {
+        question: "Which industrial switch should I choose?",
+        answer:
+          "Describe the plant environment and the equipment it will connect. Our team will help you settle on a suitable switch.",
+      },
+    ],
+  },
+  "ip-pbx": {
+    whatIs:
+      "An IP PBX is the telephone system that runs voice calls over the office network instead of old phone wiring. It registers the company's handsets and extensions, routes calls between them and to outside lines, and hosts features like voicemail, recorded greetings and call forwarding.",
+    whereUsed:
+      "These systems run in offices, hotels, clinics and warehouses across the UAE, handling reception lines, department extensions and calls between rooms. They suit any business that wants its desk and department phones managed from one place rather than handled one by one.",
+    howWeHelp:
+      "Artek Computers LLC supplies IP PBX systems in Dubai and the UAE. Tell us how many extensions you need, the site details and the equipment involved, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for IP PBX?",
+        answer:
+          "Send us an enquiry or call with the quantity of extensions and your site details. We will reply with a quote.",
+      },
+      {
+        question: "Which IP PBX should I choose?",
+        answer:
+          "Tell us the site and the phones it will serve. Our team will help you choose a suitable system.",
+      },
+    ],
+  },
+  "ip-phone": {
+    whatIs:
+      "An IP phone is a desk telephone that plugs into the computer network rather than a traditional phone line. It registers with the office phone system, then carries calls as data over the LAN, usually sharing the same cabling and switch as the computer beside it.",
+    whereUsed:
+      "These handsets sit on desks in offices, clinics, hotels and warehouses throughout Dubai — at reception, in departments and in meeting rooms. They give each person a direct extension and access to the features of the company's phone system, such as transfers and directories.",
+    howWeHelp:
+      "Artek Computers LLC supplies IP phones in Dubai and the UAE. Tell us the number of handsets, the system they will register with and the site details, and we will send a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for IP Phone?",
+        answer:
+          "Reach us by enquiry form or phone call with the quantity and your site details, and we will quote for the handsets.",
+      },
+      {
+        question: "Which IP phone should I choose?",
+        answer:
+          "Tell us the desk or room it will sit at and the system it will serve. Our team will suggest a suitable handset.",
+      },
+    ],
+  },
+  "interactive-screen": {
+    whatIs:
+      "An interactive screen is a large touch display that doubles as a computer screen and a writing surface. Teams open files on it, mark them up with a finger or stylus, run video calls, and save the notes afterwards — replacing the projector-and-whiteboard pairing in one device.",
+    whereUsed:
+      "You will meet these screens in meeting rooms and boardrooms across Dubai, in classrooms and training centres, and at reception desks showing information to visitors. Anywhere a group needs to look at the same material together and act on it, a screen like this earns its place.",
+    howWeHelp:
+      "Artek Computers LLC supplies interactive screens in Dubai and the UAE. Tell us the rooms they will serve, how many you need and the site details, and we will reply with a clear quote.",
+    faqs: [
+      {
+        question: "How do I get a quote for Interactive Screen?",
+        answer:
+          "Send an enquiry or call our office with the quantity and your site details. We will come back with a quote.",
+      },
+      {
+        question: "Which interactive screen should I choose?",
+        answer:
+          "Describe the room it will live in and how the team will use it. Our team will help you choose a suitable screen.",
+      },
+    ],
+  },
 };

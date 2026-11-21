@@ -393,7 +393,7 @@ function productSeo(path: string): PageSeo | undefined {
     const jsonLd: JsonLdObject[] = [
       breadcrumbsJsonLd([
         { name: "Home", url: company.siteUrl },
-        { name: "Brands", url: `${company.siteUrl}/brands` },
+        { name: "Products", url: `${company.siteUrl}/products` },
         { name: group.title, url: `${company.siteUrl}/products/${group.slug}` },
         { name, url: canonical(path) },
       ]),

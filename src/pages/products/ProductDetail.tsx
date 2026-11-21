@@ -38,8 +38,8 @@ export default function ProductDetail() {
       intro={description}
       breadcrumbs={[
         { label: "Home", to: "/" },
-        { label: "Brands", to: "/brands" },
-        { label: group.title, to: `/products#${group.slug}` },
+        { label: "Products", to: "/products" },
+        { label: group.title, to: `/products/${group.slug}` },
         { label: name, to: `/products/${group.slug}/${slugify(name)}` },
       ]}
       primaryCta={{
@@ -82,19 +82,21 @@ export default function ProductDetail() {
         )}
       </figure>
 
-      {/* ── Description ──────────────────────────────────────────── */}
-      <p className="mt-6 text-pretty text-base text-slate-300 sm:text-lg">{description}</p>
+      {/* ── Description — only when the hero shows the generic fallback (no custom description) ── */}
+      {!detail?.description && (
+        <p className="mt-6 text-pretty text-base text-slate-300 sm:text-lg">{description}</p>
+      )}
 
       {/* ── Article sections (only for products with productContent entries) ── */}
       {content && (
         <>
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">What is {name}?</h2>
+            <h2 className="text-2xl font-bold text-ink">What {content.plural ? "are" : "is"} {name}?</h2>
             <p className="mt-3 text-base leading-relaxed text-slate-300">{content.whatIs}</p>
           </section>
 
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">Where is {name} used?</h2>
+            <h2 className="text-2xl font-bold text-ink">Where {content.plural ? "are" : "is"} {name} used?</h2>
             <p className="mt-3 text-base leading-relaxed text-slate-300">{content.whereUsed}</p>
           </section>
 

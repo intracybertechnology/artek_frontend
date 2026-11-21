@@ -9,6 +9,8 @@ export type ProductContent = {
   whatIs: string;
   whereUsed: string;
   howWeHelp: string;
+  /** Plural product names (e.g. "Fiber Optic Pigtails") get "What are … / Where are … used?" headings. */
+  plural?: boolean;
   faqs: { question: string; answer: string }[];
 };
 
@@ -234,6 +236,7 @@ export const productContent: Record<string, ProductContent> = {
     ],
   },
   "fiber-optic-patch-panels": {
+    plural: true,
     whatIs:
       "A fiber optic patch panel is a rack-mount frame where the fiber cables of a network end. Incoming fibers are spliced or connected at the rear, adaptors sit on the front face, and the panel keeps every termination protected, ordered and ready for patch cords to plug in.",
     whereUsed:
@@ -254,6 +257,7 @@ export const productContent: Record<string, ProductContent> = {
     ],
   },
   "fiber-optic-pigtails": {
+    plural: true,
     whatIs:
       "A fiber pigtail is a short piece of fiber with a connector on one end only. The bare end is spliced onto a fixed fiber inside a panel or closure, which turns the plant into a point a patch cord can plug into, while the factory-fitted end keeps the connection consistent.",
     whereUsed:
@@ -334,6 +338,7 @@ export const productContent: Record<string, ProductContent> = {
     ],
   },
   "mpo-mtp-patch-cords": {
+    plural: true,
     whatIs:
       "An MPO & MTP patch cord is a fiber jumper fitted with a multi-fiber plug, so one connector carries a group of fibers at once. This packs many links into little rack space and speeds up cabling between high-density switches, servers and panels.",
     whereUsed:

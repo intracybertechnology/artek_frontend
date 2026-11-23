@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/common/Reveal";
 import { company } from "@/data/company";
 import { menuGroupOrder, productGroups, slugify } from "@/data/catalog";
 
@@ -58,11 +59,11 @@ export default function Products() {
             <section key={g.slug} id={g.slug} aria-labelledby={`${g.slug}-heading`} className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-4">
                 <div>
-                  <h2 id={`${g.slug}-heading`} className="text-2xl font-bold text-ink">
+                  <Reveal as="h2" id={`${g.slug}-heading`} className="text-2xl font-bold text-ink">
                     <Link to={`/products/${g.slug}`} className="hover:text-accent-600">
                       {g.title}
                     </Link>
-                  </h2>
+                  </Reveal>
                   <p className="mt-1 max-w-2xl text-sm text-slate-300">{g.intro}</p>
                 </div>
               </div>

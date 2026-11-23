@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Camera } from "lucide-react";
 import { DetailPageLayout } from "@/components/common/DetailPageLayout";
+import { Reveal } from "@/components/common/Reveal";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { FAQAccordion } from "@/components/common/FAQAccordion";
 import { brandLogo, getBrand, getBrandProducts, slugify, type BrandModel } from "@/data/catalog";
@@ -104,11 +105,10 @@ export default function BrandDetail() {
           <BrandLogo name={name} className="h-20 w-40" />
         </div>
       )}
-
       {/* ── Popular models ────────────────────────────────────────── */}
       {detail?.models && detail.models.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-ink">Popular {name} models</h2>
+          <Reveal as="h2" className="text-xl font-bold text-ink">Popular {name} models</Reveal>
           <ul className="mt-4 grid gap-4 sm:grid-cols-2">
             {detail.models.map((model) => (
               <ModelCard key={model.code} brand={name} model={model} accent={detail?.accent} />
@@ -116,11 +116,10 @@ export default function BrandDetail() {
           </ul>
         </div>
       )}
-
       {/* ── Products grid or ask-us block ─────────────────────────── */}
       {products.length > 0 ? (
         <div>
-          <h2 className="text-xl font-bold text-ink">{name} products</h2>
+          <Reveal as="h2" className="text-xl font-bold text-ink">{name} products</Reveal>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
             {products.map((item) => (
               <li
@@ -162,16 +161,15 @@ export default function BrandDetail() {
         </div>
       )}
 
-      {/* ── How we can help + FAQ (only for brands with brandContent entries) ── */}
       {content && (
         <>
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">How we can help</h2>
+            <Reveal as="h2" className="text-2xl font-bold text-ink">How we can help</Reveal>
             <p className="mt-3 text-base leading-relaxed text-slate-300">{content.howWeHelp}</p>
           </section>
 
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">Frequently asked questions</h2>
+            <Reveal as="h2" className="text-2xl font-bold text-ink">Frequently asked questions</Reveal>
             <FAQAccordion faqs={content.faqs} className="mt-6" />
           </section>
         </>

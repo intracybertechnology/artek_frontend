@@ -3,9 +3,12 @@
  *
  * Optimises raw product photos from images-inbox/<group-slug>/ into
  * public/images/products/<group-slug>/<slug>.webp — always exactly 1000x750
- * (fit "contain" on a white background) as WebP. Quality starts at 80 and
- * steps down to 70/60 while the file is over 120 KB; anything still over
- * 150 KB gets a warning. Inbox files are never modified or deleted.
+ * as WebP. Transparency is flattened to white, the picture is fitted inside
+ * the canvas (no upscaling) and centred; the missing top/bottom or left/right
+ * strips are grown with extendWith "copy", replicating the picture's own
+ * edges instead of padding with plain white. Quality starts at 80 and steps
+ * down to 70/60 while the file is over 120 KB; anything still over 150 KB gets
+ * a warning. Inbox files are never modified or deleted.
  *
  *   node scripts/optimize-images.mjs
  */
@@ -47,15 +50,27 @@ const productSlugsByGroup = new Map(
 
 const fmtKb = (bytes) => `${(bytes / 1024).toFixed(1)}KB`;
 
-/** Encode at stepped-down qualities until the buffer fits the retry limit. */
+/** Encode at stepped-down qualities until the buffer fits the retry limit.
+ * Fit inside the canvas first (flatten → inside fit, no upscaling), centre the
+ * result, then grow the missing strips with extendWith "copy" so the padding
+ * replicates the picture's own edges instead of plain white. */
 async function encode(src) {
+  const fitted = await sharp(src)
+    .flatten({ background: WHITE })
+    .resize(WIDTH, HEIGHT, { fit: "inside", withoutEnlargement: true })
+    .toBuffer();
+  const { width, height } = await sharp(fitted).metadata();
+  const left = Math.floor((WIDTH - width) / 2);
+  const right = WIDTH - width - left;
+  const top = Math.floor((HEIGHT - height) / 2);
+  const bottom = HEIGHT - height - top;
+  const canvas = await sharp(fitted)
+    .extend({ top, bottom, left, right, extendWith: "copy" })
+    .toBuffer();
+
   let last;
   for (const quality of QUALITY_STEPS) {
-    const buffer = await sharp(src)
-      .flatten({ background: WHITE })
-      .resize(WIDTH, HEIGHT, { fit: "contain", background: WHITE })
-      .webp({ quality })
-      .toBuffer();
+    const buffer = await sharp(canvas).webp({ quality }).toBuffer();
     last = { buffer, quality };
     if (buffer.byteLength <= RETRY_LIMIT) break;
   }

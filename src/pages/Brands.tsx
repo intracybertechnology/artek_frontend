@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+import { Reveal } from "@/components/common/Reveal";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/company";
 import { brandGroups, brandGroupOrder, brandLogo, slugify } from "@/data/catalog";
@@ -77,12 +78,13 @@ export default function Brands() {
             <section key={g.title} className="py-10 sm:py-12" aria-labelledby={`group-${slugify(g.title)}`}>
               {/* Section heading + count */}
               <div className="flex flex-wrap items-baseline gap-3">
-                <h2
+                <Reveal
+                  as="h2"
                   id={`group-${slugify(g.title)}`}
                   className="text-2xl font-semibold text-ink"
                 >
                   {g.title}
-                </h2>
+                </Reveal>
                 <span className="text-sm text-text-muted">
                   {g.brands.length} {g.brands.length === 1 ? "brand" : "brands"}
                 </span>

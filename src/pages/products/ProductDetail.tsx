@@ -4,6 +4,8 @@ import { Image as ImageIcon } from "lucide-react";
 import { DetailPageLayout } from "@/components/common/DetailPageLayout";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { FAQAccordion } from "@/components/common/FAQAccordion";
+import { Reveal } from "@/components/common/Reveal";
+import { REAL_PHOTO_KEYS } from "@/data/imageNotes";
 import { brandDetails, brandGroups, getProduct, slugify } from "@/data/catalog";
 import { productContent } from "@/data/productContent";
 import { company } from "@/data/company";
@@ -20,7 +22,8 @@ export default function ProductDetail() {
 
   if (!product || !group || !name) return <NotFound />;
 
-  const image = PRODUCT_IMAGE_FILES[`${group.slug}/${slugify(name)}`];
+  const productKey = `${group.slug}/${slugify(name)}`;
+  const image = PRODUCT_IMAGE_FILES[productKey];
   const description = detail?.description
     ?? `${name} from our ${group.title} range, supplied and supported by Artek Computers LLC in Dubai.`;
   const brandGroup = brandGroups.find((b) => b.title === group.brandGroupTitle);
@@ -63,7 +66,7 @@ export default function ProductDetail() {
       }}
     >
       {/* ── Product image ────────────────────────────────────────── */}
-      <figure className="overflow-hidden rounded-2xl border border-white/10">
+      <figure className="w-full max-w-[640px] overflow-hidden rounded-2xl border border-white/10">
         {image && !failedImage ? (
           <img
             src={image}
@@ -74,7 +77,7 @@ export default function ProductDetail() {
             fetchPriority="high"
             decoding="async"
             onError={() => setFailedImage(true)}
-            className="aspect-[4/3] w-full object-cover"
+            className="aspect-[4/3] w-full object-contain"
           />
         ) : (
           <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 bg-white/5 p-6 text-center">
@@ -83,6 +86,10 @@ export default function ProductDetail() {
           </div>
         )}
       </figure>
+
+      {image && !failedImage && !REAL_PHOTO_KEYS.has(productKey) && (
+        <p className="mt-2 text-sm text-slate-400">Image for illustration only.</p>
+      )}
 
       {/* ── Description — only when the hero shows the generic fallback (no custom description) ── */}
       {!detail?.description && (
@@ -93,18 +100,18 @@ export default function ProductDetail() {
       {content && (
         <>
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">What {content.plural ? "are" : "is"} {name}?</h2>
+            <Reveal as="h2" className="text-2xl font-bold text-ink">What {content.plural ? "are" : "is"} {name}?</Reveal>
             <p className="mt-3 text-base leading-relaxed text-slate-300">{content.whatIs}</p>
           </section>
 
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">Where {content.plural ? "are" : "is"} {name} used?</h2>
+            <Reveal as="h2" className="text-2xl font-bold text-ink">Where {content.plural ? "are" : "is"} {name} used?</Reveal>
             <p className="mt-3 text-base leading-relaxed text-slate-300">{content.whereUsed}</p>
           </section>
 
           {contentBrands.length > 0 && (
             <section className="mt-10">
-              <h2 className="text-2xl font-bold text-ink">Brands we supply</h2>
+              <Reveal as="h2" className="text-2xl font-bold text-ink">Brands we supply</Reveal>
               <p className="mt-3 text-base leading-relaxed text-slate-300">
                 {name} from brands including{" "}
                 {contentBrands.map((brand, i) => (
@@ -124,12 +131,12 @@ export default function ProductDetail() {
           )}
 
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">How we can help</h2>
+            <Reveal as="h2" className="text-2xl font-bold text-ink">How we can help</Reveal>
             <p className="mt-3 text-base leading-relaxed text-slate-300">{content.howWeHelp}</p>
           </section>
 
           <section className="mt-10">
-            <h2 className="text-2xl font-bold text-ink">Frequently asked questions</h2>
+            <Reveal as="h2" className="text-2xl font-bold text-ink">Frequently asked questions</Reveal>
             <FAQAccordion faqs={content.faqs} className="mt-6" />
           </section>
         </>
@@ -138,7 +145,7 @@ export default function ProductDetail() {
       {/* ── Brands we supply in this area ────────────────────────── */}
       {brandGroup && (
         <div className="mt-8">
-          <h2 className="text-lg font-bold text-ink">Brands we supply in this area</h2>
+          <Reveal as="h2" className="text-lg font-bold text-ink">Brands we supply in this area</Reveal>
           <ul className="mt-4 flex flex-wrap gap-2">
             {brandGroup.brands.map((brand) => (
               <li key={brand}>

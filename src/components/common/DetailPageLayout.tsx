@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+import { Reveal } from "@/components/common/Reveal";
 import { QuoteSidebar } from "@/components/common/QuoteSidebar";
 import { Button } from "@/components/ui/button";
 import { company } from "@/data/company";
@@ -140,9 +141,9 @@ export function DetailPageLayout({
       {/* ── Bottom CTA ────────────────────────────────────────────── */}
       <section className="border-t border-white/[0.06] bg-slate-safe py-14 sm:py-20">
         <div className="container-page flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-          <h2 className="max-w-2xl text-2xl font-bold text-text sm:text-3xl">
+          <Reveal as="h2" className="max-w-2xl text-2xl font-bold text-text sm:text-3xl">
             Looking for <span className="text-accent">{bottomCtaTitle}</span>?
-          </h2>
+          </Reveal>
           <Button asChild size="lg">
             <Link to="/contact">Enquire now</Link>
           </Button>

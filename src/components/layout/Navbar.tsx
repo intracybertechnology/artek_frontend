@@ -336,7 +336,7 @@ export function Navbar() {
                           onClick={() => setMegaOpen(false)}
                           className="group mt-6 inline-flex items-center gap-1.5 rounded-sm text-[13px] font-semibold text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
                         >
-                          View all {activeGroup.title.toLowerCase()}
+                          View all {activeGroup.title}
                           <ArrowRight
                             className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
                             aria-hidden="true"

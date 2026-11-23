@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
@@ -40,6 +40,8 @@ interface DetailPageLayoutProps {
   bottomCtaTitle: string;
   /** SEO data — rendered by SEOHead in MainLayout via resolvePageSeo, not here. */
   seo: DetailPageSeo;
+  /** Optional brand accent colour (hex) — set as --brand-accent on the wrapper; only the hero accent line and the model card top borders consume it. */
+  accent?: string;
 }
 
 /** Neutral trust ticks — no claims about warranties, dealers or stock. */
@@ -68,9 +70,12 @@ export function DetailPageLayout({
   children,
   bottomCtaTitle,
   seo: _seo,
+  accent,
 }: DetailPageLayoutProps) {
   return (
-    <article>
+    <article
+      style={accent ? ({ "--brand-accent": accent } as CSSProperties) : undefined}
+    >
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <header className="bg-navy-950 pb-16 pt-32 text-white">
         <div className="container-page">
@@ -78,7 +83,10 @@ export function DetailPageLayout({
             {title}
           </h1>
           <p className="mt-4 max-w-4xl text-pretty text-lg text-slate-200">{intro}</p>
-          <div className="mt-5 h-1 w-28 rounded bg-accent" />
+          <div
+            className="mt-5 h-1 w-28 rounded bg-accent"
+            style={accent ? { backgroundColor: "var(--brand-accent)" } : undefined}
+          />
           {/* Hero CTAs match Ram's Solutions hero */}
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg">

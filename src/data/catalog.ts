@@ -318,7 +318,11 @@ export type BrandDetail = {
   /** Exact product names (as in productGroups[].items) this brand shows. If missing, fall back to the products of the product groups whose brandGroupTitle matches the brand's group. */
   products?: readonly string[];
   models?: readonly BrandModel[];
+  /** Optional brand accent colour (hex) sampled from the brand's logo — used sparingly for decoration on the brand page. */
+  accent?: string;
 };
+/** Hikvision red — the most saturated non-white pixel of the logo (public/images/brand-logos/hikvision.png). */
+const HIKVISION_ACCENT = "#c91718";
 export const brandDetails: Record<string, BrandDetail> = {
   belden: { description: "", products: ["Copper Patch Cord"] },
   extell: { description: "", products: ["Cat6 Cable"] },
@@ -352,7 +356,7 @@ export const brandDetails: Record<string, BrandDetail> = {
     { code: "DS-2CD1643G0-IZ",       type: "Camera" },
     { code: "DS-2CD2543G2-IS",       type: "Dome camera" },
     { code: "iDS-2CD7A45G2-IZHSY",   type: "Bullet camera" },
-  ] },
+  ], accent: HIKVISION_ACCENT },
   dahua: { description: "", products: ["IP Camera", "Dome Camera", "Bullet Camera", "PTZ Camera"] },
   axis: { description: "" },
   toten: { description: "" },

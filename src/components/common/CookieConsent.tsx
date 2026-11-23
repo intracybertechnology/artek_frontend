@@ -15,8 +15,11 @@ import { cn } from "@/lib/utils";
  * link). A plain fixed card: no overlay, no focus trap, the page stays usable.
  */
 
-const btnCls =
-  "rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-1 focus-visible:ring-offset-white";
+const primaryBtnCls =
+  "rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none transition-colors hover:bg-slate-200 focus-visible:ring-2 focus-visible:ring-white";
+
+const outlineBtnCls =
+  "rounded-md border border-white/30 px-3 py-2 text-sm font-semibold text-white outline-none transition-colors hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white";
 
 /** One toggle row in the customize panel. */
 function SwitchRow({
@@ -35,8 +38,8 @@ function SwitchRow({
   return (
     <div className="flex items-center justify-between gap-4">
       <span>
-        <span className="block text-sm font-semibold text-slate-900">{title}</span>
-        <span className="block text-xs text-slate-500">{description}</span>
+        <span className="block text-sm font-semibold text-white">{title}</span>
+        <span className="block text-xs text-slate-400">{description}</span>
       </span>
       <button
         type="button"
@@ -47,8 +50,8 @@ function SwitchRow({
         onClick={() => onChange?.(!checked)}
         className={cn(
           "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full outline-none transition-colors",
-          "focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white",
-          checked ? "bg-slate-900" : "bg-slate-200",
+          "focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d10]",
+          checked ? "bg-green-500" : "bg-slate-600",
           disabled ? "opacity-60" : "cursor-pointer",
         )}
       >
@@ -115,7 +118,7 @@ export function CookieConsent() {
         if (e.key === "Escape" && customizing) setCustomizing(false);
       }}
       className={cn(
-        "fixed z-[60] border border-slate-200 bg-white p-5 text-slate-900 shadow-2xl transition-opacity duration-200",
+        "fixed z-[60] border border-white/10 bg-[#0b0d10] p-5 text-white shadow-2xl transition-opacity duration-200",
         // Below sm: bottom sheet across the width, keeping the right strip
         // free so the WhatsApp button is never covered.
         "bottom-0 left-4 right-[9rem] rounded-t-2xl",
@@ -123,31 +126,31 @@ export function CookieConsent() {
         closing ? "opacity-0" : "opacity-100",
       )}
     >
-      <h2 id="cookie-consent-heading" className="text-base font-bold">
+      <h2 id="cookie-consent-heading" className="text-base font-bold text-white">
         We use cookies
       </h2>
-      <p className="mt-2 text-sm leading-relaxed text-slate-600">
+      <p className="mt-2 text-sm leading-relaxed text-slate-300">
         We use necessary cookies to run this site. With your permission we also use analytics
         and marketing cookies to understand how the site is used and to improve it. You can
         change your choice at any time.
       </p>
       <Link
         to="/privacy-policy"
-        className="mt-1 inline-block rounded-sm text-sm font-medium text-blue-700 underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
+        className="mt-1 inline-block rounded-sm text-sm font-medium text-white underline underline-offset-2 outline-none hover:text-slate-300 focus-visible:ring-2 focus-visible:ring-white"
       >
         Privacy policy
       </Link>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <button type="button" className={btnCls} onClick={() => finish(true, true)}>
+        <button type="button" className={primaryBtnCls} onClick={() => finish(true, true)}>
           Accept all
         </button>
-        <button type="button" className={btnCls} onClick={() => finish(false, false)}>
+        <button type="button" className={primaryBtnCls} onClick={() => finish(false, false)}>
           Reject non-essential
         </button>
         <button
           type="button"
-          className={btnCls}
+          className={outlineBtnCls}
           onClick={() => {
             const stored = getConsent();
             setAnalytics(stored?.analytics ?? false);
@@ -160,7 +163,7 @@ export function CookieConsent() {
       </div>
 
       {customizing && (
-        <div className="mt-4 space-y-3 border-t border-slate-200 pt-4">
+        <div className="mt-4 space-y-3 border-t border-white/10 pt-4">
           <SwitchRow
             title="Necessary"
             description="Required for the site to work"
@@ -181,7 +184,7 @@ export function CookieConsent() {
           />
           <button
             type="button"
-            className={btnCls}
+            className={primaryBtnCls}
             onClick={() => finish(analytics, marketing)}
           >
             Save my choices

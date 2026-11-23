@@ -10,12 +10,15 @@ import { company } from "@/data/company";
 import NotFound from "@/pages/NotFound";
 
 /** Single model card: placeholder or image, code, type, and quote button. */
-function ModelCard({ brand, model }: { brand: string; model: BrandModel }) {
+function ModelCard({ brand, model, accent }: { brand: string; model: BrandModel; accent?: string }) {
   const [imgFailed, setImgFailed] = useState(false);
   const quoteTo = `/contact?message=${encodeURIComponent(`I'm interested in ${brand} ${model.code} (${model.type}).`)}`;
 
   return (
-    <li className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+    <li
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
+      style={accent ? { borderTopColor: "var(--brand-accent)" } : undefined}
+    >
       {/* Image or placeholder */}
       <div className="flex aspect-[4/3] items-center justify-center bg-slate-100">
         {model.image && !imgFailed ? (
@@ -87,6 +90,7 @@ export default function BrandDetail() {
       }))}
       sidebarAllLink={{ label: "All brands", to: "/brands" }}
       bottomCtaTitle={`${name} products`}
+      accent={detail?.accent}
       seo={{
         title: `${name} Products in Dubai, UAE | Artek Computers LLC`,
         description: `Browse ${name} products supplied by Artek Computers LLC in Dubai and the UAE. Request a quote by call or WhatsApp.`,
@@ -107,7 +111,7 @@ export default function BrandDetail() {
           <h2 className="text-xl font-bold text-ink">Popular {name} models</h2>
           <ul className="mt-4 grid gap-4 sm:grid-cols-2">
             {detail.models.map((model) => (
-              <ModelCard key={model.code} brand={name} model={model} />
+              <ModelCard key={model.code} brand={name} model={model} accent={detail?.accent} />
             ))}
           </ul>
         </div>

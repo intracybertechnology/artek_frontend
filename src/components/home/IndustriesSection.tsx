@@ -28,13 +28,14 @@ const ICONS = {
  */
 export function IndustriesSection() {
   return (
-    <section className="band-lg" aria-labelledby="industries-heading">
+    <section className="on-paper bg-paper band-lg" aria-labelledby="industries-heading">
       <div className="container-page">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 xl:gap-24">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <SectionHeading
               id="industries-heading"
               align="left"
+              tone="paper"
               eyebrow="Industries"
               title="Built around how your premises actually runs."
               description="A villa, a warehouse and a clinic have different risks, budgets and regulations. The work starts with yours."
@@ -44,28 +45,28 @@ export function IndustriesSection() {
             </div>
           </div>
 
-          <ul className="border-t border-white/10">
+          <ul className="border-t border-slate-900/10">
             {industries.map((ind, i) => {
               const Icon = ICONS[ind.icon as keyof typeof ICONS] ?? Building2;
               return (
-                <RevealBox as="li" key={ind.slug} delay={(i % 3) * 60} className="group border-b border-white/10">
+                <RevealBox as="li" key={ind.slug} delay={(i % 3) * 60} className="group border-b border-slate-900/10">
                   <Link
                     to={`/industries/${ind.slug}`}
                     className="grid grid-cols-[auto_1fr_auto] items-start gap-5 py-6 transition-colors sm:gap-6"
                   >
-                    <span className="mt-0.5 flex size-10 items-center justify-center rounded-lg border border-white/10 text-text-muted transition-colors duration-300 group-hover:border-white/25 group-hover:text-text">
+                    <span className="mt-0.5 flex size-10 items-center justify-center rounded-lg border border-slate-900/10 text-slate-600 transition-colors duration-300 group-hover:border-slate-900/25 group-hover:text-slate-900">
                       <Icon className="size-[18px]" strokeWidth={1.6} aria-hidden="true" />
                     </span>
                     <span>
-                      <span className="block text-lg font-semibold tracking-tight text-text">
+                      <span className="block text-lg font-semibold tracking-tight text-slate-900">
                         {ind.name}
                       </span>
-                      <span className="mt-1 block max-w-lg text-sm leading-relaxed text-text-muted">
+                      <span className="mt-1 block max-w-lg text-sm leading-relaxed text-slate-600">
                         {ind.description}
                       </span>
                     </span>
                     <ArrowUpRight
-                      className="mt-1 size-5 shrink-0 text-white/25 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-text"
+                      className="mt-1 size-5 shrink-0 text-slate-400 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-900"
                       aria-hidden="true"
                     />
                   </Link>

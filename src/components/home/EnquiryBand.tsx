@@ -16,21 +16,21 @@ import { RevealBox } from "@/components/common/RevealBox";
  */
 export function EnquiryBand() {
   return (
-    <section className="border-y border-white/[0.08] band" aria-labelledby="enquiry-heading">
+    <section className="on-paper bg-paper border-y border-slate-900/10 band" aria-labelledby="enquiry-heading">
       <div className="container-page">
         <RevealBox className="grid items-end gap-8 lg:grid-cols-[minmax(0,1.25fr)_auto] lg:gap-16">
           <div>
-            <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
+            <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-600">
               Next step
-              <span className="h-px w-10 bg-white/15" aria-hidden="true" />
+              <span className="h-px w-10 bg-slate-900/15" aria-hidden="true" />
             </p>
             <h2
               id="enquiry-heading"
-              className="display-title mt-4 text-[clamp(1.6rem,1.2rem+1.3vw,2.35rem)] text-text"
+              className="display-title mt-4 text-[clamp(1.6rem,1.2rem+1.3vw,2.35rem)] text-slate-900"
             >
               Not sure what your premises needs? Ask us.
             </h2>
-            <p className="mt-3 max-w-xl text-pretty text-[15px] leading-relaxed text-text-muted">
+            <p className="mt-3 max-w-xl text-pretty text-[15px] leading-relaxed text-slate-600">
               Tell us what you have today and what is going wrong with it. We will
               tell you what we would install — and what we would leave alone.
             </p>
@@ -39,14 +39,14 @@ export function EnquiryBand() {
           <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
             <a
               href={company.phoneHref}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-paper px-6 text-[15px] font-semibold text-surface transition-colors duration-200 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-slate-900 px-6 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
             >
               <Phone className="size-4" aria-hidden="true" />
               {company.phoneDisplay}
             </a>
             <Link
               to="/contact"
-              className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/20 px-6 text-[15px] font-semibold text-text transition-colors duration-200 hover:border-white/40 hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
+              className="group inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-slate-900/20 px-6 text-[15px] font-semibold text-slate-900 transition-colors duration-200 hover:border-slate-900/40 hover:bg-slate-900/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
             >
               Contact details
               <ArrowRight

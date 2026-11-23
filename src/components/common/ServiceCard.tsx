@@ -11,6 +11,7 @@ import {
   Wrench,
 } from "lucide-react";
 import type { Service } from "@/types";
+import SpotlightCard from "@/components/ui/SpotlightCard";
 
 const ICONS = {
   cloud: Cloud,
@@ -23,13 +24,6 @@ const ICONS = {
   shield: Shield,
 } as const;
 
-/**
- * Solution card — flat editorial style.
- * Identity comes from typography: ghost index, a small icon tile that fills
- * in on hover, and a single stretched title link. The card sits one step
- * above its band (`surface-2` band → `surface` card) so it separates by
- * contrast as well as by its hairline.
- */
 export function ServiceCard({
   service,
   index = 0,
@@ -40,9 +34,21 @@ export function ServiceCard({
   const Icon = ICONS[service.icon as keyof typeof ICONS] ?? Shield;
 
   return (
-    <article className="group relative flex h-full flex-col rounded-(--radius-card) border border-white/[0.08] bg-surface p-6 transition-[border-color,background-color] duration-300 hover:border-white/20 hover:bg-[#0D0D0F] focus-within:border-white/35">
+    <SpotlightCard
+      theme="dark"
+      spotlightColor="#ffffff"
+      intensity={0.12}
+      spotlightSize={260}
+      softness={0.75}
+      borderGlow={0.5}
+      proximity={90}
+      smoothing={0.25}
+      grain={0.04}
+      className="group flex h-full flex-col p-6 transition-transform duration-300 hover:-translate-y-1 focus-within:border-white/35"
+      style={{ "--spotlight-card-surface": "rgba(255, 255, 255, 0.04)" } as React.CSSProperties}
+    >
       <div className="flex items-start justify-between gap-4">
-        <span className="flex size-11 items-center justify-center rounded-lg border border-white/10 text-text-muted transition-colors duration-300 group-hover:border-paper group-hover:bg-paper group-hover:text-surface">
+        <span className="flex size-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-text-muted backdrop-blur-sm transition-all duration-300 group-hover:border-paper group-hover:bg-paper group-hover:text-surface group-hover:shadow-lift">
           <Icon className="size-5" strokeWidth={1.6} aria-hidden="true" />
         </span>
         <span
@@ -55,7 +61,7 @@ export function ServiceCard({
       <h3 className="mt-6 text-[17px] font-semibold leading-snug tracking-tight text-text">
         <Link
           to={`/solutions/${service.slug}`}
-          className="transition-colors after:absolute after:inset-0 after:rounded-(--radius-card)"
+          className="transition-colors after:absolute after:inset-0 after:rounded-[inherit]"
         >
           {service.title}
         </Link>
@@ -70,6 +76,6 @@ export function ServiceCard({
         Explore
         <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
       </span>
-    </article>
+    </SpotlightCard>
   );
 }

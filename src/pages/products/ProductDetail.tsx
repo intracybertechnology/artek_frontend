@@ -8,6 +8,7 @@ import { brandDetails, brandGroups, getProduct, slugify } from "@/data/catalog";
 import { productContent } from "@/data/productContent";
 import { company } from "@/data/company";
 import NotFound from "@/pages/NotFound";
+import { PRODUCT_IMAGE_FILES } from "@/data/productImages.generated";
 
 /** One product: image, description, brand logos and sibling products in the sidebar. */
 export default function ProductDetail() {
@@ -19,7 +20,7 @@ export default function ProductDetail() {
 
   if (!product || !group || !name) return <NotFound />;
 
-  const image = detail?.image;
+  const image = PRODUCT_IMAGE_FILES[`${group.slug}/${slugify(name)}`];
   const description = detail?.description
     ?? `${name} from our ${group.title} range, supplied and supported by Artek Computers LLC in Dubai.`;
   const brandGroup = brandGroups.find((b) => b.title === group.brandGroupTitle);
@@ -58,7 +59,7 @@ export default function ProductDetail() {
         title: `${name} in Dubai, UAE | Artek Computers LLC`,
         description,
         canonical: `/products/${group.slug}/${slugify(name)}`,
-        image,
+        image: image ? `${company.siteUrl}${image}` : undefined,
       }}
     >
       {/* ── Product image ────────────────────────────────────────── */}
@@ -67,9 +68,10 @@ export default function ProductDetail() {
           <img
             src={image}
             alt={`${name} supplied by Artek Computers LLC in Dubai`}
-            width={800}
-            height={600}
+            width={1000}
+            height={750}
             loading="eager"
+            fetchPriority="high"
             decoding="async"
             onError={() => setFailedImage(true)}
             className="aspect-[4/3] w-full object-cover"

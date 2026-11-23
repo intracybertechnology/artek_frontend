@@ -9,6 +9,7 @@ import { getAuthor } from "./authors.ts";
 import { productContent } from "./productContent.ts";
 import { brandContent } from "./brandContent.ts";
 import { brandGroups, brandLogo, getBrand, getBrandProducts, getProductGroup, productDetails, productGroups, slugify } from "./catalog.ts";
+import { PRODUCT_IMAGE_FILES } from "./productImages.generated.ts";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -380,6 +381,7 @@ function productSeo(path: string): PageSeo | undefined {
   if (name) {
     // ── Product detail page ──
     const detail = productDetails[segments[1]] ?? {};
+    const image = PRODUCT_IMAGE_FILES[`${group.slug}/${segments[1]}`];
     const descBase = detail.description
       ? detail.description
       : `${name} from our ${group.title} range, supplied and supported by Artek Computers LLC in Dubai.`;
@@ -415,7 +417,7 @@ function productSeo(path: string): PageSeo | undefined {
       path: canonical(path),
       title: title.length <= 60 ? title : `${name} in Dubai, UAE | Artek`,
       description,
-      ogImage: detail.image ? `${company.siteUrl}${detail.image}` : undefined,
+      ogImage: image ? `${company.siteUrl}${image}` : undefined,
       jsonLd,
     };
   }

@@ -22,6 +22,14 @@ import { PRODUCT_IMAGE_FILES } from "./productImages.generated.ts";
 
 const canonical = (path: string) => `${company.siteUrl}${path === "/" ? "" : path}`;
 
+/** Default share image (og:image / twitter:image) for pages without their own. */
+const DEFAULT_OG_IMAGE = `${company.siteUrl}/images/logo_main.png`;
+
+/** Product detail route (/products/<group>/<product>)? Its og:image is one of
+ * the generated 1000x750 product images, so og:image:width/height apply. */
+export const isProductDetailPath = (path: string) =>
+  /^\/products\/[^/]+\/[^/]+\/?$/.test(path.replace(/\/$/, ""));
+
 const STATIC_PAGE_META: Record<string, PageSeo> = {
   "/": {
     path: canonical("/"),
@@ -44,13 +52,13 @@ const STATIC_PAGE_META: Record<string, PageSeo> = {
   },
   "/brands": {
     path: canonical("/brands"),
-    title: "Brands We Supply in Dubai | Cisco, Fortinet, Hikvision, Dell, HP | Artek Computers LLC",
+    title: "Brands We Supply in Dubai | Artek Computers LLC",
     description:
       "Networking, cabling, security, power and computer brands supplied and supported by Artek Computers LLC in Dubai.",
   },
   "/products": {
     path: canonical("/products"),
-    title: "IT Products Dubai - Enterprise technology solutions from Artek Computers",
+    title: "Products in Dubai | Artek Computers LLC",
     description:
       "IT products supplied by ARTEK Computers LLC in Dubai — laptops and desktops, servers, CCTV cameras, networking equipment, telephony and peripherals.",
   },
@@ -327,7 +335,13 @@ function blogPostSeo(path: string): PageSeo | undefined {
   };
 }
 
-/** Resolve the SEO bundle for any route (pure — also used in Node SSR). */export function resolvePageSeo(path: string): PageSeo {
+export function resolvePageSeo(path: string): PageSeo {
+  /* every page gets a share image: its own when it has one, else the main logo */
+  const seo = resolveRouteSeo(path);
+  return seo.ogImage ? seo : { ...seo, ogImage: DEFAULT_OG_IMAGE };
+}
+
+function resolveRouteSeo(path: string): PageSeo {
   if (STATIC_PAGE_META[path]) {
     const base = STATIC_PAGE_META[path]!;
     const jsonLd: JsonLdObject[] = [breadcrumbsJsonLd([{ name: "Home", url: company.siteUrl }])];

@@ -80,10 +80,10 @@ export function DetailPageLayout({
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <header className="bg-navy-950 pb-16 pt-32 text-white">
         <div className="container-page">
-          <h1 className="max-w-4xl text-balance text-4xl font-extrabold tracking-tight sm:text-5xl">
+          <h1 className="hero-fade max-w-4xl text-balance text-4xl font-extrabold tracking-tight sm:text-5xl">
             {title}
           </h1>
-          <p className="mt-4 max-w-4xl text-pretty text-lg text-slate-200">{intro}</p>
+          <p className="hero-fade-delay mt-4 max-w-4xl text-pretty text-lg text-slate-200">{intro}</p>
           <div
             className="mt-5 h-1 w-28 rounded bg-accent"
             style={accent ? { backgroundColor: "var(--brand-accent)" } : undefined}

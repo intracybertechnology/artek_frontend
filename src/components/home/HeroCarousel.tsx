@@ -1,196 +1,75 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { HeroSlide } from "@/types";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { heroPreloadImage } from "@/data/heroSlides";
 
-const AUTOPLAY_MS = 5500;
-const SWIPE_THRESHOLD = 48;
+const ROTATION_MS = 3000;
+const slides = [
+  heroPreloadImage.image,
+  "/images/hero/slide2-biometric.webp",
+  "/images/hero/slide3-access.webp",
+  "/images/hero/slide4-entry.webp",
+  "/images/hero/slide5-network.webp",
+];
 
-/**
- * Premium cinematic image carousel (crossfade, no dependencies).
- * - autoplay 5.5s, paused on hover / keyboard focus / hidden tab
- * - pointer-based swipe on touch devices
- * - prev/next buttons, 5 indicators, "01 / 05" counter
- * - transform/opacity transitions only; autoplay disabled under
- *   prefers-reduced-motion
- */
-export function HeroCarousel({ slides, mobileFullBleed = false }: { slides: readonly HeroSlide[]; mobileFullBleed?: boolean }) {
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const hiddenTab = useRef(false);
-  const reducedMotion = useRef(false);
-  const [userNavigated, setUserNavigated] = useState(false);
-  const pointerStart = useRef<{ x: number; id: number } | null>(null);
-  const count = slides.length;
+/** Fade the decorative photo without moving the hero copy or actions. */
+export function HeroPicture() {
+  const [motionAllowed, setMotionAllowed] = useState(false);
+  const [status, setStatus] = useState<Partial<Record<number, "loaded" | "failed">>>({});
+  const [{ active, previous }, setSlide] = useState({ active: 0, previous: 0 });
+  const readyToRotate = slides.slice(1).every((_, i) => status[i + 1]) &&
+    slides.filter((_, i) => status[i] === "loaded").length > 1;
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const vis = () => (hiddenTab.current = document.hidden);
-    const onMq = () => (reducedMotion.current = mq.matches);
-    onMq();
-    document.addEventListener("visibilitychange", vis);
-    mq.addEventListener("change", onMq);
-    return () => {
-      document.removeEventListener("visibilitychange", vis);
-      mq.removeEventListener("change", onMq);
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => {
+      setMotionAllowed(!preference.matches);
+      if (preference.matches) setSlide({ active: 0, previous: 0 });
     };
+    sync();
+    preference.addEventListener("change", sync);
+    return () => preference.removeEventListener("change", sync);
   }, []);
 
-  const go = useCallback(
-    (next: number, byUser = true) => {
-      if (byUser) setUserNavigated(true);
-      setIndex(((next % count) + count) % count);
-    },
-    [count],
-  );
-
-  const play = !paused && !reducedMotion.current && !hiddenTab.current;
-
   useEffect(() => {
-    if (!play) return;
-    const t = setTimeout(() => go(index + 1, false), AUTOPLAY_MS);
-    return () => clearTimeout(t);
-  }, [index, play, go]);
+    if (!motionAllowed || !readyToRotate) return;
+    const available = slides.flatMap((_, i) => status[i] === "loaded" ? [i] : []);
+    const timer = window.setInterval(() => {
+      if (document.hidden) return;
+      setSlide(({ active }) => ({
+        active: available[(available.indexOf(active) + 1) % available.length]!,
+        previous: active,
+      }));
+    }, ROTATION_MS);
+    return () => window.clearInterval(timer);
+  }, [motionAllowed, readyToRotate, status]);
 
-  /* pointer swipe */
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    pointerStart.current = { x: e.clientX, id: e.pointerId };
-  };
-  const onPointerUp = (e: React.PointerEvent) => {
-    const start = pointerStart.current;
-    pointerStart.current = null;
-    if (!start || start.id !== e.pointerId) return;
-    const dx = e.clientX - start.x;
-    if (Math.abs(dx) > SWIPE_THRESHOLD) go(index + (dx < 0 ? 1 : -1));
-  };
-
-  const slide = slides[index]!;
+  function recordImage(index: number, result: "loaded" | "failed") {
+    setStatus((current) => current[index] === result ? current : { ...current, [index]: result });
+  }
 
   return (
-    <div
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="ARTEK technology solutions"
-      className={cn(
-        "group relative h-full w-full overflow-hidden bg-mist-2 shadow-(--shadow-card-hover) ring-1 ring-white/15 ring-inset",
-        mobileFullBleed ? "rounded-none sm:rounded-3xl" : "rounded-2xl sm:rounded-3xl",
-      )}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
-      onPointerCancel={() => (pointerStart.current = null)}
-      style={{ touchAction: "pan-y" }}
-    >
-      {/* slides — stacked, crossfading */}
-      <ul className="absolute inset-0">
-        {slides.map((s, i) => (
-          <li
-            key={s.id}
-            aria-hidden={i !== index}
-            aria-roledescription="slide"
-            aria-label={`${i + 1} of ${count}: ${s.title}`}
-            className={cn(
-              "absolute inset-0 transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity,transform]",
-              i === index ? "opacity-100 scale-100" : "opacity-0 scale-[1.03] pointer-events-none",
-            )}
-            data-active={i === index || undefined}
-          >
+    <>
+      <div className="home-hero__picture" aria-hidden="true">
+        {slides.map((src, index) => {
+          if (index !== 0 && !(motionAllowed && status[0])) return null;
+          return (
             <img
-              src={mobileFullBleed ? (s.mobileImage ?? s.image) : s.image}
-              alt={s.imageAlt}
-              width={mobileFullBleed ? 900 : s.width}
-              height={mobileFullBleed ? 1200 : s.height}
-              loading={i === 0 ? "eager" : "lazy"}
-              decoding={i === 0 ? "sync" : "async"}
-              fetchPriority={i === 0 ? "high" : undefined}
-              draggable={false}
-              className="h-full w-full object-cover select-none"
+              key={src}
+              className={`home-hero__slide${index === active ? " is-active" : index === previous ? " is-previous" : ""}`}
+              src={src}
+              width={heroPreloadImage.width}
+              height={heroPreloadImage.height}
+              alt=""
+              decoding={index === 0 ? undefined : "async"}
+              fetchPriority={index === 0 ? "high" : "low"}
+              onLoad={() => recordImage(index, "loaded")}
+              onError={() => recordImage(index, "failed")}
+              ref={(image) => {
+                if (image?.complete) recordImage(index, image.naturalWidth ? "loaded" : "failed");
+              }}
             />
-          </li>
-        ))}
-      </ul>
-
-      {/* readability scrim — hidden in mobileFullBleed (HeroSection provides its own) */}
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/85 via-black/40 to-transparent",
-          mobileFullBleed && "hidden lg:block",
-        )}
-      />
-
-      {/* overlay content — hidden in mobileFullBleed (HeroSection provides its own) */}
-        <div className={cn(
-          "absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 sm:gap-6 sm:p-7",
-          mobileFullBleed && "hidden lg:flex",
-        )}>
-        <div
-          key={slide.id}
-          aria-live={userNavigated ? "polite" : "off"}
-          className="min-w-0 max-w-[70%] text-white transition-opacity duration-500 sm:max-w-md"
-        >
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/75 sm:text-[11px]">
-            {slide.category}
-          </p>
-          <h2 className="mt-1 text-base font-bold leading-snug tracking-tight sm:mt-1.5 sm:text-2xl">
-            {slide.title}
-          </h2>
-          <p className="mt-1 line-clamp-2 text-xs text-white/80 sm:text-sm">{slide.description}</p>
-        </div>
-
-        {/* controls */}
-        <div className="flex shrink-0 flex-col items-end gap-2 sm:gap-3">
-          <p className="text-xs font-semibold tabular-nums tracking-[0.2em] text-white/75" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-          </p>
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
-            <button
-              type="button"
-              onClick={() => go(index - 1)}
-              aria-label="Previous slide"
-              className="flex size-8 items-center justify-center rounded-full border border-white/30 text-white backdrop-blur-sm transition-colors hover:border-white/70 hover:bg-white/10 sm:size-10"
-            >
-              <ChevronLeft className="size-3.5 sm:size-4" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              onClick={() => go(index + 1)}
-              aria-label="Next slide"
-              className="flex size-8 items-center justify-center rounded-full border border-white/30 text-white backdrop-blur-sm transition-colors hover:border-white/70 hover:bg-white/10 sm:size-10"
-            >
-              <ChevronRight className="size-3.5 sm:size-4" aria-hidden="true" />
-            </button>
-          </div>
-        </div>
+          );
+        })}
       </div>
-
-      {/* indicators — plain buttons; the carousel region carries live status */}
-      <div
-        className={cn(
-          "absolute inset-x-0 top-0 flex justify-end gap-2 p-5 sm:p-7",
-          mobileFullBleed && "hidden lg:flex",
-        )}
-      >
-        {slides.map((s, i) => (
-          <button
-            key={s.id}
-            type="button"
-            aria-current={i === index || undefined}
-            aria-label={`Go to slide ${i + 1}: ${s.title}`}
-            onClick={() => go(i)}
-            className={cn(
-              "h-1.5 rounded-full transition-all duration-300",
-              i === index
-                ? "w-7 bg-mist-2"
-                : "w-3 bg-white/5 hover:bg-white/10",
-            )}
-          />
-        ))}
-      </div>
-    </div>
+    </>
   );
 }

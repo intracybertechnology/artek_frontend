@@ -15,7 +15,7 @@ const app = (
   </StrictMode>
 );
 
-if (container.hasChildNodes()) {
+if (container.firstElementChild) {
   // Hydrate prerendered static HTML (built via `npm run build:static`)
   hydrateRoot(container, app);
 } else {

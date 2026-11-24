@@ -1,13 +1,12 @@
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Building2, Store, Home, Warehouse, ConciergeBell, Factory, ArrowUpRight,
-} from "lucide-react";
+import { ArrowUpRight, Building2, ConciergeBell, Factory, Home, Store, Warehouse } from "lucide-react";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { RevealBox } from "@/components/common/RevealBox";
 import { ArrowCTA } from "@/components/common/CTAButton";
 import { industries } from "@/data/industries";
+import "./IndustriesSection.css";
 
-const ICONS = {
+const icons = {
   "building-2": Building2,
   store: Store,
   home: Home,
@@ -16,64 +15,94 @@ const ICONS = {
   factory: Factory,
 } as const;
 
-/**
- * Homepage — industries.
- *
- * Deliberately NOT a card grid (Solutions owns that pattern): a ruled list of
- * sectors with the icon and name on the left and the description right, so
- * the page alternates between dense and open rather than repeating cards.
- * Placeholder gradient panels were removed — an empty gradient reads as a
- * missing photo; the type-only treatment reads as intentional until real
- * project photography arrives.
- */
+const images: Partial<Record<string, string>> = {
+  "corporate-offices": "/images/services/computer-systems.jpg",
+  "retail-shopping": "/images/services/cctv.jpg",
+  "residential-properties": "/images/hero/slide4-entry.webp",
+  "warehouses-logistics": "/images/industries/warehouse.webp",
+  hospitality: "/images/industries/hospitality.webp",
+  "industrial-facilities": "/images/industries/industrial-facilities.webp",
+};
+
+/** React Bits–style expanding panels, using CSS sizing transitions. */
 export function IndustriesSection() {
+  const [active, setActive] = useState(industries[0]?.slug);
+  const pointer = useRef<{ x: number; y: number } | null>(null);
+
   return (
     <section className="band-lg" aria-labelledby="industries-heading">
       <div className="container-page">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 xl:gap-24">
-          <div className="lg:sticky lg:top-28 lg:self-start">
-            <SectionHeading
-              id="industries-heading"
-              align="left"
-              eyebrow="Industries"
-              title="Built around how your premises actually runs."
-              description="A villa, a warehouse and a clinic have different risks, budgets and regulations. The work starts with yours."
-            />
-            <div className="mt-8">
-              <ArrowCTA to="/industries">See all industries we serve</ArrowCTA>
-            </div>
-          </div>
-
-          <ul className="border-t border-white/10">
-            {industries.map((ind, i) => {
-              const Icon = ICONS[ind.icon as keyof typeof ICONS] ?? Building2;
-              return (
-                <RevealBox as="li" key={ind.slug} delay={(i % 3) * 60} className="group border-b border-white/10">
-                  <Link
-                    to={`/industries/${ind.slug}`}
-                    className="grid grid-cols-[auto_1fr_auto] items-start gap-5 py-6 transition-colors sm:gap-6"
-                  >
-                    <span className="mt-0.5 flex size-10 items-center justify-center rounded-lg border border-white/10 text-text-muted transition-colors duration-300 group-hover:border-white/25 group-hover:text-text">
-                      <Icon className="size-[18px]" strokeWidth={1.6} aria-hidden="true" />
-                    </span>
-                    <span>
-                      <span className="block text-lg font-semibold tracking-tight text-text">
-                        {ind.name}
-                      </span>
-                      <span className="mt-1 block max-w-lg text-sm leading-relaxed text-text-muted">
-                        {ind.description}
-                      </span>
-                    </span>
-                    <ArrowUpRight
-                      className="mt-1 size-5 shrink-0 text-white/25 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-text"
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </RevealBox>
-              );
-            })}
-          </ul>
+        <div className="flex flex-wrap items-end justify-between gap-5">
+          <SectionHeading
+            id="industries-heading"
+            align="left"
+            eyebrow="Industries"
+            title="Built around how your premises actually runs."
+            description="A villa, a warehouse and a clinic have different risks, budgets and regulations. The work starts with yours."
+          />
+          <ArrowCTA to="/industries">See all industries we serve</ArrowCTA>
         </div>
+
+        <ul
+          className="industries-gallery mt-8"
+          aria-label="Industries we serve"
+          onPointerLeave={() => { pointer.current = null; }}
+        >
+          {industries.map((industry) => {
+            const Icon = icons[industry.icon as keyof typeof icons] ?? Building2;
+            const image = images[industry.slug];
+            const expanded = industry.slug === active;
+            const detailsId = `industry-preview-${industry.slug}`;
+            return (
+              <li
+                key={industry.slug}
+                className="industries-gallery__panel"
+                data-expanded={expanded}
+                onPointerMove={(event) => {
+                  if (event.pointerType !== "mouse" || !window.matchMedia("(min-width: 64rem)").matches) return;
+                  const x = event.clientX;
+                  const y = event.clientY;
+                  // Resizing panels can move under a stationary pointer. Only
+                  // switch when the visitor actually moves the mouse.
+                  if (pointer.current?.x === x && pointer.current.y === y) return;
+                  pointer.current = { x, y };
+                  if (!expanded && !event.currentTarget.parentElement?.contains(document.activeElement)) {
+                    setActive(industry.slug);
+                  }
+                }}
+              >
+                {image
+                  ? <img className="industries-gallery__image" src={image} alt="" loading="lazy" decoding="async" />
+                  : <Icon className="industries-gallery__watermark" aria-hidden="true" />}
+                <div className="industries-gallery__caption">
+                  <h3>
+                    <button
+                      type="button"
+                      className="industries-gallery__trigger"
+                      aria-expanded={expanded}
+                      aria-controls={detailsId}
+                      onClick={() => setActive(industry.slug)}
+                    >
+                      <Icon className="size-5 shrink-0 text-sky-300" aria-hidden="true" />
+                      <span>
+                        {industry.slug === "hospitality" ? (
+                          <>Hospitality <span className={expanded ? undefined : "lg:block"}>Venues</span></>
+                        ) : industry.name}
+                      </span>
+                    </button>
+                  </h3>
+                  <div id={detailsId} className="industries-gallery__details" hidden={!expanded}>
+                    <p className="text-sm leading-relaxed text-slate-200">{industry.description}</p>
+                    <Link to={`/industries/${industry.slug}`} className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-sky-200">
+                      Explore {industry.name} <ArrowUpRight className="size-4 shrink-0" aria-hidden="true" />
+                    </Link>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        {/* <p className="mt-4 text-xs text-text-muted">Images are illustrative, not photos of ARTEK projects.</p> */}
       </div>
     </section>
   );

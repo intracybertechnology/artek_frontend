@@ -1,77 +1,76 @@
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { ArrowRight, Pause, Play } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import FlexCarousel from "@/components/FlexCarousel";
+import { brandLogo, slugify } from "@/data/catalog";
 
-/**
- * Partner brand logos (homepage) — logo tiles on a moving marquee.
- *
- * The marks are shown as wordmarks on the page field (no tiles, no borders):
- * logo rows look most intentional when the marks themselves do the work and
- * the edge of the band is masked into the background.
- *
- * IMPORTANT: these logo files are client-supplied PixelLab exports whose
- * exact brand identities are NOT yet confirmed — filenames are positional
- * (`logo-1..8`), not brand names, so nothing here asserts a partnership.
- * Before production: (1) confirm each logo's brand + partner status with
- * ARTEK, (2) rename files to brand slugs and add brand names to `alt`,
- * (3) re-export the blank tile (original `...1081517.png` was empty white).
- *
- * One shared CSS keyframe animation, duplicated track for a seamless loop,
- * pauses on hover, disabled under prefers-reduced-motion.
- */
-
-/** Positional logo assets — order = original upload order, minus the blank. */
-const LOGOS = [
-  "/images/brands/logo-1.png",
-  "/images/brands/logo-2.png",
-  "/images/brands/logo-3.png",
-  "/images/brands/logo-4.png",
-  "/images/brands/logo-5.png",
-  "/images/brands/logo-6.png",
-  "/images/brands/logo-7.png",
-  "/images/brands/logo-8.png",
-] as const;
-
-const trackBase = [...LOGOS];
-const track = [...trackBase, ...trackBase];
+const items = ["Cisco", "Fortinet", "Ubiquiti", "Aruba", "Dell", "HP", "Microsoft", "APC"].flatMap((title) => {
+  const src = brandLogo(title);
+  return src ? [{ src, title }] : [];
+});
 
 export function PartnersCarousel() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
+  const navigate = useNavigate();
+  if (!items.length) return null;
+  const current = items[active] ?? items[0];
+
   return (
-    <section
-      className="border-y border-white/[0.06] band-tight"
-      aria-label="Technology partners"
-    >
+    <section className="on-paper border-y border-slate-200 bg-white text-slate-900 band-tight" aria-labelledby="technology-brands-heading">
       <div className="container-page">
-        <p className="text-center text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
-          Trusted technology partners
-        </p>
-      </div>
-      <div className="relative mt-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-        <ul
-          className="marquee-track flex w-max animate-marquee items-center gap-14 px-6 sm:gap-20"
-          style={{ animationDuration: "60s" }}
-          aria-label="Technology brand logos ARTEK works with"
-        >
-          {track.map((src, i) => (
-            <li
-              key={`${src}#${i}`}
-              aria-hidden={i >= trackBase.length}
-              className="flex shrink-0 items-center"
-            >
-              <span className={cn("flex h-10 items-center justify-center select-none opacity-70 transition-opacity duration-300 hover:opacity-100 sm:h-11")}>
-                <img
-                  src={src}
-                  alt=""
-                  role="presentation"
-                  width={220}
-                  height={72}
-                  loading="eager"
-                  decoding="async"
-                  className="h-full w-auto max-w-[9rem] object-contain grayscale"
-                  draggable={false}
-                />
-              </span>
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="technology-brands-heading" className="display-title text-2xl sm:text-3xl">Technology brands in our catalog</h2>
+          <Link to="/brands" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-sky-800 hover:underline">
+            View all brands <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
+        {unavailable ? (
+          <ul className="mt-6 flex gap-3 overflow-x-auto p-2" aria-label="Featured brands">
+            {items.map(({ src, title }) => (
+              <li key={title} className="shrink-0">
+                <Link to={`/brands/${slugify(title)}`} className="flex h-24 w-36 items-center justify-center rounded-xl border border-slate-200 bg-white p-4">
+                  <img src={src} alt={title} loading="lazy" className="h-full w-full object-contain" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>
+            <div className="mt-4 h-[clamp(14rem,28vw,22rem)]" id="technology-brands-carousel">
+              <FlexCarousel
+                items={items}
+                intro="none"
+                cardHeight={0.52}
+                fit="landscape"
+                containImages
+                radius={14}
+                autoplay={!paused}
+                driftSpeed={70}
+                interval={4}
+                captions={false}
+                captureWheel={false}
+                focusOnClick={false}
+                ariaLabel="Featured brands. Drag, swipe, or use the arrow keys to browse."
+                onChange={setActive}
+                onSelect={(_, { title }) => navigate(`/brands/${slugify(title)}`)}
+                onUnavailable={() => setUnavailable(true)}
+              />
+            </div>
+            <div className="flex flex-col items-center">
+              <p className="text-center text-xs text-slate-600">Drag, swipe, or use the arrow keys to browse</p>
+              <div className="flex items-center gap-3">
+                <Link to={`/brands/${slugify(current.title)}`} className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-sky-800 hover:underline">
+                  Explore {current.title} <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+                <button type="button" onClick={() => setPaused((value) => !value)} aria-controls="technology-brands-carousel" aria-label={paused ? "Resume brand carousel" : "Pause brand carousel"} className="grid size-11 cursor-pointer place-items-center rounded-full text-sky-800 hover:bg-sky-50 motion-reduce:hidden">
+                  {paused ? <Play className="size-4" aria-hidden="true" /> : <Pause className="size-4" aria-hidden="true" />}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

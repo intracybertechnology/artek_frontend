@@ -12,13 +12,15 @@ const services = [
 const supportingReasons = [
   {
     icon: ClipboardList,
-    title: "Clear, itemised quotes",
-    description: "See what’s included before work starts.",
+    stage: "Before work starts",
+    title: "Know what you’re paying for.",
+    description: "An itemised quote shows the equipment, installation, and what’s included before you approve the work.",
   },
   {
     icon: Headset,
-    title: "Support after handover",
-    description: "Get help with maintenance and changes as your needs grow.",
+    stage: "After handover",
+    title: "Know who to call.",
+    description: "Keep one point of contact for maintenance, troubleshooting, and future upgrades.",
   },
 ] as const;
 
@@ -81,14 +83,15 @@ export function WhyChooseArtek() {
             </p>
             <TeamDiagram />
           </div>
-          <ul className="divide-y divide-slate-200 border-y border-slate-200 md:border-y-0">
-            {supportingReasons.map(({ icon: Icon, title, description }) => (
-              <li key={title} className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 py-6 lg:py-8">
-                <span className="grid size-10 place-items-center rounded-xl bg-sky-50 text-sky-700">
+          <ul className="grid gap-(--why-row-gap) [--why-row-gap:1.75rem] lg:[--why-row-gap:2.5rem]">
+            {supportingReasons.map(({ icon: Icon, stage, title, description }) => (
+              <li key={stage} className="relative grid grid-cols-[auto_minmax(0,1fr)] gap-4 first:before:pointer-events-none first:before:absolute first:before:top-5 first:before:left-5 first:before:h-[calc(100%+var(--why-row-gap))] first:before:w-px first:before:bg-sky-300 first:before:content-['']">
+                <span className="relative grid size-10 place-items-center rounded-full border border-sky-200 bg-sky-50 text-sky-700">
                   <Icon className="size-5" strokeWidth={1.7} aria-hidden="true" />
                 </span>
-                <div>
-                  <h3 className="text-lg font-bold leading-snug">{title}</h3>
+                <div className="bg-white">
+                  <p className="text-[11px] font-bold tracking-[0.16em] text-sky-800 uppercase">{stage}</p>
+                  <h3 className="mt-2 text-xl font-bold leading-snug">{title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">{description}</p>
                 </div>
               </li>

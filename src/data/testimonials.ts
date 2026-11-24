@@ -13,7 +13,10 @@ import type { Testimonial } from "@/types";
  * (200×200 or larger) once you have permission to use their photo. Removing
  * `image` falls back to a round monogram rather than a broken frame.
  */
-export const testimonials: readonly Testimonial[] = [
+// Only quotes approved for publication belong in this list.
+export const approvedTestimonials: readonly Testimonial[] = [];
+
+export const demoTestimonials: readonly Testimonial[] = [
   {
     id: "t1",
     quote:

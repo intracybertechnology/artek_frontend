@@ -1122,6 +1122,7 @@ const FlexCarousel = ({
         goal = landing;
         if (Math.abs(velocity) > 400 && Math.abs(landing - pos) < 1) step(m, velocity > 0 ? 1 : -1);
         mode = 'spring';
+        interactedAt = -Infinity;
         start();
         return;
       }
@@ -1136,6 +1137,7 @@ const FlexCarousel = ({
         const rel = (hit.x0 + hit.x1) / 2 - width / 2;
         goal = snapPoint(m, pos + rel);
         mode = 'spring';
+        interactedAt = -Infinity;
         if (s.focusOnClick) focus.pending = hit.index;
         start();
       }
@@ -1220,6 +1222,7 @@ const FlexCarousel = ({
     };
     const onBlur = () => {
       hasFocus = false;
+      start();
     };
     const onVisibility = () => {
       if (!document.hidden) start();

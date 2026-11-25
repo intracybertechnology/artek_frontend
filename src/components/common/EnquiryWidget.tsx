@@ -75,7 +75,9 @@ export function EnquiryWidget() {
           type="button"
           aria-label="Contact ARTEK on WhatsApp"
           className={[
-            "fixed bottom-5 right-4 z-40 inline-flex items-center justify-center rounded-full",
+            // z-20: below the navbar (z-40) and its mega-menu backdrop, so the
+            // button dims with the page while the Products menu is open.
+            "fixed bottom-5 right-4 z-20 inline-flex items-center justify-center rounded-full",
             "bg-[#25D366] text-white shadow-[0_8px_24px_rgb(37_211_102/0.35)]",
             "outline-none transition-all duration-300",
             "hover:bg-[#1ebe5b] focus-visible:ring-2 focus-visible:ring-[#25D366]/60",

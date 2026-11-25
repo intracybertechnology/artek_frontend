@@ -12,18 +12,20 @@ import { cn } from "@/lib/utils";
 /**
  * Premium floating navigation with a Products mega menu.
  *
- * The Products trigger is a plain link to /products (click navigates) with a
- * chevron that flips while the panel is open. The panel opens on:
- *   - hover over the trigger (200 ms open delay, 150 ms close delay)
- *   - keyboard focus into the trigger
- * It closes on:
- *   - mouse leaving the trigger + panel (150 ms delay, no flicker)
- *   - Escape key (focus returns to the trigger)
- *   - route change, click outside, focus leaving the header (Tab)
+ * The Products trigger is a button that toggles the panel (click, or
+ * Enter/Space); the chevron flips while the panel is open. The panel
+ * closes on:
+ *   - clicking the trigger again
+ *   - clicking outside the header (the backdrop counts) or Escape
+ *     (focus returns to the trigger)
+ *   - clicking any link inside the panel
+ *   - route change
  *
  * The bar stays dark; the white panel below it shows a category rail on the
  * left, the selected category's products in the middle, and top brands on
- * the right — no dark overlay or glow over the page content.
+ * the right. While open, a fixed backdrop (.mega-backdrop, z-10 inside this
+ * header) dims and blurs the page behind the menu — the bar and the panel
+ * stay sharp.
  */
 export function Navbar() {
   const scrolled = useScrolled(24);
@@ -32,10 +34,7 @@ export function Navbar() {
   const [megaOpen, setMegaOpen] = useState(false);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [panelCanScroll, setPanelCanScroll] = useState(false);
-  const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const suppressFocusOpen = useRef(false);
-  const triggerRef = useRef<HTMLAnchorElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const categoryListRef = useRef<HTMLElement>(null);
   const panelScrollRef = useRef<HTMLDivElement>(null);
@@ -94,21 +93,11 @@ export function Navbar() {
     return () => window.removeEventListener("resize", updatePanelFade);
   }, [megaOpen, updatePanelFade]);
 
-  /** Close immediately, dropping any pending timer. */
-  const closeNow = useCallback(() => {
-    if (openTimer.current) { clearTimeout(openTimer.current); openTimer.current = null; }
-    if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
-    if (hoverTimer.current) { clearTimeout(hoverTimer.current); hoverTimer.current = undefined; }
-    setMegaOpen(false);
-  }, []);
 
+  // Close on route change.
+  useEffect(() => { setMegaOpen(false); }, [pathname]);
 
-  // Close on route change. Cancels any pending hover-open timer so the panel
-  // cannot re-open over the destination page while the cursor rests on the
-  // trigger after a click.
-  useEffect(() => { closeNow(); }, [pathname]);
-
-  // Close on click outside
+  // Close on click outside (the backdrop overlay counts as outside).
   useEffect(() => {
     if (!megaOpen) return;
     function onPointerDown(e: PointerEvent) {
@@ -116,7 +105,7 @@ export function Navbar() {
         triggerRef.current?.contains(e.target as Node) ||
         panelRef.current?.contains(e.target as Node)
       ) return;
-      closeNow();
+      setMegaOpen(false);
     }
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
@@ -126,10 +115,7 @@ export function Navbar() {
     if (!megaOpen) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        // Returning focus to the trigger re-fires its onFocus; suppress that
-        // one open so Escape actually leaves the menu closed.
-        if (document.activeElement !== triggerRef.current) suppressFocusOpen.current = true;
-        closeNow();
+        setMegaOpen(false);
         triggerRef.current?.focus();
       }
     }
@@ -137,39 +123,23 @@ export function Navbar() {
     return () => document.removeEventListener("keydown", onKey);
   }, [megaOpen]);
 
-  const scheduleOpen = useCallback(() => {
-    if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
-    openTimer.current = setTimeout(() => setMegaOpen(true), 200);
-  }, []);
-
-  const scheduleClose = useCallback(() => {
-    if (openTimer.current) { clearTimeout(openTimer.current); openTimer.current = null; }
-    closeTimer.current = setTimeout(() => setMegaOpen(false), 150);
-  }, []);
-
-  const cancelClose = useCallback(() => {
-    if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
-  }, []);
-
   const linkCls =
     "relative inline-flex items-center rounded-md px-3 py-2 text-[13.5px] font-semibold tracking-[0.01em] text-text outline-none transition-colors duration-200 hover:text-white focus-visible:ring-2 focus-visible:ring-paper/60 before:absolute before:inset-x-3 before:-bottom-0.5 before:h-px before:origin-center before:scale-x-0 before:bg-paper before:transition-transform before:duration-200";
   const activeCls = "before:!scale-x-100";
 
   return (
-    <header
-      className="fixed inset-x-0 top-0 z-40"
-      onBlur={(e) => {
-        // Tab support: close when keyboard focus leaves the header entirely.
-        if (megaOpen && !e.currentTarget.contains(e.relatedTarget as Node | null)) closeNow();
-      }}
-    >
+    <header className="fixed inset-x-0 top-0 z-40">
+      {/* Page backdrop — dims + blurs everything below the navbar while the
+          mega menu is open. Clickable while open (see .mega-backdrop) so a
+          click on it closes the menu; the bar and panel sit above it. */}
+      <div aria-hidden="true" data-open={megaOpen} className="mega-backdrop" />
       <div className="px-3 pt-2 sm:px-6 sm:pt-3">
         <div className="relative mx-auto max-w-[87.5rem]">
 
           {/* ── Nav bar ─────────────────────────────────────────────── */}
           <div
             className={cn(
-              "flex h-14 items-center justify-between gap-2 rounded-xl border px-3 transition-[background-color,border-color,box-shadow] duration-300 sm:h-[3.75rem] sm:gap-4 sm:px-5",
+              "relative z-40 flex h-14 items-center justify-between gap-2 rounded-xl border px-3 transition-[background-color,border-color,box-shadow] duration-300 sm:h-[3.75rem] sm:gap-4 sm:px-5",
               megaOpen
                 ? "border-white/10 bg-surface shadow-none"
                 : scrolled
@@ -194,37 +164,26 @@ export function Navbar() {
                 }
 
                 // ── Products trigger ─────────────────────────────────
-                // Click still navigates to /products; hover or keyboard focus
-                // opens the mega panel.
+                // A button that toggles the mega panel (click, Enter, Space).
                 return (
-                  <div
+                  <button
                     key={item.to}
-                    className="relative"
-                    onMouseEnter={scheduleOpen}
-                    onMouseLeave={scheduleClose}
+                    ref={triggerRef}
+                    type="button"
+                    aria-haspopup="true"
+                    aria-expanded={megaOpen}
+                    onClick={() => setMegaOpen((v) => !v)}
+                    className={cn(linkCls, "gap-1", item.to === activeTo && activeCls)}
                   >
-                    <NavLink
-                      ref={triggerRef}
-                      to="/products"
-                      aria-haspopup="true"
-                      aria-expanded={megaOpen}
-                      onFocus={() => {
-                        if (suppressFocusOpen.current) { suppressFocusOpen.current = false; return; }
-                        cancelClose();
-                        setMegaOpen(true);
-                      }}
-                      className={cn(linkCls, "gap-1", item.to === activeTo && activeCls)}
-                    >
-                      {item.label}
-                      <ChevronDown
-                        className={cn(
-                          "size-4 text-white/50 transition-transform duration-200",
-                          megaOpen && "rotate-180 text-white/70",
-                        )}
-                        aria-hidden="true"
-                      />
-                    </NavLink>
-                  </div>
+                    {item.label}
+                    <ChevronDown
+                      className={cn(
+                        "size-4 text-white/50 transition-transform duration-200",
+                        megaOpen && "rotate-180 text-white/70",
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
                 );
               })}
             </nav>
@@ -247,18 +206,17 @@ export function Navbar() {
 
           {/* ── Mega menu panel ─────────────────────────────────────── */}
           {megaOpen && (
-            // Hover area = invisible bridge + card, so the pointer can cross
-            // the gap between the header bar and the card without closing.
+            // Clicking any link navigates and closes the panel; clicks on
+            // empty panel areas leave it open (only outside clicks close it).
             <div
               ref={panelRef}
               role="dialog"
               aria-label="Products and brands menu"
-              onMouseEnter={cancelClose}
-              onMouseLeave={scheduleClose}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest("a")) setMegaOpen(false);
+              }}
               className="absolute left-1/2 top-full z-30 mt-2 w-[900px] max-w-[calc(100vw-2rem)] -translate-x-1/2"
             >
-              {/* Invisible bridge over the header→card gap */}
-              <div aria-hidden="true" className="absolute inset-x-0 -top-3 h-3" />
               {/* The card scrolls only on really short screens (.menu-scroll) */}
               <div
                 ref={panelScrollRef}
@@ -285,7 +243,6 @@ export function Navbar() {
                           <Link
                             key={g.slug}
                             to={`/products/${g.slug}`}
-                            onClick={() => setMegaOpen(false)}
                             onMouseEnter={() => scheduleActivate(g.slug)}
                             onMouseLeave={cancelActivate}
                             onFocus={() => { cancelActivate(); setActiveSlug(g.slug); }}
@@ -311,7 +268,6 @@ export function Navbar() {
                       <>
                         <Link
                           to={`/products/${activeGroup.slug}`}
-                          onClick={() => setMegaOpen(false)}
                           className="text-xl font-extrabold text-slate-900 transition-colors hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
                         >
                           {activeGroup.title}
@@ -322,7 +278,6 @@ export function Navbar() {
                             <li key={item}>
                               <Link
                                 to={`/products/${activeGroup.slug}/${slugify(item)}`}
-                                onClick={() => setMegaOpen(false)}
                                 className="flex items-center gap-1.5 rounded-sm py-0.5 text-[15px] font-medium text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
                               >
                                 <span className="size-1 shrink-0 rounded-full bg-slate-400" aria-hidden="true" />
@@ -333,7 +288,6 @@ export function Navbar() {
                         </ul>
                         <Link
                           to={`/products/${activeGroup.slug}`}
-                          onClick={() => setMegaOpen(false)}
                           className="group mt-6 inline-flex items-center gap-1.5 rounded-sm text-[13px] font-semibold text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
                         >
                           View all {activeGroup.title}
@@ -356,7 +310,6 @@ export function Navbar() {
                     <Link
                       key={brand}
                       to={`/brands/${slugify(brand)}`}
-                      onClick={() => setMegaOpen(false)}
                       className="rounded-sm text-sm font-medium text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
                     >
                       {brand}
@@ -364,7 +317,6 @@ export function Navbar() {
                   ))}
                   <Link
                     to="/brands"
-                    onClick={() => setMegaOpen(false)}
                     className="group inline-flex items-center gap-1 rounded-sm text-sm font-semibold text-slate-900 outline-none transition-colors hover:text-blue-700 hover:underline focus-visible:ring-2 focus-visible:ring-blue-600"
                   >
                     View all brands

@@ -225,6 +225,40 @@
   background-clip: padding-box;
 }
 
+/* ── Mega-menu page backdrop ────────────────────────────────────────── */
+/* Full-screen dim + blur behind the open Products menu. Clickable while
+   open (pointer-events: auto, un-transitioned so it engages instantly) so
+   a click on it closes the menu like any other outside click; inert while
+   closed or fading out. Rendered inside the header at z-index 10: the
+   header's own z-40 context keeps it above page content and the floating
+   widgets, while the bar (z-40) and panel (z-30) paint above it and stay
+   sharp.
+   `visibility` joins the transition so the element only stops painting
+   after the fade-out finishes (and the blur is fully off while closed). */
+.mega-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  -webkit-backdrop-filter: blur(0);
+  backdrop-filter: blur(0);
+  transition:
+    opacity 200ms ease,
+    visibility 200ms,
+    -webkit-backdrop-filter 200ms ease,
+    backdrop-filter 200ms ease;
+}
+.mega-backdrop[data-open="true"] {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
 html {
   /* Smooth scrolling is provided by Lenis (see src/lib/lenis.ts), which
      disables this natively while active. Kept as the reduced-motion fallback. */

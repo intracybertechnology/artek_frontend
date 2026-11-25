@@ -18,7 +18,13 @@ export function PartnersCarousel() {
   const current = items[active] ?? items[0];
 
   return (
-    <section className="on-paper border-y border-slate-200 bg-white text-slate-900 band-tight" aria-labelledby="technology-brands-heading">
+    <section className="on-paper relative isolate border-y border-slate-200 bg-[#eef3f9] text-slate-900 band-tight" aria-labelledby="technology-brands-heading">
+      {/* Faint sky wash at the top edge — the logo files sit on white, so the
+          tint is what gives the carousel's cards a visible edge. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-[radial-gradient(ellipse_at_top,#d7e7f7_0%,transparent_70%)]"
+        aria-hidden="true"
+      />
       <div className="container-page">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="technology-brands-heading" className="display-title text-2xl sm:text-3xl">Technology brands in our catalog</h2>

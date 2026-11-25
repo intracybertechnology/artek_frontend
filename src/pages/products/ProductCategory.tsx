@@ -61,6 +61,7 @@ export default function ProductCategory() {
             <h2 id="items-heading" className="sr-only">
               {group.title} we supply
             </h2>
+            {group.items.length > 0 ? (
             <ul className="grid gap-3 sm:grid-cols-2">
               {group.items.map((name) => {
                 return (
@@ -89,6 +90,17 @@ export default function ProductCategory() {
                 );
               })}
             </ul>
+            ) : (
+              <div className="flex flex-col items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-6">
+                <p className="text-sm text-slate-300">No products listed yet.</p>
+                <Link
+                  to={`/contact?category=${encodeURIComponent(group.title)}`}
+                  className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  Get a quote
+                </Link>
+              </div>
+            )}
           </div>
 
           <figure className="overflow-hidden rounded-xl border border-white/10">

@@ -150,6 +150,31 @@ export const productGroups: readonly ProductGroup[] = [
     brandGroupTitle: "Computers, storage and peripherals",
     items: ["Mouse", "Keyboard", "Webcam", "Conference Webcam", "Printer", "Hard Disk"],
   },
+  /* ── NEW categories added 2026 ────────────────────────────────── */
+  {
+    slug: "servers-storage",
+    title: "Servers & storage",
+    intro: "Rack, tower and storage hardware, supplied and configured.",
+    image: "/images/products/computers.webp",
+    brandGroupTitle: "Servers and storage",
+    items: [],
+  },
+  {
+    slug: "firewalls-security",
+    title: "Firewalls & security",
+    intro: "Appliances and licences for edge and endpoint protection.",
+    image: "/images/products/networking.webp",
+    brandGroupTitle: "Firewalls and security",
+    items: [],
+  },
+  {
+    slug: "backup-data-protection",
+    title: "Backup & data protection",
+    intro: "Software and media for backup and archive.",
+    image: "/images/products/computers.webp",
+    brandGroupTitle: "Backup and data protection",
+    items: [],
+  },
 ];
 
 /** Navbar mega-menu group order, as productGroups slugs. A group missing
@@ -165,6 +190,9 @@ export const menuGroupOrder: readonly string[] = [
   "copper-cabling",
   "specialty-cables",
   "telephony-displays",
+  "servers-storage",
+  "firewalls-security",
+  "backup-data-protection",
 ];
 
 export const brandGroupOrder: readonly string[] = [
@@ -218,6 +246,19 @@ export const brandGroups: readonly BrandGroup[] = [
       "NVIDIA",
       "Intel",
     ],
+  },
+  /* ── Brand groups for the 3 new categories ───────────────────── */
+  {
+    title: "Servers and storage",
+    brands: ["Dell EMC", "HP", "Lenovo", "Synology", "QNAP"],
+  },
+  {
+    title: "Firewalls and security",
+    brands: ["Fortinet", "Sophos", "Cisco", "Acronis"],
+  },
+  {
+    title: "Backup and data protection",
+    brands: ["Veeam", "Acronis", "LTO Tape"],
   },
 ];
 

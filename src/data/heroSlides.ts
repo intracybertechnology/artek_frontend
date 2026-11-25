@@ -1,60 +1,7 @@
-import type { HeroSlide } from "../types/index.ts";
-
-export const heroSlides: readonly HeroSlide[] = [
-  {
-    id: "cctv",
-    category: "Video Surveillance",
-    title: "Intelligent CCTV Solutions",
-    description: "Advanced surveillance solutions for homes and businesses.",
-    image: "/images/hero/artek-security-workspace.webp",
-    imageAlt: "ARTEK security solutions workspace — CCTV monitoring and IT setup",
-    width: 1536,
-    height: 1200,
-  },
-  {
-    id: "biometrics",
-    category: "Biometric Systems",
-    title: "Smarter Attendance Management",
-    description: "Modern biometric technology for workplace access and attendance.",
-    image: "/images/hero/hero-2-workspace.webp",
-    imageAlt: "ARTEK biometric and security systems installation",
-    width: 1600,
-    height: 1200,
-    mobileImage: "/images/hero/slide2-biometric-mobile.webp",
-  },
-  {
-    id: "access-control",
-    category: "Access Control",
-    title: "Secure Every Entry Point",
-    description: "Smart access management for controlled and secure environments.",
-    image: "/images/hero/hero-3-workspace.webp",
-    imageAlt: "ARTEK access control solution at a commercial site",
-    width: 1600,
-    height: 1200,
-    mobileImage: "/images/hero/slide3-access-mobile.webp",
-  },
-  {
-    id: "intercom",
-    category: "Video Intercom",
-    title: "Connected Entry Solutions",
-    description: "Convenient communication and visitor management.",
-    image: "/images/hero/hero-4-workspace.webp",
-    imageAlt: "ARTEK connected entry and intercom installation",
-    width: 1600,
-    height: 1200,
-    mobileImage: "/images/hero/slide4-entry-mobile.webp",
-  },
-  {
-    id: "networking",
-    category: "IT Infrastructure",
-    title: "Reliable Network Infrastructure",
-    description: "Technology infrastructure that keeps businesses connected.",
-    image: "/images/hero/slide5-network.webp",
-    imageAlt: "Organised server racks and network cabling in a data center",
-    width: 1600,
-    height: 1200,
-    mobileImage: "/images/hero/slide5-network-mobile.webp",
-  },
-];
-
-export const heroPreloadImage = heroSlides[0];
+// Representative imagery, not a photograph of an ARTEK installation.
+// The prerendered homepage preloads this same resource.
+export const heroPreloadImage = {
+  image: "/images/hero/candidate-b-security-surveillance.webp",
+  width: 1600,
+  height: 1200,
+} as const;

@@ -1,0 +1,182 @@
+.home-hero {
+  position: relative;
+  isolation: isolate;
+  background: var(--bg-dark, #0a0a0b);
+  color: #fff;
+}
+
+.home-hero__picture {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: min(27rem, 110vw);
+  background: var(--bg-navy, #0b1220);
+}
+
+.home-hero__picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 37%;
+}
+
+.home-hero__picture::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(10 10 11 / 52%) 0%, transparent 23%, rgb(10 10 11 / 15%) 35%, rgb(10 10 11 / 94%) 77%, var(--bg-dark, #0a0a0b) 100%);
+  content: "";
+}
+
+.home-hero__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.home-hero__slide.is-previous { z-index: 1; opacity: 1; }
+.home-hero__slide.is-active { z-index: 2; opacity: 1; }
+.home-hero__picture::after { z-index: 3; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero__slide.is-active:not(:first-child),
+  .home-hero__picture:has(.is-previous) .home-hero__slide.is-active {
+    animation: hero-photo-in 650ms ease-in-out both;
+  }
+}
+
+@keyframes hero-photo-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__slide:not(:first-child) { display: none; }
+}
+
+.home-hero__inner {
+  display: flex;
+  align-items: center;
+  /* Full viewport height: vh fallback, svh so mobile address-bar chrome
+     doesn't push the next section in and out of view. */
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: clamp(12.5rem, 87vw, 21rem) 3rem;
+}
+
+.home-hero__copy {
+  width: min(100%, 46rem);
+}
+
+.home-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  color: #f3f7fd;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.home-hero__eyebrow::before {
+  width: 1.6rem;
+  height: 2px;
+  flex: 0 0 auto;
+  background: var(--accent-bright, #00a0e8);
+  content: "";
+}
+
+.home-hero__headline {
+  margin-top: 1rem;
+  font-size: clamp(2.125rem, 6.3vw + .8rem, 4.6rem);
+  font-weight: 800;
+  letter-spacing: -.065em;
+  line-height: 1.03;
+}
+
+.home-hero__headline span {
+  color: #bedffa;
+}
+
+.home-hero__description {
+  max-width: 32rem;
+  margin-top: 1.15rem;
+  color: #dce3ed;
+  font-size: clamp(1rem, .92rem + .3vw, 1.125rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.home-hero__actions {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-top: 1.6rem;
+}
+
+.home-hero__cta {
+  display: inline-flex;
+  min-height: 3.125rem;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  border: 1px solid transparent;
+  border-radius: .625rem;
+  padding: .5rem 1.15rem;
+  color: #fff;
+  font-size: .94rem;
+  font-weight: 750;
+  text-align: center;
+}
+
+.home-hero__cta svg { flex: none; }
+.home-hero__cta:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.home-hero__cta--phone { border-color: #8c9cac; background: rgb(11 18 32 / 65%); }
+.home-hero__cta--phone:hover { background: #233144; }
+
+.home-hero__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .45rem;
+  margin-top: 1.15rem;
+}
+
+.home-hero__chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border: 1px solid rgb(255 255 255 / 21%);
+  border-radius: 999px;
+  background: rgb(11 18 32 / 68%);
+  padding: .25rem .5rem;
+  color: #e9f2fb;
+  font-size: .6875rem;
+  font-weight: 650;
+  letter-spacing: .005em;
+  line-height: 1.3;
+}
+
+.home-hero__chips svg { color: #9edaff; }
+
+@media (min-width: 36rem) {
+  .home-hero__actions { flex-flow: row wrap; }
+  .home-hero__chips { margin-top: 1.35rem; }
+}
+
+@media (min-width: 56rem) {
+  .home-hero__picture { inset: 0 0 0 30%; height: auto; }
+  .home-hero__picture img { object-position: 69% center; }
+  .home-hero__picture::after {
+    background:
+      linear-gradient(0deg, var(--bg-dark, #0a0a0b), transparent 34%, transparent 80%, rgb(10 10 11 / 35%)),
+      linear-gradient(90deg, var(--bg-dark, #0a0a0b) 0%, rgb(10 10 11 / 90%) 27%, rgb(10 10 11 / 70%) 51%, rgb(10 10 11 / 18%) 82%, rgb(10 10 11 / 10%) 100%);
+  }
+  .home-hero__inner { padding-block: 9rem 4rem; }
+  .home-hero__headline { font-size: clamp(3.6rem, 5.15vw, 5.25rem); }
+  .home-hero__copy { max-width: 65%; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero__cta { transition: background-color 150ms ease; }
+}

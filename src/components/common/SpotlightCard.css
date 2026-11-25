@@ -1,0 +1,40 @@
+.spotlight-card {
+  --spotlight-x: 50%;
+  --spotlight-y: 50%;
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight-card__light,
+.spotlight-card__edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.spotlight-card__light {
+  z-index: -1;
+  background: radial-gradient(circle 240px at var(--spotlight-x) var(--spotlight-y), rgb(1 224 255 / 18%), transparent 100%);
+}
+
+.spotlight-card__edge {
+  z-index: 1;
+  inset: -1px;
+  padding: 1px;
+  background: radial-gradient(circle 180px at var(--spotlight-x) var(--spotlight-y), rgb(1 224 255 / 72%), transparent 100%);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+.spotlight-card:focus-visible {
+  outline: 2px solid #01e0ff;
+  outline-offset: 4px;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .spotlight-card__light,
+  .spotlight-card__edge { transition: opacity 200ms ease-out; }
+  .spotlight-card:hover > .spotlight-card__light,
+  .spotlight-card:hover > .spotlight-card__edge { opacity: 1; }
+}

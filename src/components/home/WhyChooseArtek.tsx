@@ -1,103 +1,102 @@
-import { BadgeCheck, Route, Zap, Scale, Users } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Cctv, ClipboardList, Headset, Monitor, Network, Users } from "lucide-react";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { RevealBox } from "@/components/common/RevealBox";
+import "./WhyChooseArtek.css";
 
-/**
- * Why Choose ARTEK (directly after the hero block).
- * Dark "premium" band: ambience, glass cards, numbered indices.
- * ⚠ Each block is a company claim; verify wording with ARTEK — in
- * particular the individual SIRA certification, no-subcontracting and
- * same-day response statements — before production.
- */
-const FEATURES = [
+const services = [
+  { icon: Cctv, label: "CCTV" },
+  { icon: Network, label: "Networking" },
+  { icon: Monitor, label: "IT" },
+] as const;
+
+const supportingReasons = [
   {
-    icon: BadgeCheck,
-    title: "SIRA-Certified Engineers",
-    body:
-      "Our technicians hold individual SIRA certifications — not just company approval. Every installation is done by someone who knows the regulations inside out.",
-    claim: "verify individual engineer certification",
+    icon: ClipboardList,
+    stage: "Before work starts",
+    title: "Know what you’re paying for.",
+    description: "An itemised quote shows the equipment, installation, and what’s included before you approve the work.",
   },
   {
-    icon: Route,
-    title: "End-to-End Service",
-    body:
-      "We don't subcontract. From site survey to SIRA NOC to annual maintenance, one team handles everything. One call, full accountability.",
-    claim: "verify no-subcontracting policy",
-  },
-  {
-    icon: Zap,
-    title: "Fast On-Site Response",
-    body:
-      "Based in Bur Dubai, we reach most locations within hours. AMC clients get same-day response for critical faults.",
-    claim: "verify location + response promise",
-  },
-  {
-    icon: Scale,
-    title: "Top Brands, Honest Pricing",
-    body:
-      "We supply Hikvision, Dahua, and other suitable security brands. Our Computer Street presence helps us provide competitive pricing with transparent quotations.",
-    claim: "verify Computer Street presence ",
-  },
-  {
-    icon: Users,
-    title: "Long-Term Partnerships",
-    body:
-      "We build long-term customer relationships through reliable service, ongoing support and a dedicated approach to each customer's IT infrastructure.",
+    icon: Headset,
+    stage: "After handover",
+    title: "Know who to call.",
+    description: "Keep one point of contact for maintenance, troubleshooting, and future upgrades.",
   },
 ] as const;
 
+function TeamDiagram() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    const diagram = ref.current;
+    if (!diagram || typeof IntersectionObserver === "undefined") return;
+    // Don't replay the entrance if the diagram is already visible on mount.
+    if (diagram.getBoundingClientRect().top < window.innerHeight) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      setEntered(true);
+      observer.disconnect();
+    }, { threshold: 0.2 });
+    observer.observe(diagram);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="why-artek__diagram" data-entered={entered} aria-hidden="true">
+      <div className="why-artek__sources">
+        {services.map(({ icon: Icon, label }) => (
+          <span key={label} className="why-artek__source">
+            <Icon className="size-5 text-sky-700" strokeWidth={1.7} />
+            {label}
+          </span>
+        ))}
+      </div>
+      <svg className="why-artek__connectors" viewBox="0 0 300 64" preserveAspectRatio="none" fill="none" stroke="currentColor" focusable="false">
+        <path pathLength="1" d="M50 0 V16 Q50 32 66 32 H134 Q150 32 150 48 V64" />
+        <path pathLength="1" d="M150 0 V64" />
+        <path pathLength="1" d="M250 0 V16 Q250 32 234 32 H166 Q150 32 150 48 V64" />
+      </svg>
+      <span className="why-artek__destination">
+        <Users className="size-5 text-sky-300" strokeWidth={1.7} />
+        One point of contact
+      </span>
+    </div>
+  );
+}
+
 export function WhyChooseArtek() {
   return (
-    <section className="relative band-lg" aria-labelledby="why-heading">
+    <section className="on-paper bg-white text-slate-900 band" aria-labelledby="why-heading">
       <div className="container-page">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 xl:gap-24">
-          <SectionHeading
-            id="why-heading"
-            align="left"
-            eyebrow="Why Artek"
-            title="A technology partner, not a supplier."
-            description="Choosing the right partner matters more than choosing the right camera. We bring security expertise, IT infrastructure and support into one accountable team — so nobody has to coordinate three vendors to keep a building running."
-            className="lg:sticky lg:top-28 lg:self-start"
-          />
-
-          <ol className="border-t border-white/10">
-            {FEATURES.map((f, i) => {
-              const num = String(i + 1).padStart(2, "0");
-              const Icon = f.icon;
-              return (
-                <RevealBox
-                  as="li"
-                  key={f.title}
-                  delay={(i % 3) * 60}
-                  className="group border-b border-white/10"
-                >
-                  <div className="grid grid-cols-[auto_1fr] gap-5 py-7 sm:gap-7">
-                    <div className="flex flex-col items-start gap-4">
-                      <span
-                        aria-hidden="true"
-                        className="font-display text-sm font-medium tabular-nums text-white/30 transition-colors duration-300 group-hover:text-paper"
-                      >
-                        {num}
-                      </span>
-                      <Icon
-                        className="size-5 text-text-muted transition-colors duration-300 group-hover:text-text"
-                        strokeWidth={1.6}
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold tracking-tight text-text sm:text-xl">
-                        {f.title}
-                      </h3>
-                      <p className="mt-2 max-w-xl text-pretty text-sm leading-relaxed text-text-muted sm:text-[15px]">
-                        {f.body}
-                      </p>
-                    </div>
-                  </div>
-                </RevealBox>
-              );
-            })}
-          </ol>
+        <SectionHeading
+          id="why-heading"
+          tone="paper"
+          eyebrow="Why ARTEK"
+          title="A technology partner, not a supplier."
+        />
+        <div className="mx-auto mt-9 grid max-w-6xl gap-7 md:mt-12 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-center md:gap-10 lg:gap-16">
+          <div className="why-artek__lead rounded-2xl border border-sky-100 p-4 sm:p-7 lg:p-9">
+            <h3 className="display-title text-2xl sm:text-3xl">One team for the whole project</h3>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+              Coordinate CCTV, networking, and IT through one point of contact.
+            </p>
+            <TeamDiagram />
+          </div>
+          <ul className="grid gap-(--why-row-gap) [--why-row-gap:1.75rem] lg:[--why-row-gap:2.5rem]">
+            {supportingReasons.map(({ icon: Icon, stage, title, description }) => (
+              <li key={stage} className="relative grid grid-cols-[auto_minmax(0,1fr)] gap-4 first:before:pointer-events-none first:before:absolute first:before:top-5 first:before:left-5 first:before:h-[calc(100%+var(--why-row-gap))] first:before:w-px first:before:bg-sky-300 first:before:content-['']">
+                <span className="relative grid size-10 place-items-center rounded-full border border-sky-200 bg-sky-50 text-sky-700">
+                  <Icon className="size-5" strokeWidth={1.7} aria-hidden="true" />
+                </span>
+                <div className="bg-white">
+                  <p className="text-[11px] font-bold tracking-[0.16em] text-sky-800 uppercase">{stage}</p>
+                  <h3 className="mt-2 text-xl font-bold leading-snug">{title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base">{description}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

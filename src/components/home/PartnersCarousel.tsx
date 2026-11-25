@@ -6,7 +6,7 @@ const BRANDS = [
   { name: "Ubiquiti",    file: "ubiquiti.jpg" },
   { name: "Aruba",       file: "aruba.jpg" },
   { name: "Dell",        file: "dell.jpg" },
-  { name: "HP",          file: "hp.jpg" },
+  // { name: "HP",          file: "hp.jpg" },
   { name: "Microsoft",   file: "microsoft.jpg" },
   { name: "APC",         file: "apc.jpg" },
   { name: "Huawei",      file: "huawei.jpg" },

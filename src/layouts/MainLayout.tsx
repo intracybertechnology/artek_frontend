@@ -41,7 +41,6 @@ export function MainLayout() {
       <Footer />
       <EnquiryWidget />
       {/* <FloatingCallButton /> */}
-      <FloatingCallButton />
       <CookieConsent />
     </div>
   );

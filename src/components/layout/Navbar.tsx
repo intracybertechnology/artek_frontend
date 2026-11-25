@@ -235,7 +235,7 @@ export function Navbar() {
                       ref={categoryListRef}
                       aria-label="Product categories"
                       onKeyDown={onCategoryListKeyDown}
-                      className="flex flex-col gap-0.5"
+                      className="flex flex-col gap-0.5 max-h-[min(60vh,460px)] overflow-y-auto [scrollbar-width:thin]"
                     >
                       {orderedGroups.map((g) => {
                         const isActive = g.slug === activeGroup?.slug;

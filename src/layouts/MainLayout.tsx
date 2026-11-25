@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { EnquiryWidget } from "@/components/common/EnquiryWidget";
+import { CookieConsent } from "@/components/common/CookieConsent";
 // import { FloatingCallButton } from "@/components/layout/FloatingCallButton";
 import { SEOHead } from "@/components/common/SEOHead";
 import { getLenis, initLenis } from "@/lib/lenis";
@@ -40,6 +41,8 @@ export function MainLayout() {
       <Footer />
       <EnquiryWidget />
       {/* <FloatingCallButton /> */}
+      <FloatingCallButton />
+      <CookieConsent />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { openCookieSettings } from "@/lib/cookieConsent";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaPinterestP, FaXTwitter } from "react-icons/fa6";
 import { company } from "@/data/company";
@@ -152,6 +153,13 @@ export function Footer() {
           <div className="flex gap-5">
             <Link to="/privacy-policy" className="transition-colors hover:text-text">Privacy Policy</Link>
             <Link to="/terms-and-conditions" className="transition-colors hover:text-text">Terms &amp; Conditions</Link>
+            <button
+              type="button"
+              onClick={openCookieSettings}
+              className="transition-colors hover:text-text"
+            >
+              Cookie settings
+            </button>
           </div>
         </div>
       </div>

@@ -12,3 +12,6 @@ dist
 
 # Original brand logo backups (before trim)
 brand-logos-original/
+
+# Raw product photo inbox (optimised copies live in public/images/products/)
+images-inbox/

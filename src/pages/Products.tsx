@@ -1,14 +1,21 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Phone } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/common/Reveal";
 import { company } from "@/data/company";
-import { productGroups, slugify } from "@/data/catalog";
+import { menuGroupOrder, productGroups, slugify } from "@/data/catalog";
 
 /** Product index: every category and its items, each with a quote action. */
 export default function Products() {
   const { hash } = useLocation();
+
+  const mgRank = (slug: string) => {
+    const i = menuGroupOrder.indexOf(slug);
+    return i === -1 ? menuGroupOrder.length : i;
+  };
+  const orderedGroups = [...productGroups].sort((a, b) => mgRank(a.slug) - mgRank(b.slug));
 
   /* react-router doesn't scroll to hash anchors on client navigation — do it after render */
   useEffect(() => {
@@ -29,12 +36,22 @@ export default function Products() {
           <p className="mt-4 max-w-2xl text-pretty text-base text-slate-300 sm:text-lg">
             Cables, networking, computers and security equipment, supplied and supported by Artek Computers LLC.
           </p>
+          <p className="mt-4 text-sm text-slate-300">
+            Looking for a brand?{" "}
+            <Link
+              to="/brands"
+              className="inline-flex items-center gap-1.5 font-semibold text-white hover:underline"
+            >
+              Browse by brand
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </p>
         </div>
       </header>
 
       <nav aria-label="Product groups" className="border-b border-white/10 bg-navy-950">
         <div className="container-page flex gap-2 overflow-x-auto py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {productGroups.map((g) => (
+          {orderedGroups.map((g) => (
             <a
               key={g.slug}
               href={`#${g.slug}`}
@@ -48,15 +65,15 @@ export default function Products() {
 
       <div className="bg-mist-2 py-14 sm:py-20">
         <div className="container-page space-y-16">
-          {productGroups.map((g) => (
+          {orderedGroups.map((g) => (
             <section key={g.slug} id={g.slug} aria-labelledby={`${g.slug}-heading`} className="scroll-mt-28">
               <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-4">
                 <div>
-                  <h2 id={`${g.slug}-heading`} className="text-2xl font-bold text-ink">
+                  <Reveal as="h2" id={`${g.slug}-heading`} className="text-2xl font-bold text-ink">
                     <Link to={`/products/${g.slug}`} className="hover:text-accent-600">
                       {g.title}
                     </Link>
-                  </h2>
+                  </Reveal>
                   <p className="mt-1 max-w-2xl text-sm text-slate-300">{g.intro}</p>
                 </div>
               </div>

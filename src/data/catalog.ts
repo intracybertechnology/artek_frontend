@@ -431,6 +431,12 @@ export const brandDetails: Record<string, BrandDetail> = {
   rapoo: { description: "" },
   nvidia: { description: "" },
   intel: { description: "" },
+  /* ── New brands for Servers & storage, Firewalls & security, Backup ── */
+  "dell-emc": { description: "" },
+  sophos: { description: "" },
+  acronis: { description: "" },
+  veeam: { description: "" },
+  "lto-tape": { description: "" },
 };
 
 /** Resolve a brand page (/brands/<brand>) to its name, brand group and details. */

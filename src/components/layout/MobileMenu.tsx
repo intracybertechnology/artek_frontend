@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 /**
  * Mobile navigation — a white sheet fixed below the dark header bar.
  *
- * "Products" (links to /brands) is an expandable accordion item (chevron)
- * containing:
+ * "Products" (links to /products) is an accordion row: the label navigates,
+ * the chevron expands the section, containing:
  *   - a "View all brands" link to /brands
  *   - "Top brands" (flat list)
  *   - "Shop by category" (nested accordion per product group, menu order)
@@ -135,18 +135,27 @@ export function MobileMenu() {
 
               <Accordion.Root type="multiple">
                 <Accordion.Item value="brands" className="border-t border-slate-200">
-                  <Accordion.Trigger
-                    className={cn(
-                      "group flex w-full min-h-[52px] items-center justify-between gap-3 pl-4 pr-2 text-[17px] font-medium tracking-[-0.01em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600",
-                      productsActive ? "text-blue-700" : "text-slate-900 hover:text-blue-700",
-                    )}
-                  >
-                    Products
-                    <ChevronDown
-                      className="size-4 shrink-0 text-slate-400 transition-transform duration-200 group-data-[state=open]:rotate-180"
-                      aria-hidden="true"
-                    />
-                  </Accordion.Trigger>
+                  <div className="flex items-stretch">
+                    <NavLink
+                      to="/products"
+                      onClick={close}
+                      className={cn(
+                        "flex min-h-[52px] flex-1 items-center pl-4 pr-2 text-[17px] font-medium tracking-[-0.01em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600",
+                        productsActive ? "text-blue-700" : "text-slate-900 hover:text-blue-700",
+                      )}
+                    >
+                      Products
+                    </NavLink>
+                    <Accordion.Trigger
+                      className="group flex min-h-[52px] w-12 items-center justify-end pr-2 outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                      aria-label="Toggle products section"
+                    >
+                      <ChevronDown
+                        className="size-4 shrink-0 text-slate-400 transition-transform duration-200 group-data-[state=open]:rotate-180"
+                        aria-hidden="true"
+                      />
+                    </Accordion.Trigger>
+                  </div>
                   <Accordion.Content>
 
                     {/* View all brands */}

@@ -10,10 +10,36 @@ import { brandContent } from "@/data/brandContent";
 import { company } from "@/data/company";
 import NotFound from "@/pages/NotFound";
 
-/** Single model card: placeholder or image, code, type, and quote button. */
+/** Single model card: image card, or a compact card when there is no image. */
 function ModelCard({ brand, model, accent }: { brand: string; model: BrandModel; accent?: string }) {
   const [imgFailed, setImgFailed] = useState(false);
   const quoteTo = `/contact?message=${encodeURIComponent(`I'm interested in ${brand} ${model.code} (${model.type}).`)}`;
+
+  const quoteButton = (
+    <Link
+      to={quoteTo}
+      className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md bg-slate-900 py-2.5 text-sm font-semibold text-white outline-none transition-colors hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+    >
+      Request a Free Quote
+    </Link>
+  );
+
+  /* No image: compact card — camera icon beside the code, no placeholder box */
+  if (!model.image) {
+    return (
+      <li
+        className="rounded-2xl border border-slate-200 bg-white p-5"
+        style={accent ? { borderTopColor: "var(--brand-accent)" } : undefined}
+      >
+        <div className="flex items-center gap-2.5">
+          <Camera className="size-6 shrink-0 text-slate-400" aria-hidden="true" />
+          <p className="break-words text-sm font-bold text-slate-900">{model.code}</p>
+        </div>
+        <p className="mt-1 text-sm text-slate-600">{model.type}</p>
+        {quoteButton}
+      </li>
+    );
+  }
 
   return (
     <li
@@ -41,12 +67,7 @@ function ModelCard({ brand, model, accent }: { brand: string; model: BrandModel;
       <div className="p-4">
         <p className="break-words text-sm font-bold text-slate-900">{model.code}</p>
         <p className="mt-0.5 text-sm text-slate-600">{model.type}</p>
-        <Link
-          to={quoteTo}
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          Request a Free Quote
-        </Link>
+        {quoteButton}
       </div>
     </li>
   );
@@ -101,7 +122,7 @@ export default function BrandDetail() {
     >
       {/* ── Brand logo ────────────────────────────────────────────── */}
       {logoSrc && (
-        <div className="mb-6 flex justify-center">
+        <div className="mb-6">
           <BrandLogo name={name} className="h-20 w-40" />
         </div>
       )}
@@ -176,7 +197,7 @@ export default function BrandDetail() {
       )}
 
       {/* ── Trademark note (every brand page) ─────────────────────── */}
-      <p className="mt-10 border-t border-slate-200 pt-4 text-sm text-slate-500">
+      <p className="mt-10 border-t border-slate-200 pt-4 text-sm text-slate-400">
         {name} is a trademark of its respective owner. Artek Computers LLC is a reseller of {name} products.
       </p>
     </DetailPageLayout>

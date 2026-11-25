@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 /**
  * Premium floating navigation with a Products mega menu.
  *
- * The Products trigger is a plain link to /brands (click navigates) with a
+ * The Products trigger is a plain link to /products (click navigates) with a
  * chevron that flips while the panel is open. The panel opens on:
  *   - hover over the trigger (200 ms open delay, 150 ms close delay)
  *   - keyboard focus into the trigger
@@ -194,7 +194,7 @@ export function Navbar() {
                 }
 
                 // ── Products trigger ─────────────────────────────────
-                // Click still navigates to /brands; hover or keyboard focus
+                // Click still navigates to /products; hover or keyboard focus
                 // opens the mega panel.
                 return (
                   <div
@@ -205,7 +205,7 @@ export function Navbar() {
                   >
                     <NavLink
                       ref={triggerRef}
-                      to={item.to}
+                      to="/products"
                       aria-haspopup="true"
                       aria-expanded={megaOpen}
                       onFocus={() => {

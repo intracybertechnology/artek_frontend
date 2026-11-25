@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Phone } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/common/Reveal";
@@ -35,6 +35,16 @@ export default function Products() {
           </h1>
           <p className="mt-4 max-w-2xl text-pretty text-base text-slate-300 sm:text-lg">
             Cables, networking, computers and security equipment, supplied and supported by Artek Computers LLC.
+          </p>
+          <p className="mt-4 text-sm text-slate-300">
+            Looking for a brand?{" "}
+            <Link
+              to="/brands"
+              className="inline-flex items-center gap-1.5 font-semibold text-white hover:underline"
+            >
+              Browse by brand
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
           </p>
         </div>
       </header>

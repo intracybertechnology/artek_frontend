@@ -16,7 +16,7 @@ export type BrandContent = {
 export const brandContent: Record<string, BrandContent> = {
   hikvision: {
     intro:
-      "Artek Computers LLC supplies Hikvision security cameras to customers in Dubai and across the UAE. On this site we list Hikvision IP cameras, dome cameras, bullet cameras and PTZ cameras for offices, shops, warehouses and residential buildings, ready to quote for projects of any scale.",
+      "Artek Computers LLC supplies Hikvision security cameras to customers in Dubai and across the UAE. On this site we list Hikvision IP cameras, dome cameras, bullet cameras and PTZ cameras for offices, shops, warehouses and residential buildings, ready to quote for your project.",
     howWeHelp:
       "Tell us which camera types you need, how many of each, and where they will be installed. Artek Computers LLC will reply with a clear quote for your Hikvision order in Dubai or anywhere in the UAE.",
     faqs: [

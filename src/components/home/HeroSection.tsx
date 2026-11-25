@@ -38,7 +38,7 @@ export function HeroSection() {
           </div>
           <ul className="home-hero__chips" aria-label="Service highlights">
             {serviceChips.map(({ label, icon: Icon }) => (
-              <li key={label}><Icon size={15} aria-hidden="true" />{label}</li>
+              <li key={label}><Icon size={11} aria-hidden="true" />{label}</li>
             ))}
           </ul>
         </div>

@@ -1,11 +1,10 @@
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { approvedTestimonials, demoTestimonials } from "@/data/testimonials";
+import { approvedTestimonials } from "@/data/testimonials";
 import { cn } from "@/lib/utils";
 
-const preview = import.meta.env.DEV && approvedTestimonials.length === 0;
-const stories = preview ? demoTestimonials : approvedTestimonials;
+const stories = approvedTestimonials;
 
 export function TestimonialsSection() {
   const [index, setIndex] = useState(0);
@@ -21,7 +20,7 @@ export function TestimonialsSection() {
     const target = (next + stories.length) % stories.length;
     if (target === index) return;
     setIndex(target);
-    setAnnouncement(`${preview ? "Sample" : "Story"} ${target + 1} of ${stories.length}: ${stories[target].name}`);
+    setAnnouncement(`Story ${target + 1} of ${stories.length}: ${stories[target].name}`);
   }
 
   return (
@@ -30,15 +29,14 @@ export function TestimonialsSection() {
         <SectionHeading
           id="testimonials-heading"
           tone="paper"
-          eyebrow={preview ? "Design preview" : "Client stories"}
-          title={preview ? "A preview of our client stories." : "What clients say after the work is done."}
-          description={preview ? "Fictional examples for layout review only. These are not customer endorsements." : undefined}
+          eyebrow="Client stories"
+          title="What clients say after the work is done."
         />
         <div
           className="relative isolate mx-auto mt-8 max-w-5xl overflow-hidden rounded-[1.75rem] border border-slate-700 bg-[#0b1220] px-5 py-7 text-white shadow-[0_24px_64px_-36px_#102a43] sm:mt-12 sm:p-10 lg:px-14"
           role="group"
           aria-roledescription="carousel"
-          aria-label={preview ? "Sample stories" : "Client stories"}
+          aria-label="Client stories"
           onKeyDown={(event) => {
             if (!multiple || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
             if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
@@ -64,7 +62,7 @@ export function TestimonialsSection() {
           <div className="flex items-center justify-between gap-4">
             <Quote className="size-8 text-sky-300" strokeWidth={1.5} aria-hidden="true" />
             <span className="text-xs font-semibold tracking-[0.16em] text-sky-200 uppercase tabular-nums">
-              {preview ? "Sample" : "Story"} {String(index + 1).padStart(2, "0")} / {String(stories.length).padStart(2, "0")}
+              Story {String(index + 1).padStart(2, "0")} / {String(stories.length).padStart(2, "0")}
             </span>
           </div>
           <div id="client-story" className="mt-5 grid">
@@ -90,7 +88,7 @@ export function TestimonialsSection() {
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-4">
               <div role="group" aria-label="Choose a story" className="flex flex-wrap">
                 {stories.map((story, i) => (
-                  <button key={story.id} type="button" onClick={() => select(i)} aria-label={`Show ${preview ? "sample" : "story"} ${i + 1}: ${story.name}`} aria-current={i === index ? "true" : undefined} aria-controls="client-story" className="grid size-10 cursor-pointer place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-sky-300">
+                  <button key={story.id} type="button" onClick={() => select(i)} aria-label={`Show story ${i + 1}: ${story.name}`} aria-current={i === index ? "true" : undefined} aria-controls="client-story" className="grid size-10 cursor-pointer place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-sky-300">
                     <span aria-hidden="true" className={cn("h-2 rounded-full", i === index ? "w-5 bg-sky-300" : "w-2 bg-slate-400")} />
                   </button>
                 ))}

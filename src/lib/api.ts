@@ -13,12 +13,13 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-const BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+/** Backend origin — exported so image paths served by the API (e.g. /uploads/…) can be prefixed. */
+export const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
 
 export type ApiError = Error & { status?: number };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     ...init,

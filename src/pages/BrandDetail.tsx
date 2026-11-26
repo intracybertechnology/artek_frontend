@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Camera } from "lucide-react";
 import { DetailPageLayout } from "@/components/common/DetailPageLayout";
@@ -8,6 +8,7 @@ import { FAQAccordion } from "@/components/common/FAQAccordion";
 import { brandLogo, getBrand, getBrandProducts, slugify, type BrandModel } from "@/data/catalog";
 import { brandContent } from "@/data/brandContent";
 import { company } from "@/data/company";
+import { fetchProductsByBrand, type ApiProduct } from "@/lib/catalogApi";
 import NotFound from "@/pages/NotFound";
 
 /** Single model card: image card, or a compact card when there is no image. */
@@ -73,11 +74,36 @@ function ModelCard({ brand, model, accent }: { brand: string; model: BrandModel;
   );
 }
 
+/** Backend product → card model: code = modelNumber, type = type, image when present. */
+const toModel = (p: ApiProduct): BrandModel => ({
+  code: p.modelNumber,
+  type: p.type ?? "Product",
+  image: p.image ?? undefined,
+});
+
 /** One brand: logo, popular models, products (or ask-us block), and sibling brands in the sidebar. */
 export default function BrandDetail() {
   const { brand: brandSlug } = useParams<{ brand: string }>();
   const brand = brandSlug ? getBrand(brandSlug) : undefined;
   const { name, group, detail } = brand ?? {};
+  /** Live models from /api/products; null until loaded — the catalog models show meanwhile. */
+  const [apiModels, setApiModels] = useState<BrandModel[] | null>(null);
+
+  useEffect(() => {
+    if (!brandSlug) return;
+    let active = true;
+    setApiModels(null);
+    fetchProductsByBrand(brandSlug)
+      .then((products) => {
+        if (active && products.length > 0) setApiModels(products.map(toModel));
+      })
+      .catch(() => {
+        /* Backend unreachable or errored — the visitor keeps seeing the catalog models. */
+      });
+    return () => {
+      active = false;
+    };
+  }, [brandSlug]);
 
   if (!brand || !name || !group) return <NotFound />;
 
@@ -86,6 +112,9 @@ export default function BrandDetail() {
   const intro = content?.intro
     || detail?.description
     || `Browse the ${name} products we supply in Dubai and request a quote.`;
+  /** Card models: backend products once loaded, else the catalog.ts models. */
+  const models = apiModels ?? detail?.models ?? [];
+
   const products = getBrandProducts(brandSlug ?? "");
   const otherBrands = group.brands.filter((b) => b !== name);
   const logoSrc = brandLogo(name);
@@ -126,12 +155,12 @@ export default function BrandDetail() {
           <BrandLogo name={name} className="h-20 w-40" />
         </div>
       )}
-      {/* ── Popular models ────────────────────────────────────────── */}
-      {detail?.models && detail.models.length > 0 && (
+      {/* ── Popular models — backend products, catalog.ts models as fallback ── */}
+      {models.length > 0 && (
         <div className="mb-8">
           <Reveal as="h2" className="text-xl font-bold text-ink">Popular {name} models</Reveal>
           <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-            {detail.models.map((model) => (
+            {models.map((model) => (
               <ModelCard key={model.code} brand={name} model={model} accent={detail?.accent} />
             ))}
           </ul>

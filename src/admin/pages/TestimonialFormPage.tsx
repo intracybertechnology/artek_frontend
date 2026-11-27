@@ -54,8 +54,8 @@ function friendlyError(err: unknown): string {
 export default function TestimonialFormPage() {
   const navigate = useNavigate();
   const params = useParams<{ id?: string }>();
-  const isEdit = Boolean(params.id);
-  const id = Number(params.id!);
+  const isEdit = Boolean(id);
+  const id = Number(id);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -100,7 +100,7 @@ export default function TestimonialFormPage() {
       }
     };
     void load();
-  }, [isEdit, params.id, navigate]);
+  }, [isEdit, id, navigate]);
 
   const requiredMissing: string[] = [];
   if (!name.trim()) requiredMissing.push("Name");
@@ -129,7 +129,7 @@ export default function TestimonialFormPage() {
         isPublished,
       };
       if (isEdit) {
-        await updateTestimonial(params.id!, body);
+        await updateTestimonial(id, body);
         setSuccess("Testimonial saved.");
       } else {
         const res = await createTestimonial(body);
@@ -156,10 +156,10 @@ export default function TestimonialFormPage() {
   };
 
   const handlePublishToggle = async () => {
-    if (!params.id) return;
+    if (!id) return;
     setError(null);
     try {
-      await togglePublishTestimonial(params.id, !isPublished);
+      await togglePublishTestimonial(id, !isPublished);
       setIsPublished(!isPublished);
       setSuccess(isPublished ? "Testimonial hidden." : "Testimonial published.");
     } catch (err) {
@@ -199,15 +199,15 @@ export default function TestimonialFormPage() {
   };
 
   const handlePortraitUpload = async () => {
-    if (!params.id || !selectedFile) return;
+    if (!id || !selectedFile) return;
     setError(null);
     setImageUploading(true);
     try {
-      await uploadTestimonialImage(params.id, selectedFile);
+      await uploadTestimonialImage(id, selectedFile);
       setSelectedFile(null);
       if (filePreview) URL.revokeObjectURL(filePreview);
       setFilePreview(null);
-      const t = await getTestimonial(params.id);
+      const t = await getTestimonial(id);
       setImage(t.image ?? null);
       setSuccess("Portrait uploaded.");
     } catch (err) {
@@ -221,10 +221,10 @@ export default function TestimonialFormPage() {
   };
 
   const handleRemovePortrait = async () => {
-    if (!params.id) return;
+    if (!id) return;
     setError(null);
     try {
-      await deleteTestimonialImage(params.id);
+      await deleteTestimonialImage(id);
       setImage(null);
       setConfirmRemoveImage(false);
       setSuccess("Portrait removed.");
@@ -323,14 +323,14 @@ export default function TestimonialFormPage() {
 
               <div className="space-y-2">
                 <Label>Quote</Label>
-                <Input
-                  as="textarea"
+                <textarea
                   rows={4}
                   value={quote}
                   onChange={(e) => setQuote(e.target.value)}
                   placeholder="Enter the client’s quote…"
                   aria-invalid={!quote.trim() || quote.trim().length < 10 || quote.trim().length > 1000}
                   required
+                  className="block w-full min-w-0 rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 aria-invalid:border-destructive"
                 />
                 <p className="text-xs text-muted-foreground text-right">
                   {quote.length} / 1000 characters

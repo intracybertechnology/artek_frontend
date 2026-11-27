@@ -1,5 +1,7 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { company } from "@/data/company";
+import { offerPercent } from "@/data/offers";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { ContactForm } from "@/components/common/ContactForm";
 import { getMapEmbedUrl, MAP_SHARE_URL } from "@/lib/maps";
@@ -38,6 +40,8 @@ function MapEmbed({ url, title }: { url: string; title: string }) {
 /** Contact page — hero, contact info, quote form, (conditional) map. */
 export default function Contact() {
   const mapUrl = getMapEmbedUrl(company.address);
+  const [params] = useSearchParams();
+  const offerIntent = params.get("intent") === "offer";
 
   return (
     <>
@@ -148,9 +152,21 @@ export default function Contact() {
 
           {/* quote form */}
           <div className="rounded-xl border border-white/10 p-6 sm:p-8">
-            <h2 className="text-lg font-semibold text-ink">Request a free quote</h2>
+            <h2 className="text-lg font-semibold text-ink">
+              {offerIntent ? `Claim your ${offerPercent}% CCTV installation discount` : "Request a free quote"}
+            </h2>
             <p className="mt-1 text-sm text-slate-300">
-              Fill in the form and our team will respond with a tailored proposal.
+              {offerIntent ? (
+                <>
+                  We&apos;ll confirm the {offerPercent}% saving on a written, itemised quotation after a site
+                  survey.{" "}
+                  <Link to="/offers" className="text-text underline underline-offset-4">
+                    Offer terms
+                  </Link>
+                </>
+              ) : (
+                "Fill in the form and our team will respond with a tailored proposal."
+              )}
             </p>
             <ContactForm className="mt-6" />
           </div>

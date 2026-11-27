@@ -1,17 +1,44 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { CheckCircle2, AlertTriangle, Info, Loader2, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { CheckCircle2, AlertTriangle, Info, Loader2, Send, Sparkles } from "lucide-react";
 import { enquirySchema, type EnquiryValues } from "@/lib/validation";
 import { submitEnquiry } from "@/lib/submissions";
 import { Input, Textarea } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { coreServices } from "@/data/services";
+import { offerPercent } from "@/data/offers";
 
 const EMIRATES = ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Other (UAE)"] as const;
 
 const SERVICE_OPTIONS = [...coreServices.map((s) => s.title), "Other"];
+
+/** The CCTV service option label, used to pre-fill the offer intent. */
+const CCTV_TITLE = SERVICE_OPTIONS.find((s) => s.startsWith("CCTV")) ?? "CCTV & Security Systems";
+
+/**
+ * Reads the URL a visitor arrived from and turns it into form defaults, so an
+ * ad/offer click is never lost:
+ *  - `?intent=offer`       → CCTV selected + a message mentioning the offer
+ *  - `utm_*` from the ads   → the enquiry's `source`, so ad leads are identifiable
+ * Without any of these the form behaves exactly as before.
+ */
+function readIntent(params: URLSearchParams) {
+  const offer = params.get("intent") === "offer";
+  const utmSource = params.get("utm_source");
+  const utmMedium = params.get("utm_medium");
+  const source = [utmSource, utmMedium].filter(Boolean).join("/");
+  return {
+    offer,
+    source: source ? `offer-${source}` : offer ? "offers-page" : undefined,
+    message: offer
+      ? `I'm interested in the ${offerPercent}% CCTV installation offer. `
+      : "",
+    service: offer ? CCTV_TITLE : undefined,
+  };
+}
 
 /**
  * Accessible quote/enquiry form — React Hook Form + Zod.
@@ -19,6 +46,9 @@ const SERVICE_OPTIONS = [...coreServices.map((s) => s.title), "Other"];
  * the form clearly states it is in demo mode and fakes nothing.
  */
 export function ContactForm({ className }: { className?: string }) {
+  const [params] = useSearchParams();
+  const intent = readIntent(params);
+
   const {
     register,
     handleSubmit,
@@ -29,8 +59,27 @@ export function ContactForm({ className }: { className?: string }) {
   } = useForm<EnquiryValues>({
     resolver: zodResolver(enquirySchema),
     mode: "onBlur",
-    defaultValues: { service: "", emirate: "", companyName: "", botcheck: "" },
+    defaultValues: {
+      service: intent.service ?? "",
+      emirate: "",
+      companyName: "",
+      botcheck: "",
+      ...(intent.offer ? { message: intent.message } : {}),
+    },
   });
+
+  /* The contact page is also reachable by client-side link with a different
+     query string; re-apply the intent when it changes. */
+  const appliedIntent = useRef(`${intent.offer}|${intent.source ?? ""}`);
+  useEffect(() => {
+    const key = `${intent.offer}|${intent.source ?? ""}`;
+    if (key === appliedIntent.current) return;
+    appliedIntent.current = key;
+    if (intent.offer) {
+      setValue("service", CCTV_TITLE, { shouldValidate: false });
+      setValue("message", intent.message, { shouldValidate: false });
+    }
+  }, [intent.offer, intent.message, intent.source, setValue]);
 
   const [result, setResult] = useState<null | { kind: "ok" | "demo" | "error"; message?: string }>(null);
   const emirate = watch("emirate");
@@ -38,7 +87,7 @@ export function ContactForm({ className }: { className?: string }) {
 
   const onSubmit = handleSubmit(async (values) => {
     setResult(null);
-    const res = await submitEnquiry({ ...values, source: "website-contact-form" });
+    const res = await submitEnquiry({ ...values, source: intent.source ?? "website-contact-form" });
     if (res.status === "ok") {
       setResult({ kind: "ok" });
       reset();
@@ -69,6 +118,15 @@ export function ContactForm({ className }: { className?: string }) {
 
   return (
     <form onSubmit={onSubmit} noValidate className={className} aria-label="Request a quote">
+      {intent.offer && (
+        <p className="mb-5 flex items-start gap-2 rounded-lg border border-sky-200 bg-sky-50 p-3 text-sm text-slate-700" role="status">
+          <Sparkles className="mt-0.5 size-4 shrink-0 text-sky-700" aria-hidden="true" />
+          <span>
+            You&apos;re claiming the <strong className="font-semibold text-slate-900">{offerPercent}% CCTV installation offer</strong>. Send
+            your details and we&apos;ll confirm the saving on your quotation.
+          </span>
+        </p>
+      )}
       {/* Honeypot — hidden from users, catches bots */}
       <input
         type="text"

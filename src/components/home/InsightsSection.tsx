@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
 import { publishedPosts, readingMinutes } from "@/data/blog";
 import { getAuthor } from "@/data/authors";
 import { formatPostDate } from "@/lib/dates";
+import { fetchPosts } from "@/lib/insightsApi";
+import type { BlogPost } from "@/types";
 import { cn } from "@/lib/utils";
 
 /**
@@ -73,7 +76,26 @@ function ArticleCover({
 }
 
 export function InsightsSection() {
-  const latest = publishedPosts.slice(0, 3);
+  const [apiPosts, setApiPosts] = useState<BlogPost[] | null>(null);
+  const [apiSettled, setApiSettled] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchPosts().then((posts) => {
+      if (!cancelled) {
+        setApiPosts(posts);
+        setApiSettled(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const staticList: BlogPost[] = [...publishedPosts];
+  const byDateDesc = (a: BlogPost, b: BlogPost) => b.publishedAt.localeCompare(a.publishedAt);
+  const list = (apiSettled && apiPosts != null && apiPosts.length > 0 ? apiPosts : staticList)
+    .slice()
+    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || byDateDesc(a, b));
+  const latest = list.slice(0, 3);
   if (!latest.length) return null;
 
   return (

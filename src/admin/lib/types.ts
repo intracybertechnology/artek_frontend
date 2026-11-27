@@ -26,6 +26,35 @@ export type AdminTestimonial = {
   updatedAt: string;
 };
 
+// ── Insights / blog (admin) ───────────────────────────────────────────────
+
+export type PostStatus = "draft" | "needs-review" | "published";
+export const POST_STATUSES: PostStatus[] = ["draft", "needs-review", "published"];
+
+export type AdminPost = {
+  id: number;
+  slug: string;
+  title: string;
+  dek: string;
+  category: string;
+  tags: string[];
+  authorId: string;
+  publishedAt: string;
+  updatedAt?: string;
+  featured: boolean;
+  coverWord: string;
+  relatedServices: string[];
+  seo: { title?: string; description?: string } | null;
+  status: PostStatus;
+  readingMinutes: number;
+  deletedAt?: string | null;
+};
+
+export type AdminPostDetail = AdminPost & {
+  body: { type: string; text?: string; [key: string]: unknown }[];
+  faqs: { question: string; answer: string }[] | null;
+};
+
 // ── Products (admin) ──────────────────────────────────────────────────────
 
 export type ProductAvailability = "available" | "out_of_stock" | "on_request";

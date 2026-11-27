@@ -6,10 +6,13 @@ import { API_BASE, apiDelete, apiGet, apiGetQ, apiPatch, apiPost, type ApiError 
 import type {
   AdminBrand,
   AdminCategory,
+  AdminPost,
+  AdminPostDetail,
   AdminProduct,
   AdminProductImage,
   AdminTestimonial,
   AdminUser,
+  PostStatus,
   ProductAvailability,
   Quote,
   QuoteStatus,
@@ -209,6 +212,92 @@ export const deleteTestimonial = (id: number) =>
 
 export const restoreTestimonial = (id: number) =>
   apiPost<{ success: boolean }>(`/api/testimonials/${id}/restore`, {});
+
+// ── Insights (admin) ───────────────────────────────────────────────────────
+
+type InsightsListResponse = {
+  success: boolean;
+  posts: AdminPost[];
+};
+
+type InsightsDetailResponse = {
+  success: boolean;
+  post: AdminPostDetail;
+};
+
+export const listAdminPosts = async (params?: {
+  status?: PostStatus | "";
+  deleted?: boolean;
+}): Promise<AdminPost[]> => {
+  const qs = new URLSearchParams();
+  if (params?.deleted) qs.set("deleted", "true");
+  if (params?.status) qs.set("status", params.status);
+  const data = await apiGet<InsightsListResponse>(
+    qs.toString() ? `/api/admin/insights?${qs.toString()}` : "/api/admin/insights",
+  );
+  return data.posts ?? [];
+};
+
+export const getAdminPost = async (id: number): Promise<AdminPostDetail> => {
+  const res = await apiGet<InsightsDetailResponse>(`/api/admin/insights/${id}`);
+  return res.post;
+};
+
+type PostCreateBody = {
+  title: string;
+  slug?: string | null;
+  dek: string;
+  category: string;
+  tags?: string[];
+  authorId: string;
+  publishedAt?: string | null;
+  featured?: boolean;
+  coverWord: string;
+  relatedServices?: string[];
+  status?: PostStatus;
+  seo?: { title?: string; description?: string } | null;
+  body?: { type: string; text?: string; [key: string]: unknown }[];
+  faqs?: { question: string; answer: string }[] | null;
+};
+
+type PostUpdateBody = Partial<PostCreateBody>;
+
+export const createPost = (body: PostCreateBody) =>
+  apiPost<{ success: boolean; post?: AdminPostDetail | null }>("/api/insights", body);
+
+export const updatePost = (id: number, body: PostUpdateBody) =>
+  apiPatch<{ success: boolean }>(`/api/insights/${id}`, body);
+
+export const updatePostStatus = (id: number, status: PostStatus) =>
+  apiPatch<{ success: boolean }>(`/api/insights/${id}`, { status });
+
+export const deletePost = (id: number) =>
+  apiDelete<{ success: boolean }>(`/api/insights/${id}`);
+
+export const restorePost = (id: number) =>
+  apiPost<{ success: boolean }>(`/api/insights/${id}/restore`, {});
+
+export const uploadInsightImage = (file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  return fetch(`${API_BASE}/api/insights/images`, {
+    credentials: "include",
+    method: "POST",
+    body: formData,
+  }).then(async (res) => {
+    const body = await res.json().catch(() => ({}) as Record<string, unknown>);
+    if (!res.ok) {
+      const err = new Error(
+        (body as { message?: string }).message ||
+          (body as { error?: string }).error ||
+          `Request failed (${res.status})`,
+      ) as ApiError;
+      err.status = res.status;
+      throw err;
+    }
+    return body as { success: boolean; path: string; width: number; height: number };
+  });
+};
 
 // ── Product detail (add / edit) ──
 

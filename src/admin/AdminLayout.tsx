@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { Link, Navigate, Outlet, useLocation } from "react-router-dom";
-import { LayoutListIcon, PackageIcon, QuoteIcon, LogOutIcon } from "lucide-react";
+import { LayoutListIcon, PackageIcon, QuoteIcon, LogOutIcon, FileText } from "lucide-react";
 import { AuthProvider, useAuth } from "./lib/auth";
 import type { AdminRole } from "./lib/types";
 import { cn } from "./lib/utils";
@@ -75,6 +75,12 @@ const NAV: { label: string; to: string; icon: ReactNode; roles: AdminRole[] }[] 
     label: "Testimonials",
     to: "/admin/testimonials",
     icon: <QuoteIcon className="size-4" />,
+    roles: ["super_admin", "admin"],
+  },
+  {
+    label: "Insights",
+    to: "/admin/insights",
+    icon: <FileText className="size-4" />,
     roles: ["super_admin", "admin"],
   },
 ];

@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { FeaturedPost, PostRow } from "@/components/blog/PostRow";
 import { publishedPosts, categoriesOf } from "@/data/blog";
+import { fetchPosts } from "@/lib/insightsApi";
+import type { BlogPost } from "@/types";
 import { cn } from "@/lib/utils";
 
 /**
@@ -16,11 +18,31 @@ import { cn } from "@/lib/utils";
  * plain list, so hiding items never removes content from the markup.
  */
 export default function Blog() {
-  const categories = useMemo(() => ["All", ...categoriesOf(publishedPosts)], []);
+  const [apiPosts, setApiPosts] = useState<BlogPost[] | null>(null);
+  const [apiSettled, setApiSettled] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchPosts().then((posts) => {
+      if (!cancelled) {
+        setApiPosts(posts);
+        setApiSettled(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  const staticList: BlogPost[] = [...publishedPosts];
+  const byDateDesc = (a: BlogPost, b: BlogPost) => b.publishedAt.localeCompare(a.publishedAt);
+  const list = (apiSettled && apiPosts != null && apiPosts.length > 0 ? apiPosts : staticList)
+    .slice()
+    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || byDateDesc(a, b));
+
+  const categories = useMemo(() => ["All", ...categoriesOf(list)], [list]);
   const [active, setActive] = useState("All");
 
-  const filtered = active === "All" ? publishedPosts : publishedPosts.filter((p) => p.category === active);
-  const featured = publishedPosts.find((p) => p.featured);
+  const filtered = active === "All" ? list : list.filter((p) => p.category === active);
+  const featured = list.find((p) => p.featured);
   const rest = filtered.filter((p) => p.id !== featured?.id);
 
   return (

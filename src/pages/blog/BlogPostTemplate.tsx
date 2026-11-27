@@ -1,11 +1,13 @@
 import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, List, Phone } from "lucide-react";
-import { getPostBySlug, publishedPosts } from "@/data/blog";
+import { getPostBySlug, publishedPosts, readingMinutes } from "@/data/blog";
 import { getAuthor } from "@/data/authors";
 import { company } from "@/data/company";
 import { getServiceBySlug } from "@/data/services";
 import { formatPostDate } from "@/lib/dates";
-import { readingMinutes } from "@/data/blog";
+import { fetchPostBySlug, fetchPosts } from "@/lib/insightsApi";
+import type { BlogPost } from "@/types";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import { FAQAccordion } from "@/components/common/FAQAccordion";
 import { AuthorAvatar } from "@/components/blog/AuthorAvatar";
@@ -20,17 +22,58 @@ import NotFound from "@/pages/NotFound";
  */
 export default function BlogPostTemplate() {
   const { slug } = useParams<{ slug: string }>();
-  const post = slug ? getPostBySlug(slug) : undefined;
+  const staticPost = slug ? getPostBySlug(slug) : undefined;
+  const [post, setPost] = useState<BlogPost | null>(staticPost ?? null);
+  const [loading, setLoading] = useState(!staticPost);
+  const [apiList, setApiList] = useState<BlogPost[] | null>(null);
+  const [apiListSettled, setApiListSettled] = useState(false);
 
-  if (!post) return <NotFound />;
+  useEffect(() => {
+    if (!slug) return;
+    let cancelled = false;
+    fetchPostBySlug(slug).then((result) => {
+      if (cancelled) return;
+      if (result?.kind === "found") {
+        setPost(result.post);
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [slug]);
 
+  useEffect(() => {
+    let cancelled = false;
+    fetchPosts().then((posts) => {
+      if (!cancelled) {
+        setApiList(posts);
+        setApiListSettled(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!slug) return <NotFound />;
+  if (!post) {
+    if (loading) {
+      return (
+        <div className="min-h-dvh py-20 text-center">
+          <p className="text-muted-foreground">Loading article…</p>
+        </div>
+      );
+    }
+    return <NotFound />;
+  }
+
+  const relatedList = (apiListSettled && apiList != null && apiList.length > 0 ? apiList : [...publishedPosts]) as BlogPost[];
   const author = getAuthor(post.authorId);
   const toc = tocOf(post.body);
-  const related = publishedPosts.filter((p) => p.id !== post.id).slice(0, 3);
+  const related = relatedList.filter((p) => p.id !== post.id).slice(0, 3);
   const services = post.relatedServices
     .map((id) => getServiceBySlug(id))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
-  const index = publishedPosts.findIndex((p) => p.id === post.id);
+  const index = relatedList.findIndex((p) => p.id === post.id);
 
   return (
     <article>

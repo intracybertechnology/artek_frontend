@@ -54,8 +54,8 @@ function friendlyError(err: unknown): string {
 export default function TestimonialFormPage() {
   const navigate = useNavigate();
   const params = useParams<{ id?: string }>();
-  const isEdit = Boolean(id);
-  const id = Number(id);
+  const isEdit = Boolean(params.id);
+  const id = Number(params.id!);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +90,7 @@ export default function TestimonialFormPage() {
         setRole(t.role ?? "");
         setCompany(t.company ?? "");
         setQuote(t.quote);
-        setRating(t.rating ? String(t.rating) : "");
+        setRating(t.rating ? t.rating : "");
         setIsPublished(Boolean(t.isPublished));
         setImage(t.image ?? null);
       } catch (err) {

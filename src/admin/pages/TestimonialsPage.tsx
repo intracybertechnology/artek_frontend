@@ -14,7 +14,6 @@ import { Alert } from "@/admin/components/ui/alert";
 import { Badge } from "@/admin/components/ui/badge";
 import { Button } from "@/admin/components/ui/button";
 import { Card } from "@/admin/components/ui/card";
-import { Input } from "@/admin/components/ui/input";
 import {
   Table,
   TableBody,

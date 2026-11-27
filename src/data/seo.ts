@@ -10,6 +10,7 @@ import { productContent } from "./productContent.ts";
 import { brandContent } from "./brandContent.ts";
 import { brandGroups, brandLogo, getBrand, getBrandProducts, getProductGroup, productDetails, productGroups, slugify } from "./catalog.ts";
 import { PRODUCT_IMAGE_FILES } from "./productImages.generated.ts";
+import { offerFaqs } from "./offers.ts";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -55,6 +56,13 @@ const STATIC_PAGE_META: Record<string, PageSeo> = {
     title: "CCTV Services in Dubai | Installation & Maintenance | ARTEK Computers LLC",
     description:
       "Professional CCTV services in Dubai — SIRA-approved installation, maintenance and monitoring for homes and businesses. Get a free site survey from ARTEK Computers LLC.",
+    ogType: "website",
+  },
+  "/offers": {
+    path: canonical("/offers"),
+    title: "Offers & Promotions | CCTV, IT & Networking in Dubai | ARTEK",
+    description:
+      "Current ARTEK offers on CCTV, IT and networking for businesses and homes in Dubai — scoped by a free site survey and confirmed on a fixed, itemised quotation.",
     ogType: "website",
   },
   "/brands": {
@@ -201,6 +209,20 @@ function serviceJsonLd(svc: Service): JsonLdObject {
   };
 }
 
+/** WebPage node whose description comes from the same STATIC_PAGE_META as the head tags. */
+function webPageJsonLd(path: string): JsonLdObject {
+  const meta = STATIC_PAGE_META[path]!;
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: meta.title,
+    description: meta.description,
+    url: canonical(path),
+    inLanguage: "en-AE",
+    isPartOf: { "@type": "WebSite", name: company.legalName, url: company.siteUrl },
+  };
+}
+
 function serviceBySlugOrNull(slug: string): Service | undefined {
   return getServiceBySlug(slug);
 }
@@ -227,8 +249,7 @@ function solutionSeo(path: string): PageSeo | undefined {
   };
 }
 
-function locationSeo(path: string): PageSeo | undefined {
-  const parts = path.replace("/locations/", "").split("/").filter(Boolean);
+function locationSeo(path: string): PageSeo | undefined {  const parts = path.replace("/locations/", "").split("/").filter(Boolean);
   if (parts.length === 0) return undefined;
   const location = getLocationBySlug(parts[0]!);
   if (!location) return undefined;
@@ -267,6 +288,29 @@ function locationSeo(path: string): PageSeo | undefined {
         { name: location.name, url: `${company.siteUrl}/locations/${location.slug}` },
         { name: svc?.name ?? "Services", url: canonical(path) },
       ]),
+    ],
+  };
+}
+
+/**
+ * Offers page. Public: the page is indexable and listed in the sitemap whether
+ * or not the promotion is still a draft (final terms to be supplied later).
+ * No Offer/PriceSpecification markup is emitted until the offer is live.
+ */
+function offerSeo(): PageSeo {
+  const path = "/offers";
+  return {
+    path: canonical(path),
+    title: STATIC_PAGE_META[path]!.title,
+    description: STATIC_PAGE_META[path]!.description,
+    ogType: "website",
+    jsonLd: [
+      webPageJsonLd(path),
+      breadcrumbsJsonLd([
+        { name: "Home", url: company.siteUrl },
+        { name: "Offers", url: canonical(path) },
+      ]),
+      faqJsonLd(offerFaqs),
     ],
   };
 }
@@ -359,6 +403,7 @@ function resolveRouteSeo(path: string): PageSeo {
     }
     return { ...base, jsonLd };
   }
+  if (path === "/offers") return offerSeo();
   if (path.startsWith("/solutions/")) {
     const found = solutionSeo(path);
     if (found) return found;
@@ -544,3 +589,17 @@ export const ALL_SEO_PATHS: readonly string[] = [
   ...PRODUCT_PATHS,
   ...BRAND_PATHS,
 ];
+
+/**
+ * Pages that must stay out of the sitemap while they carry verified-claims
+ * placeholders. Currently none — the offers page is public and drafts show a
+ * non-search note instead. Kept so future drafts have one switch to hide from
+ * search (resolvePageSeo().noindex + PRERENDER_PATHS still apply).
+ */
+export const NOINDEX_PATHS: readonly string[] = [];
+
+/** Every path scripts/prerender.mjs writes to dist/ (indexable or not). */
+export const PRERENDER_PATHS: readonly string[] = [...ALL_SEO_PATHS, ...NOINDEX_PATHS];
+
+/** True when the route must be served with <meta name="robots" content="noindex">. */
+export const isNoindexPath = (path: string): boolean => NOINDEX_PATHS.includes(path);

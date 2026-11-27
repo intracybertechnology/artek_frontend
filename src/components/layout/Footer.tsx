@@ -26,6 +26,7 @@ const SOCIAL_COLORS: Record<string, string> = {
 
 const companyLinks = [
   { label: "About Us", to: "/about" },
+  { label: "Special Offers", to: "/offers" },
   { label: "Industries", to: "/industries" },
   { label: "Service Locations", to: "/locations" },
   { label: "Contact Us", to: "/contact" },

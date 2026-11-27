@@ -3,6 +3,7 @@ import { MainLayout } from "@/layouts/MainLayout";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Contact from "@/pages/Contact";
+import Offers from "@/pages/Offers";
 import Products from "@/pages/Products";
 import ProductCategory from "@/pages/products/ProductCategory";
 import ProductDetail from "@/pages/products/ProductDetail";
@@ -40,6 +41,7 @@ export function AppRoutes() {
         <Route path="about" element={<About />} />
         <Route path="contact" element={<Contact />} />
         <Route path="cctvservicesindubai" element={<Contact />} />
+        <Route path="offers" element={<Offers />} />
         <Route path="products" element={<Products />} />
         <Route path="products/:group" element={<ProductCategory />} />
         <Route path="products/:group/:product" element={<ProductDetail />} />

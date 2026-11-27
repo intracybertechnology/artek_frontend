@@ -13,7 +13,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { resolvePageSeo, ALL_SEO_PATHS, isProductDetailPath } from "../src/data/seo.ts";
+import { resolvePageSeo, PRERENDER_PATHS, isNoindexPath, isProductDetailPath } from "../src/data/seo.ts";
 import { heroPreloadImage } from "../src/data/heroSlides.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,7 +37,7 @@ async function main() {
   }
   const { renderPage } = await import(pathToFileURL(ssrEntry).href);
 
-  const routes = [...ALL_SEO_PATHS, "/404"];
+  const routes = [...PRERENDER_PATHS, "/404"];
 
   for (const route of routes) {
     let html = template;
@@ -58,7 +58,8 @@ async function main() {
         title: seo.title,
         description: seo.description,
         path: seo.path,
-        noindex: false,
+        /* draft pages (e.g. /offers before its terms are confirmed) stay out of search */
+        noindex: Boolean(seo.noindex) || isNoindexPath(route),
         ogType: seo.ogType ?? "website",
         publishedTime: seo.publishedTime,
         modifiedTime: seo.modifiedTime,

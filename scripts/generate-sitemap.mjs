@@ -23,8 +23,9 @@ const prioritized = (r) => {
 };
 
 function main() {
-  const entries = ALL_SEO_PATHS.map((route) => {
-    const seo = resolvePageSeo(route);
+  /* noindex pages are prerendered but never listed */
+  const paths = ALL_SEO_PATHS.filter((route) => !resolvePageSeo(route).noindex);
+  const entries = paths.map((route) => {
     const loc = `${BASE}${route === "/" ? "" : route}`;
     return [
       "  <url>",
@@ -43,7 +44,7 @@ function main() {
 
   mkdirSync(DIST, { recursive: true });
   writeFileSync(path.join(DIST, "sitemap.xml"), xml);
-  console.log(`sitemap.xml generated with ${ALL_SEO_PATHS.length} URLs`);
+  console.log(`sitemap.xml generated with ${paths.length} URLs`);
 }
 
 main();

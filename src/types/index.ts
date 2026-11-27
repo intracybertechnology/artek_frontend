@@ -12,6 +12,8 @@ export interface SeoMeta {
 
 export interface PageSeo extends SeoMeta {
   path: string;
+  /** keep the page out of search results until its content can be verified */
+  noindex?: boolean;
   jsonLd?: readonly JsonLdObject[];
   /** article:published_time (blog posts) */
   publishedTime?: string;

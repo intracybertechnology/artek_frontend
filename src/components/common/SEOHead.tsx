@@ -49,6 +49,8 @@ export function SEOHead() {
     /* article timestamps only exist on blog posts; drop them on other routes */
     setMeta('meta[property="article:published_time"]', "property", "article:published_time", seo.publishedTime);
     setMeta('meta[property="article:modified_time"]', "property", "article:modified_time", seo.modifiedTime);
+    /* robots is authored in index.html; only override it where a page sets it */
+    if (seo.noindex) setMeta('meta[name="robots"]', "name", "robots", "noindex");
 
     let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (!link) {

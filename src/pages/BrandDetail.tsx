@@ -1,109 +1,18 @@
-import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Camera } from "lucide-react";
 import { DetailPageLayout } from "@/components/common/DetailPageLayout";
 import { Reveal } from "@/components/common/Reveal";
 import { BrandLogo } from "@/components/common/BrandLogo";
 import { FAQAccordion } from "@/components/common/FAQAccordion";
-import { brandLogo, getBrand, getBrandProducts, slugify, type BrandModel } from "@/data/catalog";
+import { brandLogo, getBrand, getBrandProducts, slugify } from "@/data/catalog";
 import { brandContent } from "@/data/brandContent";
 import { company } from "@/data/company";
-import { fetchProductsByBrand, type ApiProduct } from "@/lib/catalogApi";
 import NotFound from "@/pages/NotFound";
 
-/** Single model card: image card, or a compact card when there is no image. */
-function ModelCard({ brand, model, accent }: { brand: string; model: BrandModel; accent?: string }) {
-  const [imgFailed, setImgFailed] = useState(false);
-  const quoteTo = `/contact?message=${encodeURIComponent(`I'm interested in ${brand} ${model.code} (${model.type}).`)}`;
-
-  const quoteButton = (
-    <Link
-      to={quoteTo}
-      className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md bg-slate-900 py-2.5 text-sm font-semibold text-white outline-none transition-colors hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-    >
-      Request a Free Quote
-    </Link>
-  );
-
-  /* No image: compact card — camera icon beside the code, no placeholder box */
-  if (!model.image) {
-    return (
-      <li
-        className="rounded-2xl border border-slate-200 bg-white p-5"
-        style={accent ? { borderTopColor: "var(--brand-accent)" } : undefined}
-      >
-        <div className="flex items-center gap-2.5">
-          <Camera className="size-6 shrink-0 text-slate-400" aria-hidden="true" />
-          <p className="break-words text-sm font-bold text-slate-900">{model.code}</p>
-        </div>
-        <p className="mt-1 text-sm text-slate-600">{model.type}</p>
-        {quoteButton}
-      </li>
-    );
-  }
-
-  return (
-    <li
-      className="overflow-hidden rounded-2xl border border-slate-200 bg-white"
-      style={accent ? { borderTopColor: "var(--brand-accent)" } : undefined}
-    >
-      {/* Image or placeholder */}
-      <div className="flex aspect-[4/3] items-center justify-center bg-slate-100">
-        {model.image && !imgFailed ? (
-          <img
-            src={model.image}
-            alt={model.imageAlt ?? `${brand} ${model.code}`}
-            width={400}
-            height={300}
-            loading="lazy"
-            decoding="async"
-            onError={() => setImgFailed(true)}
-            className="h-full w-full object-contain p-4"
-          />
-        ) : (
-          <Camera className="size-10 text-slate-400" aria-hidden="true" />
-        )}
-      </div>
-      {/* Info */}
-      <div className="p-4">
-        <p className="break-words text-sm font-bold text-slate-900">{model.code}</p>
-        <p className="mt-0.5 text-sm text-slate-600">{model.type}</p>
-        {quoteButton}
-      </div>
-    </li>
-  );
-}
-
-/** Backend product → card model: code = modelNumber, type = type, image when present. */
-const toModel = (p: ApiProduct): BrandModel => ({
-  code: p.modelNumber,
-  type: p.type ?? "Product",
-  image: p.image ?? undefined,
-});
-
-/** One brand: logo, popular models, products (or ask-us block), and sibling brands in the sidebar. */
+/** One brand: logo, products (or ask-us block), and sibling brands in the sidebar. */
 export default function BrandDetail() {
   const { brand: brandSlug } = useParams<{ brand: string }>();
   const brand = brandSlug ? getBrand(brandSlug) : undefined;
   const { name, group, detail } = brand ?? {};
-  /** Live models from /api/products; null until loaded — the catalog models show meanwhile. */
-  const [apiModels, setApiModels] = useState<BrandModel[] | null>(null);
-
-  useEffect(() => {
-    if (!brandSlug) return;
-    let active = true;
-    setApiModels(null);
-    fetchProductsByBrand(brandSlug)
-      .then((products) => {
-        if (active && products.length > 0) setApiModels(products.map(toModel));
-      })
-      .catch(() => {
-        /* Backend unreachable or errored — the visitor keeps seeing the catalog models. */
-      });
-    return () => {
-      active = false;
-    };
-  }, [brandSlug]);
 
   if (!brand || !name || !group) return <NotFound />;
 
@@ -112,8 +21,6 @@ export default function BrandDetail() {
   const intro = content?.intro
     || detail?.description
     || `Browse the ${name} products we supply in Dubai and request a quote.`;
-  /** Card models: backend products once loaded, else the catalog.ts models. */
-  const models = apiModels ?? detail?.models ?? [];
 
   const products = getBrandProducts(brandSlug ?? "");
   const otherBrands = group.brands.filter((b) => b !== name);
@@ -124,6 +31,8 @@ export default function BrandDetail() {
     <DetailPageLayout
       title={`${name} in Dubai, UAE`}
       intro={intro}
+      heroImage={detail?.heroImage}
+      heroImageAlt={detail?.heroImageAlt}
       breadcrumbs={[
         { label: "Home", to: "/" },
         { label: "Brands", to: "/brands" },
@@ -153,17 +62,6 @@ export default function BrandDetail() {
       {logoSrc && (
         <div className="mb-6">
           <BrandLogo name={name} className="h-20 w-40" />
-        </div>
-      )}
-      {/* ── Popular models — backend products, catalog.ts models as fallback ── */}
-      {models.length > 0 && (
-        <div className="mb-8">
-          <Reveal as="h2" className="text-xl font-bold text-ink">Popular {name} models</Reveal>
-          <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-            {models.map((model) => (
-              <ModelCard key={model.code} brand={name} model={model} accent={detail?.accent} />
-            ))}
-          </ul>
         </div>
       )}
       {/* ── Products grid or ask-us block ─────────────────────────── */}

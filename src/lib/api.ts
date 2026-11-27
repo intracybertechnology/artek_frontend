@@ -39,6 +39,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 /** GET `${BASE}${path}` as JSON. */
 export const apiGet = <T>(path: string): Promise<T> => request<T>(path);
 
+/** GET `${BASE}${path}` with query params as JSON. */
+export const apiGetQ = <T>(path: string, params: Record<string, string | number | undefined>): Promise<T> => {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== undefined && v !== "") q.set(k, String(v));
+  }
+  const qs = q.toString();
+  return request<T>(qs ? `${path}?${qs}` : path);
+};
+
 /** POST `${BASE}${path}` with a JSON body, returning the JSON response. */
 export const apiPost = <T>(path: string, body: unknown): Promise<T> =>
   request<T>(path, { method: "POST", body: JSON.stringify(body) });
+
+/** PATCH `${BASE}${path}` with a JSON body. */
+export const apiPatch = <T>(path: string, body: unknown): Promise<T> =>
+  request<T>(path, { method: "PATCH", body: JSON.stringify(body) });
+
+/** DELETE `${BASE}${path}`. */
+export const apiDelete = <T>(path: string): Promise<T> =>
+  request<T>(path, { method: "DELETE" });

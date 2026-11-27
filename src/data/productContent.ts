@@ -9,6 +9,8 @@ export type ProductContent = {
   whatIs: string;
   whereUsed: string;
   howWeHelp: string;
+  /** Plain, generally true points shown as a check list above the products grid. */
+  benefits?: string[];
   /** Plural product names (e.g. "Fiber Optic Pigtails") get "What are … / Where are … used?" headings. */
   plural?: boolean;
   faqs: { question: string; answer: string }[];
@@ -20,6 +22,13 @@ export const productContent: Record<string, ProductContent> = {
       "Cat6 cable is a type of copper network cable used to connect computers, printers, cameras and other devices to a network. It carries data through twisted pairs of copper wire inside a single outer jacket, and it is run inside walls, ceilings and floor spaces during cabling work.",
     whereUsed:
       "You will find this cable in offices, schools, shops and small data rooms across Dubai. It links desks to server racks, joins network switches together, feeds wireless access points and carries signals for CCTV cameras that use a wired connection.",
+    benefits: [
+      "Connects office computers and phones to the network.",
+      "Run inside walls, ceilings and floor spaces during cabling work.",
+      "Links desk outlets back to the server rack.",
+      "Feeds wired connections for printers and cameras around the office.",
+      "Terminated at the rack so every outlet stays easy to trace.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies Cat6 cable to businesses in Dubai and the wider UAE. Tell us how much cable you need, the lengths you want and a few details about your site, and our team will come back to you with a clear quote.",
     faqs: [
@@ -40,6 +49,13 @@ export const productContent: Record<string, ProductContent> = {
       "A Cat6 outdoor cable is a copper network cable built with a tougher outer layer so it can be laid outside a building. It moves data between network points the way indoor cabling does, while coping with sun, heat and damp on exposed runs.",
     whereUsed:
       "This cable suits runs between buildings, links to outbuildings and car parks, garden offices and rooftop equipment. Installers in the UAE use it for camera feeds at gates, wireless links on masts and any network route that leaves the protection of a building.",
+    benefits: [
+      "Meant for outdoor runs between buildings and across compounds.",
+      "Carries the network out to gates, masts and garden offices.",
+      "Links outbuildings and car parks back to the main site network.",
+      "Laid along outdoor routes as part of site cabling work.",
+      "Buried in ducts or clipped along outside walls on site.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies outdoor Cat6 cable across Dubai and the UAE. Let us know the route you plan, the total length and how much spare you want, and we will send you a straightforward quote.",
     faqs: [
@@ -60,6 +76,13 @@ export const productContent: Record<string, ProductContent> = {
       "Cat6A cable is a copper cabling type used for structured wiring that joins network devices. Like other category cables it is a sheathed bundle of twisted copper pairs, and it moves data between wall outlets, switches and equipment on busy company networks.",
     whereUsed:
       "Typical homes for this cable are large offices, tower blocks, warehouses and data rooms where many devices talk at once. It carries connections to desks, joins cabinets on different floors, feeds access points and supports camera systems in buildings that need plenty of wired points.",
+    benefits: [
+      "Chosen for busy office networks with many connected devices.",
+      "Installed in data rooms and cabinets that serve whole floors.",
+      "Carries wired connections to desks, cameras and wireless access points.",
+      "Suits office fit-outs where cabling goes in before the walls close.",
+      "Runs between floors to join network cabinets together.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies Cat6A cable in Dubai and across the UAE. Tell us how much you need and in what lengths, plus a little about the site, and we will answer with a clear quote.",
     faqs: [
@@ -80,6 +103,13 @@ export const productContent: Record<string, ProductContent> = {
       "Cat7 cable is a shielded copper network cable used in structured cabling systems. Each twisted pair sits inside its own screening, and the whole bundle is wrapped in a further shield, so the cable resists outside electrical noise while carrying data between network points.",
     whereUsed:
       "Because of that screening, this cable often appears in factories, plant rooms and medical or industrial sites where motors and machines create electrical interference. It is also run in data rooms, between network cabinets and along backbone links inside large buildings.",
+    benefits: [
+      "Used in factories and plant rooms full of electrical equipment.",
+      "Installed where machines and motors create background electrical noise.",
+      "Runs between network cabinets in data rooms and server areas.",
+      "Connects equipment on factory floors to the office network.",
+      "Carries backbone links that span large buildings.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies Cat7 cable to projects in Dubai and the UAE. Send us the quantity, the lengths and what the site is like, and we will reply with a clear quotation.",
     faqs: [
@@ -100,6 +130,13 @@ export const productContent: Record<string, ProductContent> = {
       "Cat8 cable is a category of copper network cable made mainly for links inside equipment racks rather than across whole buildings. Its tightly twisted, shielded pairs help keep signals steady, and it joins servers, switches and patch panels within a rack or between neighbouring racks.",
     whereUsed:
       "You will mostly see this cable in data rooms and server rooms, linking equipment inside cabinets. It suits trading floors, media studios and busy offices with their own on-site server spaces — anywhere rack-to-rack wiring needs to stay tidy and dependable.",
+    benefits: [
+      "Serves the short links between switches, servers and storage.",
+      "Used inside server racks to join equipment together.",
+      "Installs in data rooms where rack space is tight.",
+      "Keeps server-to-switch connections tidy inside the cabinet.",
+      "Picked when a wired link is wanted inside one room.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies Cat8 cable in Dubai and the UAE. Tell us how many links you are wiring, the lengths involved and a few site details, and we will come back with a clear quote.",
     faqs: [
@@ -120,6 +157,13 @@ export const productContent: Record<string, ProductContent> = {
       "Network cable is the general term for the copper wiring that carries data between devices on a local network. It runs from a central switch or patch panel out to sockets at desks and ceilings, giving phones, computers, cameras and wireless points a wired path to talk over.",
     whereUsed:
       "Almost every wired building depends on this cabling: offices, clinics, schools, hotels, warehouses and retail floors across the UAE. It connects user points to server rooms, carries camera and access-point feeds, and links cabinets together between floors and across a site.",
+    benefits: [
+      "The everyday wiring that links office devices to the network.",
+      "Connects cameras, printers and access points back to the switch.",
+      "Used for new desk positions and office moves.",
+      "Runs from wall outlets to the equipment cabinet.",
+      "Cut and terminated on site to fit each cable route.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies network cable in Dubai and throughout the UAE. Share your drawings or a simple list of runs with lengths, and we will price the supply clearly.",
     faqs: [
@@ -140,6 +184,13 @@ export const productContent: Record<string, ProductContent> = {
       "A copper patch cord is a short, flexible cable with a plug moulded on each end. Installers use these cords for the last link in a channel — joining a computer or phone to a wall socket, or connecting switches and patch panels inside a cabinet — and they can be swapped in moments.",
     whereUsed:
       "Look inside any communications cabinet and you will see rows of these cords colour-coded by use. They sit in data rooms and floor boxes across Dubai, connecting desks, cameras, wireless access points and printers to the fixed cabling behind them.",
+    benefits: [
+      "Joins desk computers and phones to the wall outlet.",
+      "Links patch panels to switches at the rack.",
+      "Plugs in at the desk, so equipment can be moved easily.",
+      "Colour choices keep desk and rack runs easy to tell apart.",
+      "Swapped by hand when a device moves to another desk.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies copper patch cords in Dubai and the UAE in assorted lengths and colours. Tell us how many you need and for which equipment, and we will reply with a simple quote.",
     faqs: [
@@ -160,6 +211,13 @@ export const productContent: Record<string, ProductContent> = {
       "A copper patch panel is a flat panel with rows of jacks mounted in a rack or cabinet. The fixed cabling from around a building terminates on the back, while short cords plug into the front, giving installers one tidy place to label, test and rearrange every network connection.",
     whereUsed:
       "These panels live in the communications cabinets of offices, data rooms and plant spaces throughout Dubai. They bring desk, camera and access-point cabling back to a single point, keep switch ports organised, and make moves and changes easy when teams shift desks.",
+    benefits: [
+      "Collects the building's cable runs in one place at the rack.",
+      "Gives each wall outlet its own labelled front port.",
+      "Keeps the server cabinet tidy and easy to work on.",
+      "Lets a switch port be repatched without touching the wall cabling.",
+      "Shows at a glance which cable serves which room.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies copper patch panels in Dubai and the wider UAE. Tell us how many cable runs each panel must serve and your rack details, and we will reply with a clear quote.",
     faqs: [
@@ -846,6 +904,13 @@ export const productContent: Record<string, ProductContent> = {
       "Desktops are the tower-and-screen computers that sit on or under a desk as a fixed workstation. The separate box holds the working parts while the screen, keyboard and mouse attach outside, giving offices a settled machine for everyday work that stays where it is put.",
     whereUsed:
       "These machines run at desks in every kind of UAE workplace: open-plan offices, reception counters, accounts departments, design studios and school computer rooms. Staff use them for documents, email, business applications and shared files, with each machine assigned to one desk.",
+    benefits: [
+      "Used for everyday office work such as documents, email and browsing.",
+      "Sits on or under the desk and stays in one place.",
+      "Set up with a screen, keyboard and mouse on the desk.",
+      "The case can be opened later to replace or upgrade parts.",
+      "Plugs into the office network and power at the desk.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies desktop computers in Dubai and the UAE. Tell us how many workstations you need, the work they will do and the site details, and we will reply with a clear quote.",
     faqs: [
@@ -866,6 +931,13 @@ export const productContent: Record<string, ProductContent> = {
       "A gaming PC is a desktop computer put together with demanding games and graphics-heavy work in mind. The same build also suits design, editing and rendering tasks, so many buyers use one machine for evening games and daytime creative work alike.",
     whereUsed:
       "These machines sit in homes and dorms across Dubai and in studios doing content work. Owners run modern games after hours, stream to an audience, or edit video and renders during the day — one box doing duty as both entertainment and a working tool.",
+    benefits: [
+      "Built for playing modern games at home.",
+      "Also used for design work, editing and streaming.",
+      "Often assembled by choosing and fitting the parts together.",
+      "Kept on or under the desk with the screen on top.",
+      "Cooled by fans that move air through the case.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies gaming PCs in Dubai and the UAE. Tell us the quantity, the games or software you run and the site details, and we will reply with a clear quote.",
     faqs: [
@@ -887,6 +959,13 @@ export const productContent: Record<string, ProductContent> = {
       "Laptops are the portable computers that fold screen to keyboard and travel in a bag. Everything a workstation needs is packed into the one unit, so staff can carry their machine between office, home and site, working wherever the day takes them.",
     whereUsed:
       "They ride in bags across Dubai and beyond: to meeting rooms and client sites, on flights, to home offices and hot desks. Companies issue them to field and remote staff, sales teams carry them on visits, and they suit anyone whose work moves with them.",
+    benefits: [
+      "Carried between meetings, home and the office in a bag.",
+      "Works on its own screen, keyboard and touchpad without extra parts.",
+      "Runs on its battery when no power socket is nearby.",
+      "Connects to office networks and screens through the ports on the sides.",
+      "Moved from desk to desk as the working day changes.",
+    ],
     howWeHelp:
       "Artek Computers LLC supplies laptops in Dubai and the UAE. Tell us how many you need, who will use them and for what, and we will reply with a clear quote.",
     faqs: [

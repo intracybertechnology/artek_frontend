@@ -1,7 +1,24 @@
-import type { Enquiry, EnquiryStatus } from "@/admin/lib/types";
+import type { Enquiry, EnquiryStatus, QuoteStatus } from "@/admin/lib/types";
 import { Badge } from "@/admin/components/ui/badge";
 
-/** Enquiry workflow badge — semantic colours so staff can scan by state. */
+// ── Quote statuses (new backend) ──────────────────────────────────────────
+
+const QUOTE_STATUS_CLASSES: Record<QuoteStatus, string> = {
+  new: "border-transparent bg-primary text-primary-foreground",
+  contacted: "border-transparent bg-blue-100 text-blue-800",
+  closed: "border-transparent bg-secondary text-muted-foreground",
+};
+
+export function QuoteStatusBadge({ status }: { status: QuoteStatus }) {
+  return (
+    <Badge className={`capitalize ${QUOTE_STATUS_CLASSES[status]}`}>
+      {status}
+    </Badge>
+  );
+}
+
+// ── Legacy enquiry statuses (kept for backward compat) ────────────────────
+
 const STATUS_CLASSES: Record<EnquiryStatus, string> = {
   new: "border-transparent bg-primary text-primary-foreground",
   contacted: "border-transparent bg-blue-100 text-blue-800",
@@ -18,7 +35,6 @@ export function StatusBadge({ status }: { status: EnquiryStatus }) {
   );
 }
 
-/** Whether ARTEK was actually emailed — "skipped" means development log-only. */
 export function NotificationBadge({ status }: { status: Enquiry["notificationStatus"] }) {
   const label: Record<Enquiry["notificationStatus"], string> = {
     pending: "Mail pending",
@@ -26,6 +42,7 @@ export function NotificationBadge({ status }: { status: Enquiry["notificationSta
     failed: "Mail failed",
     skipped: "Dev (logged)",
   };
-  const tone = status === "sent" ? "outline" : status === "failed" ? "destructive" : "secondary";
+  const tone =
+    status === "sent" ? "outline" : status === "failed" ? "destructive" : "secondary";
   return <Badge variant={tone}>{label[status]}</Badge>;
 }

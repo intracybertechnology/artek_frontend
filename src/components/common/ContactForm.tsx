@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CheckCircle2, AlertTriangle, Info, Loader2, Send } from "lucide-react";
 import { enquirySchema, type EnquiryValues } from "@/lib/validation";
 import { submitEnquiry } from "@/lib/submissions";
@@ -23,6 +24,7 @@ export function ContactForm({ className }: { className?: string }) {
     register,
     handleSubmit,
     reset,
+    getValues,
     setValue,
     watch,
     formState: { errors, isSubmitting },
@@ -33,8 +35,29 @@ export function ContactForm({ className }: { className?: string }) {
   });
 
   const [result, setResult] = useState<null | { kind: "ok" | "demo" | "error"; message?: string }>(null);
+  const [searchParams] = useSearchParams();
+
   const emirate = watch("emirate");
   const service = watch("service");
+  /* Quote links carry context in the query (?product=…&brand=…&category=…&message=…).
+     Read it once on load and prefill the message — only while the field is
+     still empty; the visitor can edit or clear it freely. */
+  useEffect(() => {
+    if (getValues("message")) return;
+    const message = searchParams.get("message");
+    const brand = searchParams.get("brand");
+    const product = searchParams.get("product");
+    const category = searchParams.get("category");
+    const parts = [brand, product].filter((p): p is string => p !== null);
+    const prefill =
+      message
+      ?? (parts.length > 0
+        ? `I am interested in ${parts.join(" ")}${category ? ` (${category})` : ""}.`
+        : category
+          ? `I am interested in ${category}.`
+          : "");
+    if (prefill) setValue("message", prefill);
+  }, []);
 
   const onSubmit = handleSubmit(async (values) => {
     setResult(null);

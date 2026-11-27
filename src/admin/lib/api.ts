@@ -1,60 +1,128 @@
-import type { AdminUser, Enquiry, EnquiryStatus } from "./types";
-
 /**
- * Thin API client. `credentials: "include"` is what sends the httpOnly JWT
- * cookie; the token itself is never visible to this code.
+ * Admin API client — uses the shared fetch helpers from src/lib/api.ts
+ * so all requests go to API_BASE with credentials: "include".
  */
-const BASE = import.meta.env.VITE_API_BASE ?? "/api";
+import { apiDelete, apiGet, apiGetQ, apiPatch, apiPost } from "@/lib/api";
+import type {
+  AdminBrand,
+  AdminCategory,
+  AdminProduct,
+  AdminUser,
+  ProductAvailability,
+  Quote,
+  QuoteStatus,
+} from "./types";
 
-type ApiError = Error & { status?: number; fields?: Record<string, string[]> };
+// ── Auth ──────────────────────────────────────────────────────────────────
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    ...init,
-  });
+export const authLogin = (email: string, password: string) =>
+  apiPost<{ success: boolean; user: AdminUser }>("/api/auth/login", { email, password });
 
-  const body = await res.json().catch(() => ({}) as Record<string, unknown>);
-  if (!res.ok) {
-    const err: ApiError = new Error((body.error as string) ?? `Request failed (${res.status})`);
-    err.status = res.status;
-    err.fields = body.fields as Record<string, string[]> | undefined;
-    throw err;
-  }
-  return body as T;
-}
+export const authLogout = () =>
+  apiPost<{ success: boolean }>("/api/auth/logout", {});
 
-export const api = {
-  login: (email: string, password: string) =>
-    request<{ ok: true; user: AdminUser }>("/admin/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    }),
+export const authMe = () =>
+  apiGet<{ success: boolean; user: AdminUser }>("/api/auth/me");
 
-  logout: () => request<{ ok: true }>("/admin/logout", { method: "POST" }),
+// ── Quotes ────────────────────────────────────────────────────────────────
 
-  me: () => request<{ ok: true; user: AdminUser }>("/admin/me"),
-
-  listEnquiries: (params: { status?: string; q?: string; limit?: number; offset?: number }) => {
-    const search = new URLSearchParams();
-    if (params.status) search.set("status", params.status);
-    if (params.q) search.set("q", params.q);
-    search.set("limit", String(params.limit ?? 25));
-    search.set("offset", String(params.offset ?? 0));
-    return request<{ ok: true; items: Enquiry[]; total: number; limit: number; offset: number }>(
-      `/admin/enquiries?${search}`,
-    );
-  },
-
-  stats: () =>
-    request<{ ok: true; counts: Partial<Record<EnquiryStatus, number>>; total: number }>(
-      "/admin/enquiries/stats",
-    ),
-
-  updateStatus: (id: string, status: EnquiryStatus) =>
-    request<{ ok: true; enquiry: Enquiry }>(`/admin/enquiries/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    }),
+export type QuoteListResponse = {
+  quotes: Quote[];
+  total: number;
+  page: number;
+  totalPages: number;
 };
+
+type QuotesApiResponse = {
+  success: boolean;
+  quotes?: Quote[] | null;
+  pagination?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    totalPages?: number;
+  } | null;
+};
+
+export const listQuotes = async (params: {
+  page?: number;
+  limit?: number;
+  status?: QuoteStatus | "";
+}): Promise<QuoteListResponse> => {
+  const data = await apiGetQ<QuotesApiResponse>("/api/quotes", {
+    page: params.page,
+    limit: params.limit,
+    status: params.status || undefined,
+  });
+  const total = data.pagination?.total ?? 0;
+  const totalPages = data.pagination?.totalPages ?? 0;
+  return {
+    quotes: data.quotes ?? [],
+    total,
+    page: data.pagination?.page ?? params.page ?? 1,
+    totalPages: totalPages > 0 ? totalPages : 1,
+  };
+};
+
+export const updateQuoteStatus = (id: string, status: QuoteStatus) =>
+  apiPatch<{ success: boolean; data: Quote }>(`/api/quotes/${id}`, { status });
+
+// ── Products ──────────────────────────────────────────────────────────────
+
+export type ProductListResponse = {
+  products: AdminProduct[];
+  total: number;
+  page: number;
+  totalPages: number;
+};
+
+type ProductsApiResponse = {
+  success: boolean;
+  products?: AdminProduct[] | null;
+  pagination?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    totalPages?: number;
+  } | null;
+};
+
+export const listProducts = async (params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  brand?: string;
+  availability?: ProductAvailability | "";
+  deleted?: boolean;
+}): Promise<ProductListResponse> => {
+  const data = await apiGetQ<ProductsApiResponse>("/api/admin/products", {
+    page: params.page,
+    limit: params.limit,
+    search: params.search || undefined,
+    category: params.category || undefined,
+    brand: params.brand || undefined,
+    availability: params.availability || undefined,
+    deleted: params.deleted ? "true" : undefined,
+  });
+  const total = data.pagination?.total ?? 0;
+  const totalPages = data.pagination?.totalPages ?? 0;
+  return {
+    products: data.products ?? [],
+    total,
+    page: data.pagination?.page ?? params.page ?? 1,
+    totalPages: totalPages > 0 ? totalPages : 1,
+  };
+};
+
+export const deleteProduct = (id: string) =>
+  apiDelete<{ success: boolean }>(`/api/products/${id}`);
+
+export const restoreProduct = (id: string) =>
+  apiPost<{ success: boolean }>(`/api/products/${id}/restore`, {});
+
+export const listCategories = () =>
+  apiGet<{ success: boolean; categories: AdminCategory[] }>("/api/categories");
+
+export const listBrands = () =>
+  apiGet<{ success: boolean; brands: AdminBrand[] }>("/api/brands");

@@ -361,6 +361,9 @@ export type BrandDetail = {
   models?: readonly BrandModel[];
   /** Optional brand accent colour (hex) sampled from the brand's logo — used sparingly for decoration on the brand page. */
   accent?: string;
+  /** Optional hero image for the brand page (public path); no brand uses one yet. */
+  heroImage?: string;
+  heroImageAlt?: string;
 };
 /** Hikvision red — the most saturated non-white pixel of the logo (public/images/brand-logos/hikvision.png). */
 const HIKVISION_ACCENT = "#c91718";

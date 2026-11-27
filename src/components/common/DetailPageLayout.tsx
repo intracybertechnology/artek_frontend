@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check, Phone } from "lucide-react";
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
@@ -43,6 +43,11 @@ interface DetailPageLayoutProps {
   seo: DetailPageSeo;
   /** Optional brand accent colour (hex) — set as --brand-accent on the wrapper; only the hero accent line and the model card top borders consume it. */
   accent?: string;
+  /** Optional hero image — right half of the hero band on large screens, faint backdrop on mobile. */
+  heroImage?: string;
+  heroImageAlt?: string;
+  /** Small caption shown bottom-right of the hero (e.g. "Image for illustration only."). */
+  heroCaption?: string;
 }
 
 /** Neutral trust ticks — no claims about warranties, dealers or stock. */
@@ -72,18 +77,43 @@ export function DetailPageLayout({
   bottomCtaTitle,
   seo: _seo,
   accent,
+  heroImage,
+  heroImageAlt,
+  heroCaption,
 }: DetailPageLayoutProps) {
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
+  const showHeroImage = Boolean(heroImage) && !heroImageFailed;
+  /** The text column narrows so the hero image never sits under the copy. */
+  const textWidth = showHeroImage ? "max-w-2xl" : "max-w-4xl";
   return (
     <article
       style={accent ? ({ "--brand-accent": accent } as CSSProperties) : undefined}
     >
       {/* ── Hero ─────────────────────────────────────────────────── */}
-      <header className="bg-navy-950 pb-16 pt-32 text-white">
-        <div className="container-page">
-          <h1 className="hero-fade max-w-4xl text-balance text-4xl font-extrabold tracking-tight sm:text-5xl">
+      <header
+        className={`bg-navy-950 pb-16 pt-32 text-white${showHeroImage ? " relative overflow-hidden" : ""}`}
+      >
+        {showHeroImage && (
+          <>
+            {/* Hero image — right half with a soft fade (lg), faint backdrop behind the text on mobile */}
+            <img
+              src={heroImage}
+              alt={heroImageAlt ?? ""}
+              onError={() => setHeroImageFailed(true)}
+              className="pointer-events-none absolute inset-y-0 right-0 h-full w-full object-contain object-right opacity-25 [mask-image:radial-gradient(ellipse_at_60%_50%,#000_35%,transparent_72%)] lg:w-[48%] lg:opacity-100"
+            />
+            {/* Dark left-to-right gradient keeps the text column fully readable */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/85 to-transparent"
+            />
+          </>
+        )}
+        <div className={`container-page${showHeroImage ? " relative" : ""}`}>
+          <h1 className={`hero-fade ${textWidth} text-balance text-4xl font-extrabold tracking-tight sm:text-5xl`}>
             {title}
           </h1>
-          <p className="hero-fade-delay mt-4 max-w-4xl text-pretty text-lg text-slate-200">{intro}</p>
+          <p className={`hero-fade-delay mt-4 ${textWidth} text-pretty text-lg text-slate-200`}>{intro}</p>
           <div
             className="mt-5 h-1 w-28 rounded bg-accent"
             style={accent ? { backgroundColor: "var(--brand-accent)" } : undefined}
@@ -113,6 +143,9 @@ export function DetailPageLayout({
             ))}
           </ul>
         </div>
+        {showHeroImage && heroCaption && (
+          <p className="absolute bottom-3 right-4 text-xs text-slate-400">{heroCaption}</p>
+        )}
       </header>
 
       {/* ── Breadcrumb strip ──────────────────────────────────────── */}

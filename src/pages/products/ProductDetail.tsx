@@ -13,10 +13,9 @@ import { brandDetails, brandGroups, getProduct, slugify } from "@/data/catalog";
 import { productContent } from "@/data/productContent";
 import { company } from "@/data/company";
 import {
-  fetchModelsBySubcategory,
-  fetchSubcategoryBrands,
-  type ModelsPage,
-  type ModelsSort,
+  fetchPaginatedModels,
+  type ModelsPageSort,
+  type PaginatedModelsPage,
 } from "@/lib/catalogApi";
 import { cn } from "@/lib/utils";
 import NotFound from "@/pages/NotFound";
@@ -44,107 +43,79 @@ function BenefitsSection({ benefits }: { benefits: readonly string[] }) {
   );
 }
 
-/** Where the models list would be: when the category has no models in the
- * backend (or it cannot be reached) the visitor still gets a clear next step. */
-function AskUsCard({ name, groupTitle }: { name: string; groupTitle: string }) {
-  /* Ram's quote flow: the product type's context in the query string. */
-  const quoteTo =
-    `/contact?product=${encodeURIComponent(name)}` +
-    `&category=${encodeURIComponent(groupTitle)}` +
-    `&message=${encodeURIComponent(`I am interested in ${name}.`)}`;
-
-  return (
-    <section className="mt-10">
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-        <Reveal as="h2" className="text-2xl font-bold text-ink">Ask us about {name}</Reveal>
-        <p className="mt-2 text-sm text-slate-300">
-          Tell us the brand, model and quantity you need and we will reply with a clear quote.
-        </p>
-        <Link
-          to={quoteTo}
-          className="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white outline-none transition-colors hover:bg-slate-700 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
-        >
-          Request a Free Quote
-        </Link>
-      </div>
-    </section>
-  );
+/** Compact page list for the grid pager: every number while there are at
+ * most 7 pages, otherwise first/last plus the pages around the current
+ * one with "…" where numbers are skipped. */
+function pageNumbers(page: number, totalPages: number): (number | "gap")[] {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  const wanted = new Set([1, totalPages, page - 1, page, page + 1]);
+  const list: (number | "gap")[] = [];
+  let previous = 0;
+  for (let p = 1; p <= totalPages; p++) {
+    if (!wanted.has(p)) continue;
+    if (previous > 0 && p - previous > 1) list.push("gap");
+    list.push(p);
+    previous = p;
+  }
+  return list;
 }
 
 /**
- * "{Product} products" — backend-driven model grid: brand chips, a toolbar
- * (result count, sort, search), the card grid and Previous/Next paging, all
- * served by GET /api/products (page, limit, search, sort, brand). While the
- * first page loads nothing renders; when the category has no models (or the
- * backend is unreachable) the ask-us card takes the grid's place.
+ * "{Product} models" — the full-width model grid at the bottom of the
+ * page, directly above the "Looking for {product}?" band (passed to
+ * DetailPageLayout as belowContent). The backend does the paging,
+ * sorting and searching: 12 models per page, oldest first by default so
+ * new models appear at the end of the grid.
+ *
+ * Renders nothing while the first page loads and nothing when the
+ * product type has no models (or the request fails) — visitors never
+ * see an error and the page keeps its plain layout. Only a search that
+ * filters to zero keeps the toolbar, so the visitor can clear it.
+ * While a page loads the previous grid stays in place (dimmed) so the
+ * height never collapses and the page does not jump.
  */
 function ModelsSection({
   name,
   groupSlug,
-  groupTitle,
   productSlug,
   typeImage,
 }: {
   name: string;
   groupSlug: string;
-  groupTitle: string;
   productSlug: string;
   /** The product type's own picture — the card fallback when a model has no photo. */
   typeImage?: string;
 }) {
-  const [brands, setBrands] = useState<string[]>([]);
   const [searchText, setSearchText] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
-  const [sort, setSort] = useState<ModelsSort>("oldest");
-  const [brand, setBrand] = useState<string | null>(null);
+  const [sort, setSort] = useState<ModelsPageSort>("created_asc");
   const [page, setPage] = useState(1);
-  const [data, setData] = useState<ModelsPage | null>(null);
-  /** True when the last page fetch failed (backend unreachable or errored). */
-  const [failed, setFailed] = useState(false);
-  const toolbarRef = useRef<HTMLDivElement>(null);
-
-  /* Brand chips: one unfiltered fetch of the whole subcategory, oldest first. */
-  useEffect(() => {
-    let active = true;
-    fetchSubcategoryBrands(productSlug)
-      .then((names) => {
-        if (active) setBrands(names);
-      })
-      .catch(() => {
-        /* No chips on failure — the grid below still loads. */
-      });
-    return () => {
-      active = false;
-    };
-  }, [productSlug]);
+  const [data, setData] = useState<PaginatedModelsPage | null>(null);
+  /** True while a page is loading — the previous grid stays visible meanwhile. */
+  const [pending, setPending] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   /* The grid page — refetched whenever a control changes. */
   useEffect(() => {
     let active = true;
-    fetchModelsBySubcategory(productSlug, {
+    setPending(true);
+    fetchPaginatedModels(productSlug, {
       page,
       limit: MODELS_PAGE_SIZE,
       sort,
       search: appliedSearch || undefined,
-      brand: brand ?? undefined,
-    })
-      .then((res) => {
-        if (active) {
-          setFailed(false);
-          setData(res);
-        }
-      })
-      .catch(() => {
-        /* Backend unreachable or errored — the ask-us card takes over below. */
-        if (active) {
-          setFailed(true);
-          setData(null);
-        }
-      });
+    }).then((res) => {
+      /* fetchPaginatedModels always resolves — failures come back as safe defaults. */
+      if (!active) return;
+      setData(res);
+      setPending(false);
+    });
     return () => {
       active = false;
     };
-  }, [productSlug, page, sort, appliedSearch, brand]);
+  }, [productSlug, page, sort, appliedSearch]);
 
   /* Search box: debounced 300 ms; Enter and the Search button apply immediately. */
   useEffect(() => {
@@ -155,16 +126,12 @@ function ModelsSection({
     return () => clearTimeout(timer);
   }, [searchText]);
 
-  /* Nothing while the first page loads; the ask-us card when the category is
-     empty or the backend failed. A filtered-to-zero search keeps the toolbar. */
-  if (data === null && !failed) return null;
-  if (failed || (data !== null && data.total === 0 && !appliedSearch && !brand)) {
-    return <AskUsCard name={name} groupTitle={groupTitle} />;
-  }
-  if (!data) return null;
+  /* Nothing before the first page arrives; nothing when the product type
+     has no models. A search that filters to zero keeps the toolbar. */
+  if (!data || (data.total === 0 && !appliedSearch)) return null;
 
-  const totalPages = Math.max(1, data.totalPages);
-  const from = data.total === 0 ? 0 : (page - 1) * MODELS_PAGE_SIZE + 1;
+  const totalPages = data.totalPages;
+  const from = Math.min((page - 1) * MODELS_PAGE_SIZE + 1, data.total);
   const to = Math.min(page * MODELS_PAGE_SIZE, data.total);
   const applySearch = () => {
     setAppliedSearch(searchText.trim());
@@ -172,107 +139,109 @@ function ModelsSection({
   };
   const gotoPage = (next: number) => {
     setPage(next);
-    requestAnimationFrame(() => toolbarRef.current?.scrollIntoView({ block: "start" }));
+    requestAnimationFrame(() => sectionRef.current?.scrollIntoView({ block: "start" }));
   };
 
   return (
-    <section className="mt-10 scroll-mt-28">
-      <Reveal as="h2" className="text-2xl font-bold text-ink">{name} products</Reveal>
+    <section ref={sectionRef} className="scroll-mt-28 bg-mist-2 pb-12 sm:pb-16">
+      <div className="container-page">
+        <Reveal as="h2" className="text-2xl font-bold text-ink">{name} models</Reveal>
 
-      {brands.length > 1 && (
-        <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter models by brand">
-          {["All", ...brands].map((b) => {
-            const isActive = b === "All" ? brand === null : brand === slugify(b);
-            return (
-              <button
-                key={b}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => {
-                  setBrand(b === "All" ? null : slugify(b));
-                  setPage(1);
-                }}
-                className={cn(
-                  "rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors",
-                  isActive
-                    ? "border-text bg-text text-surface"
-                    : "border-white/15 text-text-muted hover:border-white/40 hover:text-text",
-                )}
-              >
-                {b}
-              </button>
-            );
-          })}
+        {/* Toolbar: result count, sort and search — all handled by the server */}
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-text-muted" role="status">
+            Showing {from}–{to} of {data.total} results
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Sort — Default is oldest first, so new models appear at the end */}
+            <Select value={sort} onValueChange={(v) => { setSort(v as ModelsPageSort); setPage(1); }}>
+              <SelectTrigger aria-label="Sort models" className="w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="created_asc">Default</SelectItem>
+                <SelectItem value="created_desc">Newest first</SelectItem>
+                <SelectItem value="name">Name A-Z</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="search"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  applySearch();
+                }
+              }}
+              placeholder="Search models in this category"
+              aria-label="Search models in this category"
+              className="w-56"
+            />
+            <Button variant="outline" size="sm" type="button" onClick={applySearch}>
+              Search
+            </Button>
+          </div>
         </div>
-      )}
 
-      <div ref={toolbarRef} className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-text-muted" role="status">
-          Showing {from}–{to} of {data.total} results
-        </p>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Sort — only the orders the backend supports: newest first, and
-              oldest first assembled from it. The API's only other sort value
-              ("name") orders by product name, not model code. */}
-          <Select value={sort} onValueChange={(v) => { setSort(v as ModelsSort); setPage(1); }}>
-            <SelectTrigger aria-label="Sort products" className="w-36">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="oldest">Default</SelectItem>
-              <SelectItem value="newest">Newest first</SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            type="search"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                applySearch();
-              }
-            }}
-            placeholder="Search products in this category"
-            aria-label="Search products in this category"
-            className="w-56"
-          />
-          <Button variant="outline" size="sm" type="button" onClick={applySearch}>
-            Search
-          </Button>
-        </div>
+        {/* Grid — 4 columns on desktop, 3 on large tablet, 2 on small tablet,
+            1 on phone. While the next page loads the previous one stays
+            (dimmed) so the height never collapses. */}
+        <ul
+          aria-busy={pending}
+          className={cn(
+            "mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
+            pending && "pointer-events-none opacity-60",
+          )}
+        >
+          {data.products.map((product) => (
+            <ModelCard
+              key={product.id}
+              brand={{ name: product.brandName ?? "" }}
+              modelCode={product.modelNumber}
+              typeLabel={product.type ?? name}
+              availability={product.availability}
+              imageUrl={product.image}
+              typeImage={typeImage}
+              modelSlug={product.slug}
+              groupSlug={groupSlug}
+              productSlug={productSlug}
+            />
+          ))}
+        </ul>
+
+        {/* Pager — hidden while everything fits on one page */}
+        {totalPages > 1 && (
+          <nav className="mt-8 flex flex-wrap items-center gap-2" aria-label="Model pages">
+            <Button variant="outline" size="sm" type="button" disabled={page <= 1} onClick={() => gotoPage(page - 1)}>
+              Previous
+            </Button>
+            {pageNumbers(page, totalPages).map((p, i) =>
+              p === "gap" ? (
+                <span key={`gap-${i}`} className="px-1 text-xs text-text-muted">…</span>
+              ) : (
+                <button
+                  key={p}
+                  type="button"
+                  aria-current={p === page ? "page" : undefined}
+                  onClick={() => gotoPage(p)}
+                  className={cn(
+                    "min-w-9 rounded-md border px-2.5 py-1.5 text-sm font-semibold transition-colors",
+                    p === page
+                      ? "border-text bg-text text-surface"
+                      : "border-white/15 text-text-muted hover:border-white/40 hover:text-text",
+                  )}
+                >
+                  {p}
+                </button>
+              ),
+            )}
+            <Button variant="outline" size="sm" type="button" disabled={page >= totalPages} onClick={() => gotoPage(page + 1)}>
+              Next
+            </Button>
+          </nav>
+        )}
       </div>
-
-      <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {data.items.map((product) => (
-          <ModelCard
-            key={product.id}
-            brand={{ name: product.brandName ?? "" }}
-            modelCode={product.modelNumber}
-            typeLabel={product.type ?? name}
-            availability={product.availability}
-            imageUrl={product.image}
-            typeImage={typeImage}
-            modelSlug={product.slug}
-            groupSlug={groupSlug}
-            productSlug={productSlug}
-          />
-        ))}
-      </ul>
-
-      {totalPages > 1 && (
-        <div className="mt-6 flex items-center gap-3">
-          <Button variant="outline" size="sm" type="button" disabled={page <= 1} onClick={() => gotoPage(page - 1)}>
-            Previous
-          </Button>
-          <span className="text-xs text-text-muted">
-            Page {page} of {totalPages}
-          </span>
-          <Button variant="outline" size="sm" type="button" disabled={page >= totalPages} onClick={() => gotoPage(page + 1)}>
-            Next
-          </Button>
-        </div>
-      )}
     </section>
   );
 }
@@ -320,6 +289,15 @@ export default function ProductDetail() {
         to: `/products/${group.slug}/${slugify(item)}`,
       }))}
       sidebarAllLink={{ label: "All products", to: "/products" }}
+      belowContent={
+        <ModelsSection
+          key={productSlug ?? slugify(name)}
+          name={name}
+          groupSlug={group.slug}
+          productSlug={productSlug ?? slugify(name)}
+          typeImage={image}
+        />
+      }
       bottomCtaTitle={name}
       seo={{
         title: `${name} in Dubai, UAE | Artek Computers LLC`,
@@ -335,16 +313,6 @@ export default function ProductDetail() {
 
       {/* ── Benefits (only for products with benefits in productContent) ── */}
       {content?.benefits && <BenefitsSection benefits={content.benefits} />}
-
-      {/* ── {Product} products — backend models, or the ask-us card when there are none ── */}
-      <ModelsSection
-        key={productSlug ?? slugify(name)}
-        name={name}
-        groupSlug={group.slug}
-        groupTitle={group.title}
-        productSlug={productSlug ?? slugify(name)}
-        typeImage={image}
-      />
 
       {/* ── Article sections (only for products with productContent entries) ── */}
       {content && (

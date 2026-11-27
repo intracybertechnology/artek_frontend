@@ -2,11 +2,12 @@
  * Admin API client — uses the shared fetch helpers from src/lib/api.ts
  * so all requests go to API_BASE with credentials: "include".
  */
-import { apiDelete, apiGet, apiGetQ, apiPatch, apiPost } from "@/lib/api";
+import { API_BASE, apiDelete, apiGet, apiGetQ, apiPatch, apiPost, type ApiError } from "@/lib/api";
 import type {
   AdminBrand,
   AdminCategory,
   AdminProduct,
+  AdminProductImage,
   AdminUser,
   ProductAvailability,
   Quote,
@@ -126,3 +127,74 @@ export const listCategories = () =>
 
 export const listBrands = () =>
   apiGet<{ success: boolean; brands: AdminBrand[] }>("/api/brands");
+
+// ── Product detail (add / edit) ──
+
+type ProductByIdResponse = {
+  success: boolean;
+  product?: AdminProduct | null;
+};
+
+export const getProduct = async (id: string): Promise<AdminProduct> => {
+  const res = await apiGet<ProductByIdResponse>(`/api/admin/products/${id}`);
+  if (res.product) return res.product;
+  // Fallback: the body itself is the product (no wrapper).
+  return res as unknown as AdminProduct;
+};
+
+export const getProductBySlug = (slug: string) =>
+  apiGet<{ success: boolean; product?: AdminProduct | null }>(`/api/products/${slug}`);
+
+type ProductCreateBody = {
+  name: string;
+  model_number: string;
+  category_id: number;
+  subcategory_id?: number | null;
+  brand_id: number;
+  description?: string;
+  availability?: ProductAvailability;
+  specifications?: Record<string, string>;
+  is_active?: boolean;
+};
+
+type ProductCreateResponse = {
+  success: boolean;
+  product?: AdminProduct | null;
+  data?: { id?: string } | null;
+};
+
+export const createProduct = (body: ProductCreateBody) =>
+  apiPost<ProductCreateResponse>("/api/products", body);
+
+export const updateProduct = (id: string, body: Partial<ProductCreateBody>) =>
+  apiPatch<{ success: boolean }>(`/api/products/${id}`, body);
+
+// ── Product images ──
+
+export const uploadProductImages = (id: string, files: FileList | File[]) => {
+  const formData = new FormData();
+  for (const file of Array.from(files ?? [])) formData.append("images", file);
+  return fetch(`${API_BASE}/api/products/${id}/images`, {
+    credentials: "include",
+    method: "POST",
+    body: formData,
+  }).then(async (res) => {
+    const body = await res.json().catch(() => ({}) as Record<string, unknown>);
+    if (!res.ok) {
+      const err = new Error(
+        (body as { message?: string }).message ||
+          (body as { error?: string }).error ||
+          `Request failed (${res.status})`,
+      ) as ApiError;
+      err.status = res.status;
+      throw err;
+    }
+    return body as { success: boolean; images?: AdminProductImage[] };
+  });
+};
+
+export const setPrimaryImage = (id: string, imageId: string) =>
+  apiPatch<{ success: boolean }>(`/api/products/${id}/images/${imageId}/primary`, {});
+
+export const deleteProductImage = (id: string, imageId: string) =>
+  apiDelete<{ success: boolean }>(`/api/products/${id}/images/${imageId}`);

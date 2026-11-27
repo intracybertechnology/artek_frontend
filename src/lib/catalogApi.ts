@@ -1,4 +1,4 @@
-import { API_BASE, apiGet } from "@/lib/api";
+import { API_BASE, apiGet, apiGetQ } from "@/lib/api";
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -176,4 +176,69 @@ export const fetchSubcategoryBrands = async (subcategorySlug: string): Promise<s
   const res = await fetchPage(`subcategory=${encodeURIComponent(subcategorySlug)}&limit=60`);
   const names = rev(res.products.map(toProduct)).map((p) => p.brandName);
   return [...new Set(names.filter((n): n is string => n !== null))];
+};
+
+/* ── Product type pages: server-paginated model grid ──────────────────────────
+ *
+ * The backend does the paging, sorting and searching itself:
+ *   GET /api/products?subcategory=<slug>&page=<n>&limit=12&sort=<s>&search=<t>
+ *   → { success, products, pagination: { page, limit, total, totalPages } }
+ * Sorting options: created_asc (oldest first), created_desc, name.
+ * pagination.totalPages is 0 when there are no results — treated as 1.
+ */
+
+/** Sort orders the products API accepts for the model grid. */
+export type ModelsPageSort = "created_asc" | "created_desc" | "name";
+
+export interface PaginatedModelsQuery {
+  /** 1-based page of the grid. */
+  page?: number;
+  /** Models per page — the grid uses 12. */
+  limit?: number;
+  sort?: ModelsPageSort;
+  /** Free-text search — matched against name, model number and brand on the server. */
+  search?: string;
+}
+
+/** One grid page of models — every field always present, never undefined. */
+export interface PaginatedModelsPage {
+  products: ApiProduct[];
+  total: number;
+  page: number;
+  /** At least 1 — the API reports 0 when there are no results. */
+  totalPages: number;
+}
+
+/**
+ * One server-paginated page of a product type's models, oldest first
+ * by default (created_asc) so new models appear at the end of the grid.
+ *
+ * Resolves with safe defaults ([], 0, 1, 1) when the request fails or
+ * the response is malformed, so callers can render "nothing" without
+ * guarding against undefined fields.
+ */
+export const fetchPaginatedModels = async (
+  subcategorySlug: string,
+  q: PaginatedModelsQuery = {},
+): Promise<PaginatedModelsPage> => {
+  try {
+    const res = await apiGetQ<ProductsResponse>("/api/products", {
+      subcategory: subcategorySlug,
+      page: q.page ?? 1,
+      limit: q.limit ?? 12,
+      sort: q.sort ?? "created_asc",
+      search: q.search || undefined,
+    });
+    const products = Array.isArray(res?.products) ? res.products.map(toProduct) : [];
+    const p = res?.pagination;
+    return {
+      products,
+      total: p?.total ?? 0,
+      page: p?.page ?? 1,
+      totalPages: Math.max(1, p?.totalPages ?? 0),
+    };
+  } catch {
+    // Backend unreachable or errored — safe defaults, the caller renders nothing.
+    return { products: [], total: 0, page: 1, totalPages: 1 };
+  }
 };

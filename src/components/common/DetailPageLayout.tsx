@@ -38,6 +38,15 @@ interface DetailPageLayoutProps {
   /** "See all" link at the bottom of the related box. */
   sidebarAllLink: { label: string; to: string };
   children: ReactNode;
+  /**
+   * Optional full-width slot rendered BETWEEN the main + sidebar area and
+   * the bottom CTA band — used by the product pages for the "{Product}
+   * models" grid. Bring your own background and container (container-page);
+   * render nothing from the slot and the page looks exactly as it does
+   * without this prop (BrandDetail passes nothing).
+   */
+  belowContent?: ReactNode;
+  /** Title inside the "Looking for {…}?" band above the Enquire-now button. */
   bottomCtaTitle: string;
   /** SEO data — rendered by SEOHead in MainLayout via resolvePageSeo, not here. */
   seo: DetailPageSeo;
@@ -73,6 +82,7 @@ export function DetailPageLayout({
   sidebarTitle,
   sidebarLinks,
   sidebarAllLink,
+  belowContent,
   children,
   bottomCtaTitle,
   seo: _seo,
@@ -170,6 +180,10 @@ export function DetailPageLayout({
           />
         </div>
       </section>
+
+      {/* ── Optional full-width area below the two-column grid ─────────
+          (unwrapped on purpose: a null child leaves zero footprint) */}
+      {belowContent}
 
       {/* ── Bottom CTA ────────────────────────────────────────────── */}
       <section className="border-t border-white/[0.06] bg-slate-safe py-14 sm:py-20">

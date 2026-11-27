@@ -172,7 +172,7 @@ export function ProductsPage() {
             <h1 className="text-lg font-semibold tracking-tight">Products</h1>
             <p className="text-sm text-muted-foreground">Manage the product catalogue</p>
           </div>
-          <Button disabled title="Coming next">New product</Button>
+          <Button onClick={() => navigate("/admin/products/new")}>New product</Button>
         </div>
       </header>
 
@@ -342,8 +342,6 @@ export function ProductsPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                disabled
-                                title="Coming next"
                                 onClick={() => navigate(`/admin/products/${p.id}/edit`)}
                               >
                                 <PencilIcon className="size-3.5" />

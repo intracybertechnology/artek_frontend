@@ -26,13 +26,26 @@ export type AdminProduct = {
   model_number: string | null;
   type: string | null;
   short_description: string | null;
+  description: string | null;
   availability: ProductAvailability;
-  brand: { name: string; slug: string } | null;
-  category: { name: string; slug: string } | null;
-  subcategory: { name: string; slug: string } | null;
+  specifications: Record<string, string> | null;
+  is_active: boolean;
+  category_id: string | null;
+  subcategory_id: string | null;
+  brand_id: string | null;
+  brand: { id: string; name: string; slug: string } | null;
+  category: { id: string; name: string; slug: string } | null;
+  subcategory: { id: string; name: string; slug: string } | null;
   primary_image: string | null;
-  is_active?: boolean;
+  images: AdminProductImage[];
   deleted_at?: string | null;
+};
+
+export type AdminProductImage = {
+  id: string;
+  image_path: string;
+  is_primary: boolean;
+  sort_order: number;
 };
 
 export type AdminCategory = {

@@ -25,6 +25,7 @@ import { AdminLayout, AdminShell, PublicOnly, RoleGuard } from "@/admin/AdminLay
 import { LoginPage } from "@/admin/pages/LoginPage";
 import { QuotesPage } from "@/admin/pages/QuotesPage";
 import { ProductsPage } from "@/admin/pages/ProductsPage";
+import ProductFormPage from "@/admin/pages/ProductFormPage";
 
 /** Sends authenticated users to their role-specific home page. */
 function RoleRedirect() {
@@ -43,6 +44,8 @@ export function AppRoutes() {
           <Route index element={<RoleGuard allow={["super_admin", "admin"]}><RoleRedirect /></RoleGuard>} />
           <Route path="quotes" element={<RoleGuard allow={["super_admin"]}><QuotesPage /></RoleGuard>} />
           <Route path="products" element={<RoleGuard allow={["super_admin", "admin"]}><ProductsPage /></RoleGuard>} />
+          <Route path="products/new" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />
+          <Route path="products/:id/edit" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />
         </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>

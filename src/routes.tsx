@@ -26,6 +26,8 @@ import { LoginPage } from "@/admin/pages/LoginPage";
 import { QuotesPage } from "@/admin/pages/QuotesPage";
 import { ProductsPage } from "@/admin/pages/ProductsPage";
 import ProductFormPage from "@/admin/pages/ProductFormPage";
+import { TestimonialsPage } from "@/admin/pages/TestimonialsPage";
+import TestimonialFormPage from "@/admin/pages/TestimonialFormPage";
 
 /** Sends authenticated users to their role-specific home page. */
 function RoleRedirect() {
@@ -46,6 +48,9 @@ export function AppRoutes() {
           <Route path="products" element={<RoleGuard allow={["super_admin", "admin"]}><ProductsPage /></RoleGuard>} />
           <Route path="products/new" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />
           <Route path="products/:id/edit" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />
+          <Route path="testimonials" element={<RoleGuard allow={["super_admin", "admin"]}><TestimonialsPage /></RoleGuard>} />
+          <Route path="testimonials/new" element={<RoleGuard allow={["super_admin", "admin"]}><TestimonialFormPage /></RoleGuard>} />
+          <Route path="testimonials/:id/edit" element={<RoleGuard allow={["super_admin", "admin"]}><TestimonialFormPage /></RoleGuard>} />
         </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>

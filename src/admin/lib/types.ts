@@ -10,6 +10,22 @@ export type AdminUser = {
 export type QuoteStatus = "new" | "contacted" | "closed";
 export const QUOTE_STATUSES: QuoteStatus[] = ["new", "contacted", "closed"];
 
+// ── Testimonials (admin) ───────────────────────────────────────────────────
+
+export type AdminTestimonial = {
+  id: number;
+  quote: string;
+  name: string;
+  role: string;
+  company: string;
+  rating: number;
+  image: string | null;
+  isPublished: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 // ── Products (admin) ──────────────────────────────────────────────────────
 
 export type ProductAvailability = "available" | "out_of_stock" | "on_request";

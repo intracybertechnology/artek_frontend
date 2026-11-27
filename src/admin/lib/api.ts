@@ -8,6 +8,7 @@ import type {
   AdminCategory,
   AdminProduct,
   AdminProductImage,
+  AdminTestimonial,
   AdminUser,
   ProductAvailability,
   Quote,
@@ -127,6 +128,87 @@ export const listCategories = () =>
 
 export const listBrands = () =>
   apiGet<{ success: boolean; brands: AdminBrand[] }>("/api/brands");
+
+// ── Testimonials ───────────────────────────────────────────────────────────
+
+type TestimonialsApiResponse = {
+  success: boolean;
+  testimonials?: AdminTestimonial[] | null;
+};
+
+type TestimonialApiResponse = {
+  success: boolean;
+  testimonial?: AdminTestimonial | null;
+};
+
+type TestimonialCreateBody = {
+  quote: string;
+  name: string;
+  role?: string | null;
+  company?: string | null;
+  rating?: number | null;
+  isPublished?: boolean;
+  sortOrder?: number;
+};
+
+export const listTestimonials = async (params?: {
+  deleted?: boolean;
+}): Promise<AdminTestimonial[]> => {
+  const data = await apiGet<TestimonialsApiResponse>(
+    "/api/admin/testimonials" + (params?.deleted ? "?deleted=true" : ""),
+  );
+  return data.testimonials ?? [];
+};
+
+export const getTestimonial = async (id: number): Promise<AdminTestimonial> => {
+  const res = await apiGet<TestimonialApiResponse>(`/api/admin/testimonials/${id}`);
+  if (res.testimonial) return res.testimonial;
+  // Fallback: the body itself is the testimonial (no wrapper).
+  return res as unknown as AdminTestimonial;
+};
+
+export const createTestimonial = (body: TestimonialCreateBody) =>
+  apiPost<{ success: boolean; testimonial?: AdminTestimonial | null }>("/api/testimonials", body);
+
+export const updateTestimonial = (id: number, body: Partial<TestimonialCreateBody>) =>
+  apiPatch<{ success: boolean }>(`/api/testimonials/${id}`, body);
+
+export const togglePublishTestimonial = (id: number, isPublished: boolean) =>
+  apiPatch<{ success: boolean }>(`/api/testimonials/${id}`, { isPublished });
+
+export const reorderTestimonials = (ids: number[]) =>
+  apiPatch<{ success: boolean }>("/api/testimonials/reorder", { ids });
+
+export const uploadTestimonialImage = (id: number, file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  return fetch(`${API_BASE}/api/testimonials/${id}/image`, {
+    credentials: "include",
+    method: "POST",
+    body: formData,
+  }).then(async (res) => {
+    const body = await res.json().catch(() => ({}) as Record<string, unknown>);
+    if (!res.ok) {
+      const err = new Error(
+        (body as { message?: string }).message ||
+          (body as { error?: string }).error ||
+          `Request failed (${res.status})`,
+      ) as ApiError;
+      err.status = res.status;
+      throw err;
+    }
+    return body as { success: boolean };
+  });
+};
+
+export const deleteTestimonialImage = (id: number) =>
+  apiDelete<{ success: boolean }>(`/api/testimonials/${id}/image`);
+
+export const deleteTestimonial = (id: number) =>
+  apiDelete<{ success: boolean }>(`/api/testimonials/${id}`);
+
+export const restoreTestimonial = (id: number) =>
+  apiPost<{ success: boolean }>(`/api/testimonials/${id}/restore`, {});
 
 // ── Product detail (add / edit) ──
 

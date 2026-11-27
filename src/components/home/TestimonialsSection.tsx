@@ -1,13 +1,15 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { approvedTestimonials } from "@/data/testimonials";
+import { fetchTestimonials } from "@/lib/testimonialsApi";
+import type { Testimonial } from "@/types";
 import { cn } from "@/lib/utils";
 
-const stories = approvedTestimonials;
-
 export function TestimonialsSection() {
+  const [stories, setStories] = useState<Testimonial[]>([...approvedTestimonials]);
   const [index, setIndex] = useState(0);
+  const [imageFailed, setImageFailed] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   if (!stories.length) return null;
@@ -15,6 +17,29 @@ export function TestimonialsSection() {
   const active = stories[index];
   const multiple = stories.length > 1;
   const initials = active.name.trim().split(/\s+/).map((word) => word[0]).slice(0, 2).join("").toUpperCase();
+
+  // Start from the static list so nothing flashes, then swap in the API
+  // result when it arrives (or keep the static list on any failure).
+  useEffect(() => {
+    let activeReq = true;
+    fetchTestimonials().then((fetched) => {
+      if (!activeReq) return;
+      setStories(fetched);
+      setIndex(0);
+    });
+    return () => {
+      activeReq = false;
+    };
+  }, []);
+
+  // Keep the active index in range when the item count changes.
+  useEffect(() => {
+    if (index >= stories.length) setIndex(stories.length - 1);
+  }, [stories.length, index]);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [active.id]);
 
   function select(next: number) {
     const target = (next + stories.length) % stories.length;
@@ -72,8 +97,14 @@ export function TestimonialsSection() {
             <figure key={active.id} className="col-start-1 row-start-1 flex flex-col justify-between gap-6 motion-safe:animate-fade-up">
               <blockquote className="font-display text-lg leading-relaxed text-pretty sm:text-2xl lg:text-3xl">{active.quote}</blockquote>
               <figcaption className="flex items-center gap-3">
-                {active.image ? (
-                  <img src={active.image} alt="" loading="lazy" className="size-11 shrink-0 rounded-full object-cover ring-1 ring-sky-300/40" />
+                {active.image && !imageFailed ? (
+                  <img
+                    src={active.image}
+                    alt=""
+                    loading="lazy"
+                    onError={() => setImageFailed(true)}
+                    className="size-11 shrink-0 rounded-full object-cover ring-1 ring-sky-300/40"
+                  />
                 ) : (
                   <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-sky-400/15 text-sm font-bold text-sky-200 ring-1 ring-sky-300/40">{initials}</span>
                 )}

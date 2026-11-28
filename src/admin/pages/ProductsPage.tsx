@@ -266,18 +266,18 @@ export function ProductsPage() {
             </div>
           </div>
 
-          <Table>
+          <Table className="table-fixed [&_th]:px-2 [&_td]:px-2">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-14">Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Model</TableHead>
-                <TableHead>Brand</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Availability</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-[150px]">Name</TableHead>
+                <TableHead className="w-[105px]">Model</TableHead>
+                <TableHead className="w-[95px]">Brand</TableHead>
+                <TableHead className="w-[105px]">Category</TableHead>
+                <TableHead className="w-[95px]">Type</TableHead>
+                <TableHead className="w-[120px]">Availability</TableHead>
+                <TableHead className="w-24">Status</TableHead>
+                <TableHead className="w-[184px] text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -318,24 +318,35 @@ export function ProductsPage() {
                             )}
                           </TableCell>
                           <TableCell>
-                            <span className="font-medium">{p.name}</span>
+                            <div className="truncate font-medium" title={p.name}>{p.name}</div>
                             {p.short_description && (
-                              <div className="max-w-[220px] truncate text-xs text-muted-foreground">
+                              <div
+                                className="truncate text-xs text-muted-foreground"
+                                title={p.short_description}
+                              >
                                 {p.short_description}
                               </div>
                             )}
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            {p.model_number ?? "-"}
+                            <div className="truncate" title={p.model_number ?? undefined}>
+                              {p.model_number ?? "-"}
+                            </div>
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            {p.brand?.name ?? "-"}
+                            <div className="truncate" title={p.brand?.name ?? undefined}>
+                              {p.brand?.name ?? "-"}
+                            </div>
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            {p.category?.name ?? "-"}
+                            <div className="truncate" title={p.category?.name ?? undefined}>
+                              {p.category?.name ?? "-"}
+                            </div>
                           </TableCell>
                           <TableCell className="text-muted-foreground">
-                            {p.type ?? p.subcategory?.name ?? "-"}
+                            <div className="truncate" title={p.type ?? p.subcategory?.name ?? undefined}>
+                              {p.type ?? p.subcategory?.name ?? "-"}
+                            </div>
                           </TableCell>
                           <TableCell>
                             <AvailabilityBadge status={p.availability} />

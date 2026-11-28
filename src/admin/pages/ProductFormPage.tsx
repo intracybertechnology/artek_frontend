@@ -72,6 +72,9 @@ export default function ProductFormPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  // Required-field hints show only after a field was left or a save was attempted.
+  const [touched, setTouched] = useState({ name: false, modelNumber: false, brandId: false, categoryId: false });
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const [name, setName] = useState("");
   const [modelNumber, setModelNumber] = useState("");
@@ -99,9 +102,13 @@ export default function ProductFormPage() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const categoryRef = useRef<AdminCategory | null>(null);
-
   const clearError = () => setError(null);
   const clearSuccess = () => setSuccess(null);
+  // A successful save leaves the form without stale field errors.
+  const resetValidationHints = () => {
+    setSubmitAttempted(false);
+    setTouched({ name: false, modelNumber: false, brandId: false, categoryId: false });
+  };
 
   // Load reference data (categories + brands) always needed for the selects.
   useEffect(() => {
@@ -210,6 +217,12 @@ export default function ProductFormPage() {
   if (!brandId) requiredMissing.push("Brand");
   if (!categoryId) requiredMissing.push("Category");
 
+  // Hints appear only once a field was left or a save was attempted.
+  const showNameError = (touched.name || submitAttempted) && !name.trim();
+  const showModelError = (touched.modelNumber || submitAttempted) && !modelNumber.trim();
+  const showBrandError = (touched.brandId || submitAttempted) && !brandId;
+  const showCategoryError = (touched.categoryId || submitAttempted) && !categoryId;
+
   const payload = {
     name,
     model_number: modelNumber,
@@ -229,6 +242,7 @@ export default function ProductFormPage() {
     setError(null);
     setSuccess(null);
     if (requiredMissing.length > 0) {
+      setSubmitAttempted(true);
       setError(`Required fields: ${requiredMissing.join(", ")}.`);
       return;
     }
@@ -236,6 +250,7 @@ export default function ProductFormPage() {
     try {
       if (isEdit) {
         await updateProduct(params.id!, payload);
+        resetValidationHints();
         setSuccess("Product saved.");
         // Refresh the loaded product so the images section stays in sync.
         try {
@@ -246,6 +261,7 @@ export default function ProductFormPage() {
         }
       } else {
         const res = await createProduct(payload);
+        resetValidationHints();
         const newId = res.product?.id ?? res.data?.id;
         if (newId) {
           navigate(`/admin/products/${newId}/edit`, { replace: true });
@@ -448,31 +464,37 @@ export default function ProductFormPage() {
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    onBlur={() => setTouched((t) => ({ ...t, name: true }))}
                     placeholder="e.g. Artek Dome Camera"
-                    aria-invalid={!name.trim()}
+                    aria-invalid={showNameError}
                     required
                   />
-                  {!name.trim() && <span className="text-xs text-destructive">Name is required.</span>}
+                  {showNameError && <span className="text-xs text-destructive">Name is required.</span>}
                 </div>
                 <div className="space-y-2">
                   <Label>Model number</Label>
                   <Input
                     value={modelNumber}
                     onChange={(e) => setModelNumber(e.target.value)}
+                    onBlur={() => setTouched((t) => ({ ...t, modelNumber: true }))}
                     placeholder="e.g. ADC-2000"
-                    aria-invalid={!modelNumber.trim()}
+                    aria-invalid={showModelError}
                     required
                   />
-                  {!modelNumber.trim() && <span className="text-xs text-destructive">Model number is required.</span>}
+                  {showModelError && <span className="text-xs text-destructive">Model number is required.</span>}
                 </div>
                 <div className="space-y-2">
                   <Label>Brand</Label>
                   <Select
                     value={brandId}
                     onValueChange={(v) => setBrandId(v)}
-                    aria-invalid={!brandId}
+                    aria-invalid={showBrandError}
                   >
-                    <SelectTrigger className="w-full" aria-label="Brand">
+                    <SelectTrigger
+                      className="w-full"
+                      aria-label="Brand"
+                      onBlur={() => setTouched((t) => ({ ...t, brandId: true }))}
+                    >
                       <SelectValue placeholder="Choose a brand" />
                     </SelectTrigger>
                     <SelectContent>
@@ -483,7 +505,7 @@ export default function ProductFormPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {!brandId && <span className="text-xs text-destructive">Brand is required.</span>}
+                  {showBrandError && <span className="text-xs text-destructive">Brand is required.</span>}
                 </div>
               </div>
 
@@ -492,9 +514,13 @@ export default function ProductFormPage() {
                   <Select
                     value={categoryId}
                     onValueChange={(v) => { setCategoryId(v); setSubcategoryId(""); }}
-                    aria-invalid={!categoryId}
+                    aria-invalid={showCategoryError}
                   >
-                    <SelectTrigger className="w-full" aria-label="Category">
+                    <SelectTrigger
+                      className="w-full"
+                      aria-label="Category"
+                      onBlur={() => setTouched((t) => ({ ...t, categoryId: true }))}
+                    >
                       <SelectValue placeholder="Choose a category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -505,9 +531,8 @@ export default function ProductFormPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  {!categoryId && <span className="text-xs text-destructive">Category is required.</span>}
+                  {showCategoryError && <span className="text-xs text-destructive">Category is required.</span>}
                 </div>
-
                 <div className="space-y-2">
                   <Label>Subcategory</Label>
                   <Select

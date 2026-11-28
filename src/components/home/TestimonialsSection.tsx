@@ -1,170 +1,139 @@
-import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { RevealBox } from "@/components/common/RevealBox";
-import { cn } from "@/lib/utils";
-import { testimonials } from "@/data/testimonials";
+import { approvedTestimonials } from "@/data/testimonials";
+import { fetchTestimonials } from "@/lib/testimonialsApi";
 import type { Testimonial } from "@/types";
-
-/**
- * Homepage — client quotes, one at a time.
- *
- * A single featured quote with a round client portrait, plus a round-avatar
- * rail to jump between clients. No cards, stars or borders: the quote is the
- * layout, the portrait is the proof.
- *
- * ⚠ The quotes in src/data/testimonials.ts are PLACEHOLDER data. Add a square
- * `image` per entry once you have the client's permission; entries without
- * one fall back to a monogram, never a broken image.
- */
-function initialsOf(name: string) {
-  const parts = name.trim().split(/\s+/);
-  const first = parts[0]?.[0] ?? "";
-  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
-  return (first + last).toUpperCase();
-}
-
-/** Round portrait — photo when supplied, monogram otherwise. */
-function Avatar({ person, className }: { person: Testimonial; className?: string }) {
-  if (person.image) {
-    return (
-      <img
-        src={person.image}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        className={cn(
-          "shrink-0 rounded-full object-cover grayscale ring-1 ring-white/20",
-          className,
-        )}
-      />
-    );
-  }
-  return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "grid shrink-0 place-items-center rounded-full bg-white/[0.06] font-display font-medium text-text-muted ring-1 ring-white/15",
-        className,
-      )}
-    >
-      {initialsOf(person.name)}
-    </span>
-  );
-}
+import { cn } from "@/lib/utils";
 
 export function TestimonialsSection() {
+  const [stories, setStories] = useState<Testimonial[]>([...approvedTestimonials]);
   const [index, setIndex] = useState(0);
+  const [imageFailed, setImageFailed] = useState(false);
   const [announcement, setAnnouncement] = useState("");
-  const count = testimonials.length;
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  if (!stories.length) return null;
 
-  if (!count) return null;
+  const active = stories[index];
+  const multiple = stories.length > 1;
+  const initials = active.name.trim().split(/\s+/).map((word) => word[0]).slice(0, 2).join("").toUpperCase();
 
-  const active = testimonials[index % count];
+  // Start from the static list so nothing flashes, then swap in the API
+  // result when it arrives (or keep the static list on any failure).
+  useEffect(() => {
+    let activeReq = true;
+    fetchTestimonials().then((fetched) => {
+      if (!activeReq) return;
+      setStories(fetched);
+      setIndex(0);
+    });
+    return () => {
+      activeReq = false;
+    };
+  }, []);
 
-  const select = (next: number) => {
-    const target = (next + count) % count;
+  // Keep the active index in range when the item count changes.
+  useEffect(() => {
+    if (index >= stories.length) setIndex(stories.length - 1);
+  }, [stories.length, index]);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [active.id]);
+
+  function select(next: number) {
+    const target = (next + stories.length) % stories.length;
+    if (target === index) return;
     setIndex(target);
-    // Only the short summary is announced — never the whole quote.
-    setAnnouncement(`Testimonial ${target + 1} of ${count}: ${testimonials[target].name}`);
-  };
+    setAnnouncement(`Story ${target + 1} of ${stories.length}: ${stories[target].name}`);
+  }
 
   return (
-    <section className="border-y border-white/[0.06] band" aria-labelledby="testimonials-heading">
+    <section className="on-paper bg-white text-slate-900 band" aria-labelledby="testimonials-heading">
       <div className="container-page">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16 xl:gap-24">
-          <SectionHeading
-            id="testimonials-heading"
-            align="left"
-            eyebrow="Client Stories"
-            title="What clients say after the work is done."
-            className="lg:sticky lg:top-28 lg:self-start"
-          />
-
-          <RevealBox className="min-w-0">
-            <figure key={active.id} className="animate-fade-up">
-              <span
-                aria-hidden="true"
-                className="block font-display text-6xl leading-[0.7] text-white/15"
-              >
-                &ldquo;
-              </span>
-              <blockquote
-                id="testimonial-quote"
-                className="mt-4 max-w-2xl text-pretty text-[clamp(1.35rem,1.05rem+1.1vw,2rem)] font-medium leading-[1.42] tracking-[-0.01em] text-text"
-              >
-                {active.quote}
-              </blockquote>
-              <figcaption className="mt-8 flex items-center gap-4">
-                <Avatar person={active} className="size-16 text-lg" />
+        <SectionHeading
+          id="testimonials-heading"
+          tone="paper"
+          eyebrow="Client stories"
+          title="What clients say after the work is done."
+        />
+        <div
+          className="relative isolate mx-auto mt-8 max-w-5xl overflow-hidden rounded-[1.75rem] border border-slate-700 bg-[#0b1220] px-5 py-7 text-white shadow-[0_24px_64px_-36px_#102a43] sm:mt-12 sm:p-10 lg:px-14"
+          role="group"
+          aria-roledescription="carousel"
+          aria-label="Client stories"
+          onKeyDown={(event) => {
+            if (!multiple || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+            if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+            event.preventDefault();
+            select(index + (event.key === "ArrowRight" ? 1 : -1));
+          }}
+          onTouchStart={(event) => {
+            const touch = event.touches[0];
+            touchStart.current = multiple && event.touches.length === 1 ? { x: touch.clientX, y: touch.clientY } : null;
+          }}
+          onTouchCancel={() => { touchStart.current = null; }}
+          onTouchEnd={(event) => {
+            const start = touchStart.current;
+            touchStart.current = null;
+            if (!start || event.touches.length) return;
+            const touch = event.changedTouches[0];
+            const dx = touch.clientX - start.x;
+            const dy = touch.clientY - start.y;
+            if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) select(index + (dx < 0 ? 1 : -1));
+          }}
+        >
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,#123b53,transparent_65%)]" aria-hidden="true" />
+          <div className="flex items-center justify-between gap-4">
+            <Quote className="size-8 text-sky-300" strokeWidth={1.5} aria-hidden="true" />
+            <span className="text-xs font-semibold tracking-[0.16em] text-sky-200 uppercase tabular-nums">
+              Story {String(index + 1).padStart(2, "0")} / {String(stories.length).padStart(2, "0")}
+            </span>
+          </div>
+          <div id="client-story" className="mt-5 grid">
+            {stories.map((story) => (
+              <div key={story.id} aria-hidden="true" className="invisible col-start-1 row-start-1 pb-20 text-lg leading-relaxed sm:text-2xl lg:text-3xl">{story.quote}</div>
+            ))}
+            <figure key={active.id} className="col-start-1 row-start-1 flex flex-col justify-between gap-6 motion-safe:animate-fade-up">
+              <blockquote className="font-display text-lg leading-relaxed text-pretty sm:text-2xl lg:text-3xl">{active.quote}</blockquote>
+              <figcaption className="flex items-center gap-3">
+                {active.image && !imageFailed ? (
+                  <img
+                    src={active.image}
+                    alt=""
+                    loading="lazy"
+                    onError={() => setImageFailed(true)}
+                    className="size-11 shrink-0 rounded-full object-cover ring-1 ring-sky-300/40"
+                  />
+                ) : (
+                  <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-sky-400/15 text-sm font-bold text-sky-200 ring-1 ring-sky-300/40">{initials}</span>
+                )}
                 <div>
-                  <p className="text-sm font-semibold text-text">{active.name}</p>
-                  <p className="mt-0.5 text-xs leading-snug text-text-muted">
-                    {active.role} · {active.company}
-                  </p>
+                  <p className="text-sm font-bold text-white">{active.name}</p>
+                  <p className="mt-1 text-xs text-slate-300">{[active.role, active.company].filter(Boolean).join(" · ")}</p>
                 </div>
               </figcaption>
             </figure>
-
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-5 border-t border-white/10 pt-6">
-              <div className="flex items-center gap-2.5" role="group" aria-label="Select a testimonial">
-                {testimonials.map((person, i) => {
-                  const isActive = person.id === active.id;
-                  return (
-                    <button
-                      key={person.id}
-                      type="button"
-                      onClick={() => select(i)}
-                      aria-label={`Show testimonial from ${person.name}`}
-                      aria-current={isActive ? "true" : undefined}
-                      aria-controls="testimonial-quote"
-                      className={cn(
-                        "rounded-full transition-opacity duration-300 focus-visible:opacity-100",
-                        isActive
-                          ? "opacity-100 ring-2 ring-text ring-offset-2 ring-offset-surface"
-                          : "opacity-40 hover:opacity-90",
-                      )}
-                    >
-                      <Avatar person={person} className="size-9 text-[11px]" />
-                    </button>
-                  );
-                })}
+          </div>
+          {multiple && (
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-4">
+              <div role="group" aria-label="Choose a story" className="flex flex-wrap">
+                {stories.map((story, i) => (
+                  <button key={story.id} type="button" onClick={() => select(i)} aria-label={`Show story ${i + 1}: ${story.name}`} aria-current={i === index ? "true" : undefined} aria-controls="client-story" className="grid size-10 cursor-pointer place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-sky-300">
+                    <span aria-hidden="true" className={cn("h-2 rounded-full", i === index ? "w-5 bg-sky-300" : "w-2 bg-slate-400")} />
+                  </button>
+                ))}
               </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => select(index - 1)}
-                  aria-label="Previous testimonial"
-                  aria-controls="testimonial-quote"
-                  className="inline-flex size-10 items-center justify-center rounded-full border border-white/15 text-text transition-colors hover:border-white/40 hover:bg-white/[0.04]"
-                >
-                  <ChevronLeft className="size-4" aria-hidden="true" />
-                </button>
-                <span
-                  aria-hidden="true"
-                  className="min-w-16 text-center font-display text-sm tabular-nums text-text-muted"
-                >
-                  {String((index % count) + 1).padStart(2, "0")}
-                  <span className="mx-1 text-white/25">/</span>
-                  {String(count).padStart(2, "0")}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => select(index + 1)}
-                  aria-label="Next testimonial"
-                  aria-controls="testimonial-quote"
-                  className="inline-flex size-10 items-center justify-center rounded-full border border-white/15 text-text transition-colors hover:border-white/40 hover:bg-white/[0.04]"
-                >
-                  <ChevronRight className="size-4" aria-hidden="true" />
-                </button>
+              <div className="flex gap-2">
+                {[{ icon: ChevronLeft, label: "Previous story", offset: -1 }, { icon: ChevronRight, label: "Next story", offset: 1 }].map(({ icon: Icon, label, offset }) => (
+                  <button key={label} type="button" aria-label={label} aria-controls="client-story" onClick={() => select(index + offset)} className="grid size-11 cursor-pointer place-items-center rounded-full border border-white/25 text-white transition-colors hover:border-sky-300 hover:bg-sky-300/15 focus-visible:outline-2 focus-visible:outline-sky-300">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </button>
+                ))}
               </div>
             </div>
-
-            <p role="status" className="sr-only">
-              {announcement}
-            </p>
-          </RevealBox>
+          )}
+          <p role="status" className="sr-only">{announcement}</p>
         </div>
       </div>
     </section>

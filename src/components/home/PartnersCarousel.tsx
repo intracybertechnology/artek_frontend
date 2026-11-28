@@ -1,78 +1,56 @@
-import { cn } from "@/lib/utils";
+import { LogoLoop } from "@/components/common/LogoLoop";
 
-/**
- * Partner brand logos (homepage) — logo tiles on a moving marquee.
- *
- * The marks are shown as wordmarks on the page field (no tiles, no borders):
- * logo rows look most intentional when the marks themselves do the work and
- * the edge of the band is masked into the background.
- *
- * IMPORTANT: these logo files are client-supplied PixelLab exports whose
- * exact brand identities are NOT yet confirmed — filenames are positional
- * (`logo-1..8`), not brand names, so nothing here asserts a partnership.
- * Before production: (1) confirm each logo's brand + partner status with
- * ARTEK, (2) rename files to brand slugs and add brand names to `alt`,
- * (3) re-export the blank tile (original `...1081517.png` was empty white).
- *
- * One shared CSS keyframe animation, duplicated track for a seamless loop,
- * pauses on hover, disabled under prefers-reduced-motion.
- */
+const BRANDS = [
+  { name: "Cisco",       file: "cisco.jpg" },
+  { name: "Fortinet",    file: "fortinet.jpg" },
+  { name: "Ubiquiti",    file: "ubiquiti.jpg" },
+  { name: "Aruba",       file: "aruba.jpg" },
+  { name: "Dell",        file: "dell.jpg" },
+  // { name: "HP",          file: "hp.jpg" },
+  { name: "Microsoft",   file: "microsoft.jpg" },
+  { name: "APC",         file: "apc.jpg" },
+  { name: "Huawei",      file: "huawei.jpg" },
+  { name: "Grandstream", file: "grandstream.jpg" },
+  { name: "Linksys",     file: "linksys.jpg" },
+];
 
-/** Positional logo assets — order = original upload order, minus the blank. */
-const LOGOS = [
-  "/images/brands/logo-1.png",
-  "/images/brands/logo-2.png",
-  "/images/brands/logo-3.png",
-  "/images/brands/logo-4.png",
-  "/images/brands/logo-5.png",
-  "/images/brands/logo-6.png",
-  "/images/brands/logo-7.png",
-  "/images/brands/logo-8.png",
-] as const;
-
-const trackBase = [...LOGOS];
-const track = [...trackBase, ...trackBase];
+const logos = BRANDS.map(({ name, file }) => ({
+  src: `/images/brand-logos/${file}`,
+  alt: name,
+  title: name,
+}));
 
 export function PartnersCarousel() {
   return (
     <section
-      className="border-y border-white/[0.06] band-tight"
-      aria-label="Technology partners"
+      className="relative isolate overflow-hidden bg-surface-2 py-14 sm:py-16"
+      aria-labelledby="partners-heading"
     >
-      <div className="container-page">
-        <p className="text-center text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted">
-          Trusted technology partners
-        </p>
-      </div>
-      <div className="relative mt-7 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-        <ul
-          className="marquee-track flex w-max animate-marquee items-center gap-14 px-6 sm:gap-20"
-          style={{ animationDuration: "60s" }}
-          aria-label="Technology brand logos ARTEK works with"
+      {/* Soft light behind the strip so the band reads as its own panel. */}
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_120%_at_50%_50%,rgba(52,120,246,0.14),transparent_70%)]"
+        aria-hidden="true"
+      />
+      <div className="container-page mb-9">
+        <h2
+          id="partners-heading"
+          className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted"
         >
-          {track.map((src, i) => (
-            <li
-              key={`${src}#${i}`}
-              aria-hidden={i >= trackBase.length}
-              className="flex shrink-0 items-center"
-            >
-              <span className={cn("flex h-10 items-center justify-center select-none opacity-70 transition-opacity duration-300 hover:opacity-100 sm:h-11")}>
-                <img
-                  src={src}
-                  alt=""
-                  role="presentation"
-                  width={220}
-                  height={72}
-                  loading="eager"
-                  decoding="async"
-                  className="h-full w-auto max-w-[9rem] object-contain grayscale"
-                  draggable={false}
-                />
-              </span>
-            </li>
-          ))}
-        </ul>
+          Technology brands we supply &amp; support
+        </h2>
       </div>
+
+      <LogoLoop
+        logos={logos}
+        speed={60}
+        logoHeight={64}
+        gap={80}
+        hoverSpeed={0}
+        fadeOut
+        fadeOutWidth={0.1}
+        muted={0.4}
+        ariaLabel="Technology brands supplied and supported by ARTEK"
+      />
     </section>
   );
 }

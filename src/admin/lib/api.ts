@@ -1,60 +1,371 @@
-import type { AdminUser, Enquiry, EnquiryStatus } from "./types";
-
 /**
- * Thin API client. `credentials: "include"` is what sends the httpOnly JWT
- * cookie; the token itself is never visible to this code.
+ * Admin API client — uses the shared fetch helpers from src/lib/api.ts
+ * so all requests go to API_BASE with credentials: "include".
  */
-const BASE = import.meta.env.VITE_API_BASE ?? "/api";
+import { API_BASE, apiDelete, apiGet, apiGetQ, apiPatch, apiPost, type ApiError } from "@/lib/api";
+import type {
+  AdminBrand,
+  AdminCategory,
+  AdminPost,
+  AdminPostDetail,
+  AdminProduct,
+  AdminProductImage,
+  AdminTestimonial,
+  AdminUser,
+  PostStatus,
+  ProductAvailability,
+  Quote,
+  QuoteStatus,
+} from "./types";
 
-type ApiError = Error & { status?: number; fields?: Record<string, string[]> };
+// ── Auth ──────────────────────────────────────────────────────────────────
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    ...init,
-  });
+export const authLogin = (email: string, password: string) =>
+  apiPost<{ success: boolean; user: AdminUser }>("/api/auth/login", { email, password });
 
-  const body = await res.json().catch(() => ({}) as Record<string, unknown>);
-  if (!res.ok) {
-    const err: ApiError = new Error((body.error as string) ?? `Request failed (${res.status})`);
-    err.status = res.status;
-    err.fields = body.fields as Record<string, string[]> | undefined;
-    throw err;
-  }
-  return body as T;
-}
+export const authLogout = () =>
+  apiPost<{ success: boolean }>("/api/auth/logout", {});
 
-export const api = {
-  login: (email: string, password: string) =>
-    request<{ ok: true; user: AdminUser }>("/admin/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    }),
+export const authMe = () =>
+  apiGet<{ success: boolean; user: AdminUser }>("/api/auth/me");
 
-  logout: () => request<{ ok: true }>("/admin/logout", { method: "POST" }),
+// ── Quotes ────────────────────────────────────────────────────────────────
 
-  me: () => request<{ ok: true; user: AdminUser }>("/admin/me"),
-
-  listEnquiries: (params: { status?: string; q?: string; limit?: number; offset?: number }) => {
-    const search = new URLSearchParams();
-    if (params.status) search.set("status", params.status);
-    if (params.q) search.set("q", params.q);
-    search.set("limit", String(params.limit ?? 25));
-    search.set("offset", String(params.offset ?? 0));
-    return request<{ ok: true; items: Enquiry[]; total: number; limit: number; offset: number }>(
-      `/admin/enquiries?${search}`,
-    );
-  },
-
-  stats: () =>
-    request<{ ok: true; counts: Partial<Record<EnquiryStatus, number>>; total: number }>(
-      "/admin/enquiries/stats",
-    ),
-
-  updateStatus: (id: string, status: EnquiryStatus) =>
-    request<{ ok: true; enquiry: Enquiry }>(`/admin/enquiries/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    }),
+export type QuoteListResponse = {
+  quotes: Quote[];
+  total: number;
+  page: number;
+  totalPages: number;
 };
+
+type QuotesApiResponse = {
+  success: boolean;
+  quotes?: Quote[] | null;
+  pagination?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    totalPages?: number;
+  } | null;
+};
+
+export const listQuotes = async (params: {
+  page?: number;
+  limit?: number;
+  status?: QuoteStatus | "";
+}): Promise<QuoteListResponse> => {
+  const data = await apiGetQ<QuotesApiResponse>("/api/quotes", {
+    page: params.page,
+    limit: params.limit,
+    status: params.status || undefined,
+  });
+  const total = data.pagination?.total ?? 0;
+  const totalPages = data.pagination?.totalPages ?? 0;
+  return {
+    quotes: data.quotes ?? [],
+    total,
+    page: data.pagination?.page ?? params.page ?? 1,
+    totalPages: totalPages > 0 ? totalPages : 1,
+  };
+};
+
+export const updateQuoteStatus = (id: string, status: QuoteStatus) =>
+  apiPatch<{ success: boolean; data: Quote }>(`/api/quotes/${id}`, { status });
+
+// ── Products ──────────────────────────────────────────────────────────────
+
+export type ProductListResponse = {
+  products: AdminProduct[];
+  total: number;
+  page: number;
+  totalPages: number;
+};
+
+type ProductsApiResponse = {
+  success: boolean;
+  products?: AdminProduct[] | null;
+  pagination?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    totalPages?: number;
+  } | null;
+};
+
+export const listProducts = async (params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  brand?: string;
+  availability?: ProductAvailability | "";
+  deleted?: boolean;
+}): Promise<ProductListResponse> => {
+  const data = await apiGetQ<ProductsApiResponse>("/api/admin/products", {
+    page: params.page,
+    limit: params.limit,
+    search: params.search || undefined,
+    category: params.category || undefined,
+    brand: params.brand || undefined,
+    availability: params.availability || undefined,
+    deleted: params.deleted ? "true" : undefined,
+  });
+  const total = data.pagination?.total ?? 0;
+  const totalPages = data.pagination?.totalPages ?? 0;
+  return {
+    products: data.products ?? [],
+    total,
+    page: data.pagination?.page ?? params.page ?? 1,
+    totalPages: totalPages > 0 ? totalPages : 1,
+  };
+};
+
+export const deleteProduct = (id: string) =>
+  apiDelete<{ success: boolean }>(`/api/products/${id}`);
+
+export const restoreProduct = (id: string) =>
+  apiPost<{ success: boolean }>(`/api/products/${id}/restore`, {});
+
+export const listCategories = () =>
+  apiGet<{ success: boolean; categories: AdminCategory[] }>("/api/categories");
+
+export const listBrands = () =>
+  apiGet<{ success: boolean; brands: AdminBrand[] }>("/api/brands");
+
+// ── Testimonials ───────────────────────────────────────────────────────────
+
+type TestimonialsApiResponse = {
+  success: boolean;
+  testimonials?: AdminTestimonial[] | null;
+};
+
+type TestimonialApiResponse = {
+  success: boolean;
+  testimonial?: AdminTestimonial | null;
+};
+
+type TestimonialCreateBody = {
+  quote: string;
+  name: string;
+  role?: string | null;
+  company?: string | null;
+  rating?: number | null;
+  isPublished?: boolean;
+  sortOrder?: number;
+};
+
+export const listTestimonials = async (params?: {
+  deleted?: boolean;
+}): Promise<AdminTestimonial[]> => {
+  const data = await apiGet<TestimonialsApiResponse>(
+    "/api/admin/testimonials" + (params?.deleted ? "?deleted=true" : ""),
+  );
+  return data.testimonials ?? [];
+};
+
+export const getTestimonial = async (id: number): Promise<AdminTestimonial> => {
+  const res = await apiGet<TestimonialApiResponse>(`/api/admin/testimonials/${id}`);
+  if (res.testimonial) return res.testimonial;
+  // Fallback: the body itself is the testimonial (no wrapper).
+  return res as unknown as AdminTestimonial;
+};
+
+export const createTestimonial = (body: TestimonialCreateBody) =>
+  apiPost<{ success: boolean; testimonial?: AdminTestimonial | null }>("/api/testimonials", body);
+
+export const updateTestimonial = (id: number, body: Partial<TestimonialCreateBody>) =>
+  apiPatch<{ success: boolean }>(`/api/testimonials/${id}`, body);
+
+export const togglePublishTestimonial = (id: number, isPublished: boolean) =>
+  apiPatch<{ success: boolean }>(`/api/testimonials/${id}`, { isPublished });
+
+export const reorderTestimonials = (ids: number[]) =>
+  apiPatch<{ success: boolean }>("/api/testimonials/reorder", { ids });
+
+export const uploadTestimonialImage = (id: number, file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  return fetch(`${API_BASE}/api/testimonials/${id}/image`, {
+    credentials: "include",
+    method: "POST",
+    body: formData,
+  }).then(async (res) => {
+    const body = await res.json().catch(() => ({}) as Record<string, unknown>);
+    if (!res.ok) {
+      const err = new Error(
+        (body as { message?: string }).message ||
+          (body as { error?: string }).error ||
+          `Request failed (${res.status})`,
+      ) as ApiError;
+      err.status = res.status;
+      throw err;
+    }
+    return body as { success: boolean };
+  });
+};
+
+export const deleteTestimonialImage = (id: number) =>
+  apiDelete<{ success: boolean }>(`/api/testimonials/${id}/image`);
+
+export const deleteTestimonial = (id: number) =>
+  apiDelete<{ success: boolean }>(`/api/testimonials/${id}`);
+
+export const restoreTestimonial = (id: number) =>
+  apiPost<{ success: boolean }>(`/api/testimonials/${id}/restore`, {});
+
+// ── Insights (admin) ───────────────────────────────────────────────────────
+
+type InsightsListResponse = {
+  success: boolean;
+  posts: AdminPost[];
+};
+
+type InsightsDetailResponse = {
+  success: boolean;
+  post: AdminPostDetail;
+};
+
+export const listAdminPosts = async (params?: {
+  status?: PostStatus | "";
+  deleted?: boolean;
+}): Promise<AdminPost[]> => {
+  const qs = new URLSearchParams();
+  if (params?.deleted) qs.set("deleted", "true");
+  if (params?.status) qs.set("status", params.status);
+  const data = await apiGet<InsightsListResponse>(
+    qs.toString() ? `/api/admin/insights?${qs.toString()}` : "/api/admin/insights",
+  );
+  return data.posts ?? [];
+};
+
+export const getAdminPost = async (id: number): Promise<AdminPostDetail> => {
+  const res = await apiGet<InsightsDetailResponse>(`/api/admin/insights/${id}`);
+  return res.post;
+};
+
+type PostCreateBody = {
+  title: string;
+  slug?: string | null;
+  dek: string;
+  category: string;
+  tags?: string[];
+  authorId: string;
+  publishedAt?: string | null;
+  featured?: boolean;
+  coverWord: string;
+  relatedServices?: string[];
+  status?: PostStatus;
+  seo?: { title?: string; description?: string } | null;
+  body?: { type: string; text?: string; [key: string]: unknown }[];
+  faqs?: { question: string; answer: string }[] | null;
+};
+
+type PostUpdateBody = Partial<PostCreateBody>;
+
+export const createPost = (body: PostCreateBody) =>
+  apiPost<{ success: boolean; post?: AdminPostDetail | null }>("/api/insights", body);
+
+export const updatePost = (id: number, body: PostUpdateBody) =>
+  apiPatch<{ success: boolean }>(`/api/insights/${id}`, body);
+
+export const updatePostStatus = (id: number, status: PostStatus) =>
+  apiPatch<{ success: boolean }>(`/api/insights/${id}`, { status });
+
+export const deletePost = (id: number) =>
+  apiDelete<{ success: boolean }>(`/api/insights/${id}`);
+
+export const restorePost = (id: number) =>
+  apiPost<{ success: boolean }>(`/api/insights/${id}/restore`, {});
+
+export const uploadInsightImage = (file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  return fetch(`${API_BASE}/api/insights/images`, {
+    credentials: "include",
+    method: "POST",
+    body: formData,
+  }).then(async (res) => {
+    const body = await res.json().catch(() => ({}) as Record<string, unknown>);
+    if (!res.ok) {
+      const err = new Error(
+        (body as { message?: string }).message ||
+          (body as { error?: string }).error ||
+          `Request failed (${res.status})`,
+      ) as ApiError;
+      err.status = res.status;
+      throw err;
+    }
+    return body as { success: boolean; path: string; width: number; height: number };
+  });
+};
+
+// ── Product detail (add / edit) ──
+
+type ProductByIdResponse = {
+  success: boolean;
+  product?: AdminProduct | null;
+};
+
+export const getProduct = async (id: string): Promise<AdminProduct> => {
+  const res = await apiGet<ProductByIdResponse>(`/api/admin/products/${id}`);
+  if (res.product) return res.product;
+  // Fallback: the body itself is the product (no wrapper).
+  return res as unknown as AdminProduct;
+};
+
+export const getProductBySlug = (slug: string) =>
+  apiGet<{ success: boolean; product?: AdminProduct | null }>(`/api/products/${slug}`);
+
+type ProductCreateBody = {
+  name: string;
+  model_number: string;
+  category_id: number;
+  subcategory_id?: number | null;
+  brand_id: number;
+  description?: string;
+  availability?: ProductAvailability;
+  specifications?: Record<string, string>;
+  is_active?: boolean;
+};
+
+type ProductCreateResponse = {
+  success: boolean;
+  product?: AdminProduct | null;
+  data?: { id?: string } | null;
+};
+
+export const createProduct = (body: ProductCreateBody) =>
+  apiPost<ProductCreateResponse>("/api/products", body);
+
+export const updateProduct = (id: string, body: Partial<ProductCreateBody>) =>
+  apiPatch<{ success: boolean }>(`/api/products/${id}`, body);
+
+// ── Product images ──
+
+export const uploadProductImages = (id: string, files: FileList | File[]) => {
+  const formData = new FormData();
+  for (const file of Array.from(files ?? [])) formData.append("images", file);
+  return fetch(`${API_BASE}/api/products/${id}/images`, {
+    credentials: "include",
+    method: "POST",
+    body: formData,
+  }).then(async (res) => {
+    const body = await res.json().catch(() => ({}) as Record<string, unknown>);
+    if (!res.ok) {
+      const err = new Error(
+        (body as { message?: string }).message ||
+          (body as { error?: string }).error ||
+          `Request failed (${res.status})`,
+      ) as ApiError;
+      err.status = res.status;
+      throw err;
+    }
+    return body as { success: boolean; images?: AdminProductImage[] };
+  });
+};
+
+export const setPrimaryImage = (id: string, imageId: string) =>
+  apiPatch<{ success: boolean }>(`/api/products/${id}/images/${imageId}/primary`, {});
+
+export const deleteProductImage = (id: string, imageId: string) =>
+  apiDelete<{ success: boolean }>(`/api/products/${id}/images/${imageId}`);

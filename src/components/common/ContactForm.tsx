@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CheckCircle2, AlertTriangle, Info, Loader2, Send } from "lucide-react";
 import { enquirySchema, type EnquiryValues } from "@/lib/validation";
 import { submitEnquiry } from "@/lib/submissions";
@@ -23,6 +24,7 @@ export function ContactForm({ className }: { className?: string }) {
     register,
     handleSubmit,
     reset,
+    getValues,
     setValue,
     watch,
     formState: { errors, isSubmitting },
@@ -32,16 +34,60 @@ export function ContactForm({ className }: { className?: string }) {
     defaultValues: { service: "", emirate: "", companyName: "", botcheck: "" },
   });
 
-  const [result, setResult] = useState<null | { kind: "ok" | "demo" | "error"; message?: string }>(null);
+  const [result, setResult] = useState<null | { kind: "success" | "demo" | "error"; message?: string }>(null);
+  const [productContext, setProductContext] = useState<{
+    product?: string;
+    brand?: string;
+    category?: string;
+    product_id?: number;
+  } | null>(null);
+  const [searchParams] = useSearchParams();
+
   const emirate = watch("emirate");
   const service = watch("service");
+  useEffect(() => {
+    const product = searchParams.get("product");
+    const brand = searchParams.get("brand");
+    const category = searchParams.get("category");
+    const productIdRaw = searchParams.get("productId");
+    const productId = productIdRaw ? Number(productIdRaw) : NaN;
+    const validId = Number.isInteger(productId) && productId >= 1 ? productId : undefined;
+    if (product || brand || category) {
+      setProductContext({ product: product || undefined, brand: brand || undefined, category: category || undefined, product_id: validId });
+    }
+    /* Quote links carry context in the query (?product=…&brand=…&category=…&message=…).
+       Read it once on load and prefill the message — only while the field is
+       still empty; the visitor can edit or clear it freely. */
+    if (getValues("message")) return;
+    const message = searchParams.get("message");
+    const parts = [brand, product].filter((p): p is string => p !== null);
+    const prefill =
+      message
+      ?? (parts.length > 0
+        ? `I am interested in ${parts.join(" ")}${category ? ` (${category})` : ""}.`
+        : category
+          ? `I am interested in ${category}.`
+          : "");
+    if (prefill) setValue("message", prefill);
+  }, []);
 
   const onSubmit = handleSubmit(async (values) => {
     setResult(null);
-    const res = await submitEnquiry({ ...values, source: "website-contact-form" });
-    if (res.status === "ok") {
-      setResult({ kind: "ok" });
+    const product_name = productContext && (productContext.brand || productContext.product)
+      ? `${productContext.brand ?? ""} ${productContext.product ?? ""}`.trim()
+      : undefined;
+    const res = await submitEnquiry({
+      ...values,
+      product_name,
+      model_number: productContext?.product,
+      brand_name: productContext?.brand,
+      category: productContext?.category,
+      product_id: productContext?.product_id,
+    });
+    if (res.status === "success") {
+      setResult({ kind: "success" });
       reset();
+      setProductContext(null);
     } else if (res.status === "demo") {
       setResult({ kind: "demo" });
     } else {
@@ -52,7 +98,7 @@ export function ContactForm({ className }: { className?: string }) {
   const labelCls = "mb-1.5 block text-sm font-medium text-slate-200";
   const errCls = "mt-1 text-xs text-red-600";
 
-  if (result?.kind === "ok") {
+  if (result?.kind === "success") {
     return (
       <div className={`rounded-xl border border-emerald-600/30 bg-emerald-950/30 p-8 text-center ${className ?? ""}`} role="status">
         <CheckCircle2 className="mx-auto size-10 text-emerald-500" aria-hidden="true" />

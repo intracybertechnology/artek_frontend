@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { resolvePageSeo } from "@/data/seo";
+import { isProductDetailPath, resolvePageSeo } from "@/data/seo";
 
 /**
  * Client-side SEO metadata updater for SPA navigation.
@@ -39,6 +39,13 @@ export function SEOHead() {
     setMeta('meta[property="og:description"]', "property", "og:description", seo.description);
     setMeta('meta[property="og:type"]', "property", "og:type", seo.ogType ?? "website");
     setMeta('meta[property="og:url"]', "property", "og:url", seo.path);
+    /* product og:images are the generated 1000x750 pictures — declare the size */
+    const productImage = seo.ogImage && isProductDetailPath(pathname);
+    setMeta('meta[property="og:image"]', "property", "og:image", seo.ogImage);
+    setMeta('meta[property="og:image:width"]', "property", "og:image:width", productImage ? "1000" : undefined);
+    setMeta('meta[property="og:image:height"]', "property", "og:image:height", productImage ? "750" : undefined);
+    setMeta('meta[name="twitter:image"]', "name", "twitter:image", seo.ogImage);
+    setMeta('meta[name="twitter:card"]', "name", "twitter:card", seo.ogImage ? "summary_large_image" : "summary");
     /* article timestamps only exist on blog posts; drop them on other routes */
     setMeta('meta[property="article:published_time"]', "property", "article:published_time", seo.publishedTime);
     setMeta('meta[property="article:modified_time"]', "property", "article:modified_time", seo.modifiedTime);

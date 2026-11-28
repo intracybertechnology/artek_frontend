@@ -1,0 +1,77 @@
+.why-artek__lead {
+  background: radial-gradient(ellipse at 50% 100%, #dff5ff, transparent 72%), #f8fcff;
+}
+
+.why-artek__diagram {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 30rem;
+  margin: 1.5rem auto 0;
+}
+
+.why-artek__sources {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.why-artek__source {
+  display: grid;
+  justify-items: center;
+  gap: .35rem;
+  margin-inline: .2rem;
+  padding: .65rem .15rem;
+  border: 1px solid #c8e6f6;
+  border-radius: .75rem;
+  background: #fff;
+  color: #14324a;
+  font-size: .75rem;
+  font-weight: 750;
+}
+
+.why-artek__connectors {
+  display: block;
+  width: 100%;
+  height: 3rem;
+  color: #328fc1;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+
+.why-artek__destination {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: .55rem;
+  padding: .65rem .9rem;
+  border-radius: .75rem;
+  background: #102b40;
+  color: #fff;
+  font-size: .875rem;
+  font-weight: 750;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .why-artek__diagram[data-entered="true"] .why-artek__source {
+    animation: why-source-in 300ms ease-out both;
+  }
+  .why-artek__diagram[data-entered="true"] .why-artek__source:nth-child(2) { animation-delay: 90ms; }
+  .why-artek__diagram[data-entered="true"] .why-artek__source:nth-child(3) { animation-delay: 180ms; }
+  .why-artek__diagram[data-entered="true"] .why-artek__connectors path {
+    stroke-dasharray: 1;
+    animation: why-connect 560ms 240ms ease-out both;
+  }
+  .why-artek__diagram[data-entered="true"] .why-artek__destination {
+    animation: why-source-in 300ms 650ms ease-out both;
+  }
+}
+
+@keyframes why-source-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes why-connect {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}

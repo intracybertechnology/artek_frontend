@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "@/admin/lib/auth";
 import { MainLayout } from "@/layouts/MainLayout";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
@@ -20,17 +21,42 @@ import BlogPostTemplate from "@/pages/blog/BlogPostTemplate";
 import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 import TermsAndConditions from "@/pages/legal/TermsAndConditions";
 import NotFound from "@/pages/NotFound";
-import { AdminLayout, Protected, PublicOnly } from "@/admin/AdminLayout";
+import { AdminLayout, AdminShell, PublicOnly, RoleGuard } from "@/admin/AdminLayout";
 import { LoginPage } from "@/admin/pages/LoginPage";
-import { EnquiriesPage } from "@/admin/pages/EnquiriesPage";
+import { QuotesPage } from "@/admin/pages/QuotesPage";
+import { ProductsPage } from "@/admin/pages/ProductsPage";
+import ProductFormPage from "@/admin/pages/ProductFormPage";
+import { TestimonialsPage } from "@/admin/pages/TestimonialsPage";
+import TestimonialFormPage from "@/admin/pages/TestimonialFormPage";
+import { AdminInsightsPage } from "@/admin/pages/AdminInsightsPage";
+import AdminPostFormPage from "@/admin/pages/AdminPostFormPage";
+
+/** Sends authenticated users to their role-specific home page. */
+function RoleRedirect() {
+  const { role } = useAuth();
+  return <Navigate to={role === "super_admin" ? "/admin/quotes" : "/admin/products"} replace />;
+}
 
 export function AppRoutes() {
   return (
     <Routes>
-      {/* Admin Dashboard (Authenticated SPA) */}
+      {/* Admin Dashboard */}
       <Route path="admin" element={<AdminLayout />}>
-        <Route index element={<Protected><EnquiriesPage /></Protected>} />
         <Route path="login" element={<PublicOnly><LoginPage /></PublicOnly>} />
+        <Route element={<AdminShell />}>
+          {/* /admin → role-based redirect */}
+          <Route index element={<RoleGuard allow={["super_admin", "admin"]}><RoleRedirect /></RoleGuard>} />
+          <Route path="quotes" element={<RoleGuard allow={["super_admin", "admin"]}><QuotesPage /></RoleGuard>} />
+          <Route path="products" element={<RoleGuard allow={["super_admin", "admin"]}><ProductsPage /></RoleGuard>} />
+          <Route path="products/new" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />
+          <Route path="products/:id/edit" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />
+          <Route path="testimonials" element={<RoleGuard allow={["super_admin", "admin"]}><TestimonialsPage /></RoleGuard>} />
+          <Route path="testimonials/new" element={<RoleGuard allow={["super_admin", "admin"]}><TestimonialFormPage /></RoleGuard>} />
+          <Route path="testimonials/:id/edit" element={<RoleGuard allow={["super_admin", "admin"]}><TestimonialFormPage /></RoleGuard>} />
+          <Route path="insights" element={<RoleGuard allow={["super_admin", "admin"]}><AdminInsightsPage /></RoleGuard>} />
+          <Route path="insights/new" element={<RoleGuard allow={["super_admin", "admin"]}><AdminPostFormPage /></RoleGuard>} />
+          <Route path="insights/:id/edit" element={<RoleGuard allow={["super_admin", "admin"]}><AdminPostFormPage /></RoleGuard>} />
+        </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
 

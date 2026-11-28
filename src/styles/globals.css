@@ -199,6 +199,91 @@
   }
 }
 
+/* ── Model card availability dot ────────────────────────────────────── */
+/* Gentle 2 s pulse of opacity and scale on the green "Available" dot —
+   nothing else on the card animates. */
+@keyframes model-availability-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.75);
+  }
+}
+
+.model-availability-dot {
+  animation: model-availability-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .model-availability-dot {
+    animation: none;
+  }
+}
+
+
+/* ── Mega-menu scrollable panel ─────────────────────────────────────── */
+/* Thin dark scrollbar for the white Products mega menu (only when it overflows). */
+.menu-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15,23,42,0.45) rgba(15,23,42,0.08);
+}
+.menu-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.menu-scroll::-webkit-scrollbar-track {
+  background: rgba(15,23,42,0.08);
+  border-radius: 999px;
+}
+.menu-scroll::-webkit-scrollbar-thumb {
+  background: rgba(15,23,42,0.45);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.menu-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(15,23,42,0.7);
+  background-clip: padding-box;
+}
+
+/* ── Mega-menu page backdrop ────────────────────────────────────────── */
+/* Full-screen dim + blur behind the open Products menu. Clickable while
+   open (pointer-events: auto, un-transitioned so it engages instantly) so
+   a click on it closes the menu like any other outside click; inert while
+   closed or fading out. Rendered inside the header at z-index 10: the
+   header's own z-40 context keeps it above page content and the floating
+   widgets, while the bar (z-40) and panel (z-30) paint above it and stay
+   sharp.
+   `visibility` joins the transition so the element only stops painting
+   after the fade-out finishes (and the blur is fully off while closed). */
+.mega-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  -webkit-backdrop-filter: blur(0);
+  backdrop-filter: blur(0);
+  transition:
+    opacity 200ms ease,
+    visibility 200ms,
+    -webkit-backdrop-filter 200ms ease,
+    backdrop-filter 200ms ease;
+}
+.mega-backdrop[data-open="true"] {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
 html {
   /* Smooth scrolling is provided by Lenis (see src/lib/lenis.ts), which
      disables this natively while active. Kept as the reduced-motion fallback. */
@@ -308,6 +393,55 @@ body {
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* Heading scroll reveal (data-reveal, set by <Reveal> after mount — the
+   attribute is absent in the prerendered HTML, so static visitors see the
+   heading immediately). Hidden state only paints opacity/transform, so it
+   never shifts layout. */
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(16px);
+}
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 600ms ease-out,
+    transform 600ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Load-time fade-up for the detail-page hero H1 and intro — CSS only, runs
+   once on load. Only paints opacity/transform, so no layout shift, and the
+   prerendered HTML keeps the plain h1 with its text. */
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-fade {
+  animation: hero-fade-up 500ms ease-out both;
+}
+.hero-fade-delay {
+  animation: hero-fade-up 500ms ease-out 120ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-fade,
+  .hero-fade-delay {
+    animation: none;
   }
 }
 

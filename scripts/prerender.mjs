@@ -2,8 +2,9 @@
  * Static prerendering script.
  * 1. Reads the vite client build's dist/index.html as the template.
  * 2. Renders each crawlable route's body markup via the compiled SSR bundle.
- * 3. Injects route-specific <title>, meta description, canonical, Open Graph
- *    and JSON-LD head tags, writes dist/<route>/index.html (+ dist/404.html).
+ * 3. Injects route-specific <title>, meta description, canonical and Open Graph
+ *    head tags, writes dist/<route>/index.html (+ dist/404.html). JSON-LD is
+ *    not injected — the SSR pass bakes it into the body via <SEOHead />.
  *
  * Run after `npm run build` (client) and the SSR build:
  *    node scripts/prerender.mjs
@@ -12,7 +13,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { resolvePageSeo, ALL_SEO_PATHS } from "../src/data/seo.ts";
+import { resolvePageSeo, ALL_SEO_PATHS, isProductDetailPath } from "../src/data/seo.ts";
 import { heroPreloadImage } from "../src/data/heroSlides.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,7 +50,6 @@ async function main() {
         description: "The page could not be found.",
         path: "/404.html",
         noindex: true,
-        jsonLd: [],
       });
     } else {
       const seo = resolvePageSeo(route);
@@ -62,7 +62,8 @@ async function main() {
         ogType: seo.ogType ?? "website",
         publishedTime: seo.publishedTime,
         modifiedTime: seo.modifiedTime,
-        jsonLd: seo.jsonLd ?? [],
+        ogImage: seo.ogImage,
+        productImage: isProductDetailPath(route),
         preloadImage: route === "/" ? heroPreloadImage.image : undefined,
       });
     }
@@ -81,7 +82,6 @@ async function main() {
       description: "ARTEK Computers LLC Admin Portal",
       path: adminRoute,
       noindex: true,
-      jsonLd: [],
     });
     const adminOut = path.join(DIST, ...adminRoute.replace(/^\//, "").split("/"), "index.html");
     mkdirSync(path.dirname(adminOut), { recursive: true });
@@ -95,8 +95,7 @@ async function main() {
 function escapeHtml(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
-
-function injectSeo(html, { title, description, path: pagePath, jsonLd, noindex, ogType = "website", publishedTime, modifiedTime, preloadImage }) {
+function injectSeo(html, { title, description, path: pagePath, noindex, ogType = "website", publishedTime, modifiedTime, ogImage, productImage = false, preloadImage }) {
   const safeTitle = escapeHtml(title);
   const safeDesc = escapeHtml(description);
   /* replace the template's fallback title + description + canonical */
@@ -106,18 +105,21 @@ function injectSeo(html, { title, description, path: pagePath, jsonLd, noindex, 
     .replace(/<link\s+rel="canonical"[\s\S]*?\/>/, `<link rel="canonical" href="${escapeHtml(pagePath)}" />`)
     .replace(/<meta\s+property="og:type"[\s\S]*?\/>/, `<meta property="og:type" content="${escapeHtml(ogType)}" />`);
 
-  /* per-route OG tags */
+  /* per-route OG tags (JSON-LD is NOT injected here — <SEOHead /> bakes the
+     same objects into the prerendered body, so a head copy would duplicate
+     every block once per page) */
   const og =
     `<meta property="og:title" content="${safeTitle}" />\n    ` +
     `<meta property="og:description" content="${safeDesc}" />\n    ` +
     `<meta property="og:url" content="${escapeHtml(pagePath)}" />\n    ` +
+    (ogImage ? `<meta property="og:image" content="${escapeHtml(ogImage)}" />\n    ` : "") +
+    /* product og:images are the generated 1000x750 pictures — declare the size */
+    (ogImage && productImage ? `<meta property="og:image:width" content="1000" />\n    ` : "") +
+    (ogImage && productImage ? `<meta property="og:image:height" content="750" />\n    ` : "") +
+    (ogImage ? `<meta name="twitter:image" content="${escapeHtml(ogImage)}" />\n    ` : "") +
     (publishedTime ? `<meta property="article:published_time" content="${escapeHtml(publishedTime)}" />\n    ` : "") +
     (modifiedTime ? `<meta property="article:modified_time" content="${escapeHtml(modifiedTime)}" />\n    ` : "") +
     (noindex ? `<meta name="robots" content="noindex" />` : "");
-
-  const ld = (jsonLd ?? [])
-    .map((o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, "\\u003c")}</script>`)
-    .join("\n    ");
 
   /* LCP preload (homepage): first carousel slide image */
   const preloads = preloadImage
@@ -127,7 +129,7 @@ function injectSeo(html, { title, description, path: pagePath, jsonLd, noindex, 
   const marker = "</head>";
   const idx = html.lastIndexOf(marker);
   if (idx === -1) return html;
-  return html.slice(0, idx) + "\n    " + og + "\n    " + (preloads ? preloads + "\n    " : "") + ld + "\n  " + html.slice(idx);
+  return html.slice(0, idx) + "\n    " + og + "\n    " + (preloads ? preloads + "\n    " : "") + html.slice(idx);
 }
 
 

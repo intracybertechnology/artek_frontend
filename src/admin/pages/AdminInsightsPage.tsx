@@ -161,15 +161,16 @@ export function AdminInsightsPage() {
         <Card className="gap-0 py-0">
           <div className="border-b p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="flex items-center gap-2">
-              <Button
-                variant={showDeleted ? "secondary" : "outline"}
-                size="sm"
-                aria-pressed={showDeleted}
-                onClick={() => { setShowDeleted((v) => !v); setPage(1); }}
-                disabled={!isSuperAdmin}
-              >
-                {showDeleted ? "Showing deleted" : "Show deleted"}
-              </Button>
+              {isSuperAdmin && (
+                <Button
+                  variant={showDeleted ? "secondary" : "outline"}
+                  size="sm"
+                  aria-pressed={showDeleted}
+                  onClick={() => { setShowDeleted((v) => !v); setPage(1); }}
+                >
+                  {showDeleted ? "Showing deleted" : "Show deleted"}
+                </Button>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <Label htmlFor="status-filter">Status</Label>

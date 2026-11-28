@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon, PencilIcon, RotateCcwIcon, Trash2Icon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/admin/lib/auth";
 import {
   deleteTestimonial,
   listTestimonials,
@@ -48,6 +49,9 @@ function ratingStars(rating: number): string {
 
 export function TestimonialsPage() {
   const navigate = useNavigate();
+  const { role } = useAuth();
+  // Delete / restore / "Show deleted" are super_admin-only.
+  const isSuperAdmin = role === "super_admin";
   const [items, setItems] = useState<AdminTestimonial[]>([]);
   const [page, setPage] = useState(1);
   const [showDeleted, setShowDeleted] = useState(false);
@@ -174,14 +178,16 @@ export function TestimonialsPage() {
         <Card className="gap-0 py-0">
           <div className="border-b p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <Button
-                variant={showDeleted ? "secondary" : "outline"}
-                size="sm"
-                aria-pressed={showDeleted}
-                onClick={() => { setShowDeleted((v) => !v); setPage(1); }}
-              >
-                {showDeleted ? "Showing deleted" : "Show deleted"}
-              </Button>
+              {isSuperAdmin && (
+                <Button
+                  variant={showDeleted ? "secondary" : "outline"}
+                  size="sm"
+                  aria-pressed={showDeleted}
+                  onClick={() => { setShowDeleted((v) => !v); setPage(1); }}
+                >
+                  {showDeleted ? "Showing deleted" : "Show deleted"}
+                </Button>
+              )}
             </div>
           </div>
 
@@ -288,7 +294,7 @@ export function TestimonialsPage() {
                               >
                                 <ChevronDownIcon className="size-3" />
                               </Button>
-                              {showDeleted ? (
+                              {isSuperAdmin && (showDeleted ? (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -308,7 +314,7 @@ export function TestimonialsPage() {
                                 >
                                   <Trash2Icon className="size-3.5" />
                                 </Button>
-                              )}
+                              ))}
                             </div>
                           </TableCell>
                         </TableRow>

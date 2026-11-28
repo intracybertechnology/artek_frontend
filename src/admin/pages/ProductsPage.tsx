@@ -8,6 +8,7 @@ import {
   listProducts,
   restoreProduct,
 } from "@/admin/lib/api";
+import { useAuth } from "@/admin/lib/auth";
 import type { AdminBrand, AdminCategory, AdminProduct, ProductAvailability } from "@/admin/lib/types";
 import { PRODUCT_AVAILABILITIES } from "@/admin/lib/types";
 import { API_BASE, type ApiError } from "@/lib/api";
@@ -69,6 +70,9 @@ function friendlyError(err: unknown): string {
 
 export function ProductsPage() {
   const navigate = useNavigate();
+  const { role } = useAuth();
+  // Delete / restore / "Show deleted" are super_admin-only.
+  const canManageDeleted = role === "super_admin";
   const [items, setItems] = useState<AdminProduct[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -249,14 +253,16 @@ export function ProductsPage() {
                 </SelectContent>
               </Select>
 
-              <Button
-                variant={showDeleted ? "secondary" : "outline"}
-                size="sm"
-                aria-pressed={showDeleted}
-                onClick={() => { setShowDeleted((v) => !v); setPage(1); }}
-              >
-                {showDeleted ? "Showing deleted" : "Show deleted"}
-              </Button>
+              {canManageDeleted && (
+                <Button
+                  variant={showDeleted ? "secondary" : "outline"}
+                  size="sm"
+                  aria-pressed={showDeleted}
+                  onClick={() => { setShowDeleted((v) => !v); setPage(1); }}
+                >
+                  {showDeleted ? "Showing deleted" : "Show deleted"}
+                </Button>
+              )}
             </div>
           </div>
 
@@ -347,7 +353,7 @@ export function ProductsPage() {
                                 <PencilIcon className="size-3.5" />
                                 Edit
                               </Button>
-                              {deleted ? (
+                              {canManageDeleted && (deleted ? (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -368,7 +374,7 @@ export function ProductsPage() {
                                   <Trash2Icon className="size-3.5" />
                                   Delete
                                 </Button>
-                              )}
+                              ))}
                             </div>
                           </TableCell>
                         </TableRow>

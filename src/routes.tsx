@@ -46,7 +46,7 @@ export function AppRoutes() {
         <Route element={<AdminShell />}>
           {/* /admin → role-based redirect */}
           <Route index element={<RoleGuard allow={["super_admin", "admin"]}><RoleRedirect /></RoleGuard>} />
-          <Route path="quotes" element={<RoleGuard allow={["super_admin"]}><QuotesPage /></RoleGuard>} />
+          <Route path="quotes" element={<RoleGuard allow={["super_admin", "admin"]}><QuotesPage /></RoleGuard>} />
           <Route path="products" element={<RoleGuard allow={["super_admin", "admin"]}><ProductsPage /></RoleGuard>} />
           <Route path="products/new" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />
           <Route path="products/:id/edit" element={<RoleGuard allow={["super_admin", "admin"]}><ProductFormPage /></RoleGuard>} />

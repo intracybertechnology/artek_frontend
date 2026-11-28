@@ -63,7 +63,7 @@ const NAV: { label: string; to: string; icon: ReactNode; roles: AdminRole[] }[] 
     label: "Quotes",
     to: "/admin/quotes",
     icon: <LayoutListIcon className="size-4" />,
-    roles: ["super_admin"],
+    roles: ["super_admin", "admin"],
   },
   {
     label: "Products",
